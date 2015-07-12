@@ -9,6 +9,6 @@ printTerm term
       TermVar x
         -> printVariable x
       TermAbs x m
-        -> "λ" ++ (printVariable x) ++ "." ++ (printTerm m)
+        -> "(λ" ++ (printVariable x) ++ "." ++ (printTerm m) ++ ")"
       TermApp m n
-        -> "(" ++ (printTerm m) ++ ") (" ++ (printTerm n) ++ ")"
+        -> "(" ++ (printTerm m) ++ " " ++ (printTerm n) ++ ")"
