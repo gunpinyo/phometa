@@ -1,6 +1,7 @@
 {
     "version": "0.0.1",
-    "summary": "A proof assistant base on visualization.",
+    "summary":
+        "An application that can build a formal system based on visualization.",
     "repository": "https://github.com/gunpinyo/phometa.git",
     "license": "BSD3",
     "source-directories": [

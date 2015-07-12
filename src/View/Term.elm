@@ -1,14 +1,13 @@
 module View.Term where
 
-import Model.Term exposing (..)
-import View.Variable exposing (printVariable)
+import Maybe exposing (Maybe)
 
-printTerm : Term -> String
-printTerm term
-  = case term of
-      TermVar x
-        -> printVariable x
-      TermAbs x m
-        -> "(λ" ++ (printVariable x) ++ "." ++ (printTerm m) ++ ")"
-      TermApp m n
-        -> "(" ++ (printTerm m) ++ " " ++ (printTerm n) ++ ")"
+import Model.Grammar exposing (Grammar)
+import Model.Term exposing (Term)
+
+--show_term : Grammar -> Term -> Maybe Html
+--show_term grammar term
+--  = case term of
+--      Term_FromIndType type_name index subterms ->
+--        let subterms_types, format = get_indtype_detail Grammar type_name index
+--         in List.map 
