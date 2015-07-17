@@ -1,34 +1,40 @@
 module Model.Term where
 
-import Model.Grammar exposing (TypeName)
+import Model.Syntax exposing (GrammarName)
 
 {- example (continue from example in `Model.Grammar`):
 
-  ((¬ ⊤) ∨ (zero = (suc zero))) : BExp
+  ((¬ ⊤) ∨ ((var 1) = (suc zero))) : BExp
 
 can be represented as
 
-  Term_FromIndType "BExp" 1
-    [ Term_FromIndType "BExp" 2
-        [ Term_FromIndType "BExp" 0 [] ]
-    , Term_FromIndType "BExp" 3
-        [ Term_FromIndType "NExp" 0 []
-        , Term_FromIndType "NExp" 1
-            [ Term_FromIndType "NExp" 0 [] ]
-        ]
-    ]
+  { grammar = "BExp"
+  , term = TermInd 1
+      [ TermInd 2
+          [ TermInd 0 [] ]
+      , TermInd 3
+          [ TermRegex "0"
+          , TermInd 1
+              [ TermInd 0 [] ]
+          ]
+      ]
+  }
 
-and
-
-  somevar : Var
-
-can be represented as
-
-  Term_FromRegexType "Var" "somevar"
+please note that, corresponded syntax is strongly needed to interpret any term
 
 -}
 
 type Term
-  = Term_FromIndType TypeName Int (List Term) -- type_name index subterms
-  | Term_FromRegexType TypeName String        -- type_name name
-  | Term_Hole                              -- state term needed to be complete
+  = TermInd Int (List Term)        -- consists of index, subterms
+  | TermRegex String               -- consists of term name
+  | TermVar String                 -- consists of variable name
+  | TermDef String                 -- consists of (global) definition name
+  | TermHole                       -- for term that need to be complete
+
+-- root term need to know its grammar in advance
+-- but subterms will we be able to figure out by themselves
+-- using root term knowledge
+type alias RootTerm
+  = { grammar : GrammarName
+    , term : Term
+    }

@@ -3,13 +3,13 @@
 
 module Main where
 
---import Graphics.Element exposing (Element, show)
+import Graphics.Element exposing (Element, show)
 --import Model.Term exposing (..)
 --import View.Term exposing (..)
-
+import Model.Repository
 --exampleTerm : Term
 --exampleTerm = TermApp (TermVar "4") (TermAbs "r" (TermVar "e"))
 
---main : Element
---main =
---  show <| printTerm exampleTerm
+main : Element
+main =
+  show <| "hey"
