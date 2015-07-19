@@ -1,26 +1,30 @@
 module Model.Repository where
 
-import Dict exposing (Dict)
+import Array exposing (Array)
 
+import Tool.OrderedDict exposing (OrderedDict)
 import Model.Syntax exposing (Syntax)
 import Model.Semantics exposing (Semantics)
 import Model.Theory exposing (Theory)
+
 
 type alias ModuleName = String
 
 type alias ModulePath = List ModuleName
 
 type Module
-  -- consists of actual syntax and list of dependent syntax
-  = ModuleSyntax Syntax (List ModulePath)
-  -- consists of actual semantics, dependent syntax,
-  --   and list of dependent semantics
-  | ModuleSemantics Semantics ModulePath (List ModulePath)
-  -- consists of actual theory, dependent semantics,
-  --   and list of dependent theory
-  | ModuleTheory Theory ModulePath (List ModulePath)
-  -- consists of dict that map module name to actual module
-  | ModulePackage (Dict ModuleName Module)
+  = ModuleSyntax { syntax : Syntax
+                 , dependent_syntaxes : Array ModulePath
+                 }
+  | ModuleSemantics { semantics : Semantics
+                    , dependent_syntax : ModulePath
+                    , dependent_semanticses : Array ModulePath
+                    }
+  | ModuleTheory { theory : Theory
+                 , dependent_semantics : ModulePath
+                 , dependent_theories : Array ModulePath
+                 }
+  | ModulePackage (OrderedDict ModuleName Module)
 
 type alias Repository
   = { root_package : Module,
