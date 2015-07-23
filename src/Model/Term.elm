@@ -1,8 +1,23 @@
 module Model.Term where
 
-import Model.Variable exposing (Variable)
+import Array exposing (Array)
+
+import Model.Syntax exposing (GrammarChoiceIndex, GrammarReference)
+
+
+type alias Variable = String
 
 type Term
-  = TermVar Variable
-  | TermAbs Variable Term
-  | TermApp Term Term
+  = TermGrammar { index : GrammarChoiceIndex
+                , subterms : Array Term
+                }
+  | TermVariable Variable
+  | TermHole
+
+-- root term need to know its grammar in advance
+-- but subterms will we be able to figure out themselves
+-- by using root term knowledge
+type alias RootTerm
+  = { grammar : GrammarReference
+    , term : Term
+    }

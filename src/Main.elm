@@ -3,13 +3,22 @@
 
 module Main where
 
-import Graphics.Element exposing (Element, show)
-import Model.Term exposing (..)
-import View.Term exposing (..)
+import Html exposing (Html)
+import StartApp exposing (App, start)
 
-exampleTerm : Term
-exampleTerm = TermApp (TermVar "4") (TermAbs "r" (TermVar "e"))
+import Model.Action exposing (Action)
+import Model.Model exposing (Model)
+import ModelUtil.Model exposing (initial_model)
+import Update.Update exposing (update)
+import View.View exposing (view)
 
-main : Element
-main =
-  show <| printTerm exampleTerm
+app : App Model Action
+app
+  = { model = initial_model
+    , view = view
+    , update = update
+    }
+
+main : Signal Html
+main
+  = start app
