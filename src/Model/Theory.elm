@@ -4,40 +4,42 @@ import Array exposing (Array)
 import Dict exposing (Dict)
 
 import Model.Term exposing (RootTerm)
-import Model.Semantics exposing (RuleRef)
+import Model.Semantics exposing (RuleReference)
 
 
 -- constrain:
---   - `DependentTheoryIndex` must be in range of
+--   - `TheoryIndex` must be in range of
 --       `dependent_theories` of `ModuleTheory` in `Model.Repository`
-type alias DependentTheoryIndex = Int
+type alias TheoryIndex = Int
 
 -- constrain:
 --   - `TheoremIndex` must be in range of `theorems` in `Theory`
 type alias TheoremIndex = Int
 
--- constrain:
---   - sub-`TheoremRef` in `TheoremRefImport` must correspond to
---       `DependentTheoryIndex`-th dependent theory of this theory
-type TheoremRef
-  = TheoremRefCurrent TheoremIndex
-  | TheoremRefImport DependentTheoryIndex TheoremRef
+-- if `theory_index` == `Nothing`, then it refer to current theory
+type alias TheoremReference
+  = { theory_index : Maybe TheoryIndex
+    , theorem_index : TheoremIndex
+    }
+
 
 -- constrain:
 --   `TheoremRef` in `ProofByLemma` must be a theorem BEFORE this `Theorem`
 --     ie. theorem that is in dependent theory or theorem above this
 type Proof
-  = ProofByRule { rule : RuleRef
+  = ProofByRule { rule : RuleReference
                 , subproofs : (Array Proof)
                 }
-  | ProofByLemma TheoremRef
+  | ProofByLemma TheoremReference
 
 -- constrain:
---   - `name` can't be empty string nor the same name with in another `theorem`
+--   - `name` can't be empty string
+--       nor the same name with in another `theorem` in `Theory`
 type alias Theorem
   = { term : RootTerm
     , proof : Proof
     , name : String
+    , comment : String
     }
 
 -- constrain:
@@ -47,4 +49,5 @@ type alias Theory
   = { theorems : Array Theorem
     , dependent_theories_aliases : Array String
     , has_locked : Bool
+    , comment : String
     }

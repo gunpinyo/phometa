@@ -3,38 +3,22 @@
 
 module Main where
 
+import Html exposing (Html)
+import StartApp exposing (App, start)
+
+import Model.Action exposing (Action)
 import Model.Model exposing (Model)
+import ModelUtil.Model exposing (initial_model)
+import Update.Update exposing (update)
+import View.View exposing (view)
 
-import Html exposing (button, text)
-import Html.Events exposing (onClick)
-import Flex exposing (row, column, flexDiv, fullbleed)
-import StartApp
+app : App Model Action
+app
+  = { model = initial_model
+    , view = view
+    , update = update
+    }
 
-main =
-  StartApp.start { model = model, view = view, update = update }
-
-model = 0
-
-view address model =
-  fullbleed <| column
-    [ row
-        [ flexDiv [("background-color", "yellow"),("width", "30%")] [] [ text "nw" ]
-        , flexDiv [("background-color", "red"),("width", "70%")] [] [ text "ne" ]
-        ]
-    , row
-        [ flexDiv [("background-color", "blue")] [] [ text "sw" ]
-        , flexDiv [("background-color", "green")] [] [ text "se" ]
-        ]
-    ]
-  --div []
-  --  [ button [ onClick address Decrement ] [ text "-" ]
-  --  , div [] [ text (toString model) ]
-  --  , button [ onClick address Increment ] [ text "+" ]
-  --  ]
-
-type Action = Increment | Decrement
-
-update action model =
-  case action of
-    Increment -> model + 1
-    Decrement -> model - 1
+main : Signal Html
+main
+  = start app

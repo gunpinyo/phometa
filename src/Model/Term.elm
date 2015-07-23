@@ -2,7 +2,7 @@ module Model.Term where
 
 import Array exposing (Array)
 
-import Model.Syntax exposing (GrammarChoiceIndex, GrammarRef)
+import Model.Syntax exposing (GrammarChoiceIndex, GrammarReference)
 
 
 type alias Variable = String
@@ -18,6 +18,6 @@ type Term
 -- but subterms will we be able to figure out themselves
 -- by using root term knowledge
 type alias RootTerm
-  = { grammar : GrammarRef
+  = { grammar : GrammarReference
     , term : Term
     }

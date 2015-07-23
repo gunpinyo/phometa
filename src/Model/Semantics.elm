@@ -7,9 +7,9 @@ import Model.Term exposing (RootTerm)
 
 
 -- constrain:
---   - `DependentSemanticsIndex` must be in range of
+--   - `SemanticsIndex` must be in range of
 --       `dependent_semanticses` of `ModuleSemantics` in `Model.Repository`
-type alias DependentSemanticsIndex = Int
+type alias SemanticsIndex = Int
 
 -- constrain:
 --   - `RuleIndex` must be in range of `rules` in `Semantics`
@@ -20,12 +20,11 @@ type alias RuleIndex = Int
 --       `choices` of corresponding `Rule`
 type alias RuleChoiceIndex = Int
 
--- constrain:
---   - sub-`RuleRef` in `RuleRefImport` must correspond to
---       `DependentSemanticsIndex`-th dependent semantics of this semantics
-type RuleRef
-  = RuleRefCurrent RuleIndex
-  | RuleRefImport DependentSemanticsIndex RuleRef
+-- if `semantics_index` == `Nothing`, then it refer to current semantics
+type alias RuleReference
+  = { semantics_index : Maybe SemanticsIndex
+    , rule_index : RuleIndex
+    }
 
 type alias RuleChoice
   = { promises : (Array RootTerm)
@@ -33,10 +32,12 @@ type alias RuleChoice
     }
 
 -- constrain:
---   - `name` can't be empty string nor the same name with in another `rule`
+--   - `name` can't be empty string
+--       nor the same name with in another `rule` in `Semantics`
 type alias Rule
   = { choices : Array RuleChoice
     , name : String
+    , comment : String
     }
 
 -- constrain:
@@ -46,4 +47,5 @@ type alias Semantics
   = { rules : Array Rule
     , dependent_semantics_aliases : Array String
     , has_locked : Bool
+    , comment : String
     }
