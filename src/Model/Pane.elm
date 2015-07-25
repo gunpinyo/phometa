@@ -6,12 +6,12 @@ type alias ComponentPath
 type Pane
   = PaneHorizontal { left_pane : Pane
                    , right_pane : Pane
-                   , width_percentage : Int
+                   , width_ratio : (Int, Int)
                    , is_lock : Bool
                    }
   | PaneVertical { upper_pane : Pane
                  , lower_pane : Pane
-                 , height_percentage : Int
+                 , height_ratio : (Int, Int)
                  , is_lock : Bool
                  }
   -- similar to `PaneVertical` but height will depend on `lower_pane` height
