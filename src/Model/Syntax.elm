@@ -3,7 +3,7 @@ module Model.Syntax where
 import Array exposing (Array)
 import Maybe exposing (Maybe(..))
 
-import Tool.Style exposing (ColorString)
+import Tool.Style exposing (CssColor)
 
 -- constrain:
 --   - `SyntaxIndex` must be in range of
@@ -42,7 +42,7 @@ type alias Grammar
     , use_distinction : Bool          -- if True, additional build-in style
                                       --   will be apply to distinct between
                                       --   parent and child term
-    , foreground_color : ColorString
+    , foreground_color : CssColor
     , comment : String
     }
 

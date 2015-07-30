@@ -76,11 +76,11 @@ import Flex exposing (row, column, flexDiv, fullbleed)
 import Html exposing (Html, button, text)
 import Html.Events exposing (onClick)
 
-import Model.Action exposing (Action)
+import Model.InputAction exposing (InputAction)
 import Model.Model exposing (Model)
 ```
 note on example of defined modules
-  in this case `Model.Action` and `Model.Model` are not denepend to each other
-  we have freedom to put anything first, but it decide to put Model.Action
-  first because action is normal come before when both of them are arguments in
-  function
+  in this case `Model.InputAction` and `Model.Model` are not depend on
+  each other we have freedom to put anything first, but I decide to put
+  `Model.InputAction` first because input_action is normal come before when
+  both of them are arguments in a function
