@@ -1,10 +1,10 @@
-module Model.Model where
+module Models.Model where
 
 import Maybe exposing (Maybe)
 
-import Model.Repository exposing (Repository)
-import Model.Pane exposing (Pane, ComponentPath)
-import Model.MiniBuffer exposing (MiniBuffer)
+import Models.Repository exposing (Repository)
+import Models.Pane exposing (Pane, ComponentPath)
+import Models.MiniBuffer exposing (MiniBuffer)
 
 type alias Model
   = { repository : Repository

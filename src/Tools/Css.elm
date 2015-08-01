@@ -1,4 +1,4 @@
-module Tool.Css where
+module Tools.Css where
 
 type alias CssKey = String
 type alias CssValue = String

@@ -1,4 +1,4 @@
---module Validator.Syntax where
+--module Validators.Syntax where
 
 ---- TODO: finish all of this
 

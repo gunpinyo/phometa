@@ -1,10 +1,10 @@
-module Model.Theory where
+module Models.Theory where
 
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import Model.Term exposing (RootTerm)
-import Model.Semantics exposing (RuleReference)
+import Models.Term exposing (RootTerm)
+import Models.Semantics exposing (RuleReference)
 
 
 -- constrain:

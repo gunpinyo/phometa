@@ -1,6 +1,6 @@
-module ModelUtil.GlobalConfig where
+module ModelUtils.GlobalConfig where
 
-import Model.GlobalConfig exposing (GlobalConfig)
+import Models.GlobalConfig exposing (GlobalConfig)
 
 initial_global_config : GlobalConfig
 initial_global_config =

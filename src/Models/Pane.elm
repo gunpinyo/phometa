@@ -1,4 +1,4 @@
-module Model.Pane where
+module Models.Pane where
 
 type alias ComponentPath
   = List Int

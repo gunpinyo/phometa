@@ -1,12 +1,12 @@
-module View.MiniBuffer where
+module Views.MiniBuffer where
 
 import Signal exposing (Address)
 
 import Html exposing (Html, text)
 
-import Model.InputAction exposing (InputAction)
-import Model.Model exposing (Model)
-import Model.MiniBuffer exposing (MiniBuffer(..))
+import Models.InputAction exposing (InputAction)
+import Models.Model exposing (Model)
+import Models.MiniBuffer exposing (MiniBuffer(..))
 
 show_mini_buffer : Address InputAction -> Model -> Html
 show_mini_buffer address model =

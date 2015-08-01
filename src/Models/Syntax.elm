@@ -1,9 +1,9 @@
-module Model.Syntax where
+module Models.Syntax where
 
 import Array exposing (Array)
 import Maybe exposing (Maybe(..))
 
-import Tool.Css exposing (CssColor)
+import Tools.Css exposing (CssColor)
 
 -- constrain:
 --   - `SyntaxIndex` must be in range of

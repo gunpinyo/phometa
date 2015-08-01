@@ -1,10 +1,11 @@
-module Tool.Flex where
+module Tools.Flex where
 
 import Maybe exposing (Maybe(..))
 
 import Html exposing (Html, Attribute, div)
 import Html.Attributes exposing (style)
-import Tool.Css exposing (CssKey, CssValue)
+
+import Tools.Css exposing (CssKey, CssValue)
 
 flex_div : List (CssKey, CssValue) -> List Attribute -> List Html -> Html
 flex_div css_block attribute_list =

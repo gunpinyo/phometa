@@ -1,4 +1,4 @@
---module Tool.Util where
+--module Tools.Util where
 
 ----import Array exposing (Array)
 ----import Dict exposing (Dict)

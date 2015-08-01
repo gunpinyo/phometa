@@ -1,4 +1,4 @@
-module Model.MiniBuffer where
+module Models.MiniBuffer where
 
 type MiniBuffer
   = MiniBufferNothing

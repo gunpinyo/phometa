@@ -1,12 +1,12 @@
-module Model.Repository where
+module Models.Repository where
 
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import Model.Syntax exposing (Syntax)
-import Model.Semantics exposing (Semantics)
-import Model.Theory exposing (Theory)
-import Model.GlobalConfig exposing (GlobalConfig)
+import Models.Syntax exposing (Syntax)
+import Models.Semantics exposing (Semantics)
+import Models.Theory exposing (Theory)
+import Models.GlobalConfig exposing (GlobalConfig)
 
 type alias ModuleName = String
 

@@ -1,6 +1,6 @@
-module ModelUtil.MiniBuffer where
+module ModelUtils.MiniBuffer where
 
-import Model.MiniBuffer exposing (MiniBuffer(..))
+import Models.MiniBuffer exposing (MiniBuffer(..))
 
 initial_mini_buffer : MiniBuffer
 --initial_mini_buffer = MiniBufferNothing

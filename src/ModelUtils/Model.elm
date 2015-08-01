@@ -1,11 +1,11 @@
-module ModelUtil.Model where
+module ModelUtils.Model where
 
 import Maybe exposing (Maybe(..))
 
-import Model.Model exposing (Model)
-import ModelUtil.Repository exposing (initial_repository)
-import ModelUtil.Pane exposing (initial_pane)
-import ModelUtil.MiniBuffer exposing (initial_mini_buffer)
+import Models.Model exposing (Model)
+import ModelUtils.Repository exposing (initial_repository)
+import ModelUtils.Pane exposing (initial_pane)
+import ModelUtils.MiniBuffer exposing (initial_mini_buffer)
 
 initial_model : Model
 initial_model =

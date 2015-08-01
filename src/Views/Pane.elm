@@ -1,16 +1,16 @@
-module View.Pane where
+module Views.Pane where
 
 import Signal exposing (Address)
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (style)
 
-import Model.InputAction exposing (InputAction)
-import Model.Model exposing (Model)
-import Model.Pane exposing (Pane(..))
-import View.Welcome exposing (show_welcome)
-import View.MiniBuffer exposing (show_mini_buffer)
-import Tool.Flex exposing (flex_div, flex_css, flex_grow)
+import Models.InputAction exposing (InputAction)
+import Models.Model exposing (Model)
+import Models.Pane exposing (Pane(..))
+import Views.Welcome exposing (show_welcome)
+import Views.MiniBuffer exposing (show_mini_buffer)
+import Tools.Flex exposing (flex_div, flex_css, flex_grow)
 
 show_pane : Address InputAction -> Model -> Pane -> Html
 show_pane address model pane =
