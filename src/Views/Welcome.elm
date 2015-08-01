@@ -9,5 +9,5 @@ import Models.Model exposing (Model)
 
 show_welcome : Address InputAction -> Model -> Html
 show_welcome address model =
-  text <| "Welcomee to phometa!!!"
+  text <| "Welcome to phometa!!!"
   -- TODO: finish this

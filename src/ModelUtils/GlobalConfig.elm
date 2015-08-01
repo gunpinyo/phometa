@@ -6,40 +6,55 @@ initial_global_config : GlobalConfig
 initial_global_config =
   { style =
       { view =
-          { font_family = "monospace"
-          , font_size = "100%"
-          , foreground_color = "blue"
+          { css =
+              [ ("font-family", "monospace")
+              , ("font-size", "100%")
+              , ("color", "DarkBlue")
+              , ("background-color", "#E9C062")
+              ]
           }
-      , input =
-          { cursor_border_color = "#FF8800"
-          , hover_border_color = "#0088FF"
-          , clickable_border_color = "#8800FF"
-          , dragable_border_color = "#FFFF00"
-          , dropable_border_color = "#FFFF00"
+      , interactive =
+          { cursor_css =
+              [ ("border-color", "DarkGreen")
+              , ("border-width", "5px")
+              ]
+          , hover_css =
+              [ ("border-color", "Lime")
+              , ("border-width", "5px")
+              ]
+          , editable_css = [("border-color", "#8800FF")]
+          , dragable_css = [("border-color", "#FFFF00")]
+          , dropable_css = [("border-color", "#FFFF00")]
           }
       , pane =
-          { border = "2px solid brown"
-          , padding = "2px"
-          , background_color = "#E9C062"
+          { css =
+              [ ("border-style", "solid")
+              , ("border-color", "brown")
+              , ("border-width", "2px")
+              , ("padding", "2px")
+              , ("margin", "2px")
+              , ("background-color", "#E9C062")
+              , ("overflow", "auto")
+              ]
           }
       , module' =
-          { comment_background_color = "#FFDDDD"
-          , dependency_background_color = "#DDFFDD"
+          { comment_bg_color = "#FFDDDD"
+          , dependency_bg_color = "#DDFFDD"
           , show_header_description = True
           }
       , repository =
-          { syntax_background_color = "#FF0000"
-          , semantics_background_color = "#00FF00"
-          , theory_background_color = "#0000FF"
-          , package_background_color_pair = ("#CCFFFF", "#FFCCFF")
+          { syntax_bg_color = "#FF0000"
+          , semantics_bg_color = "#00FF00"
+          , theory_bg_color = "#0000FF"
+          , package_bg_color_pair = ("#CCFFFF", "#FFCCFF")
           }
       , term =
-          { background_color_pair = ("#DDDDDD", "#AAAAAA")
-          , variable_background_color = "#FF2222"
+          { bg_color_pair = ("#DDDDDD", "#AAAAAA")
+          , variable_bg_color = "#FF2222"
           , show_grammar_reference = True
           }
       , theory =
-          { proof_background_color_pair = ("#DDDDDD", "#AAAAAA")
+          { proof_bg_color_pair = ("#DDDDDD", "#AAAAAA")
           }
       }
   }

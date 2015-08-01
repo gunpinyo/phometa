@@ -42,7 +42,7 @@ type alias Grammar
     , use_distinction : Bool          -- if True, additional build-in style
                                       --   will be apply to distinct between
                                       --   parent and child term
-    , foreground_color : CssColor
+    , fg_color : CssColor
     , comment : String
     }
 
