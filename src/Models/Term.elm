@@ -1,8 +1,8 @@
-module Model.Term where
+module Models.Term where
 
 import Array exposing (Array)
 
-import Model.Syntax exposing (GrammarChoiceIndex, GrammarReference)
+import Models.Syntax exposing (GrammarChoiceIndex, GrammarReference)
 
 
 type alias Variable = String

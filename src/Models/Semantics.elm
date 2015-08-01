@@ -1,9 +1,9 @@
-module Model.Semantics where
+module Models.Semantics where
 
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import Model.Term exposing (RootTerm)
+import Models.Term exposing (RootTerm)
 
 
 -- constrain:

@@ -1,6 +1,6 @@
-module Model.GlobalConfig where
+module Models.GlobalConfig where
 
-import Tool.Css exposing
+import Tools.Css exposing
   ( CssColor
   , CssSize
   , CssValue

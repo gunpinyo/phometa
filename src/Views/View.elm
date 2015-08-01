@@ -1,13 +1,13 @@
-module View.View where
+module Views.View where
 
 import Signal exposing (Address)
 
 import Html exposing (Html, div)
 
-import Model.InputAction exposing (InputAction)
-import Model.Model exposing (Model)
-import View.Pane exposing (show_pane)
-import Tool.Flex exposing (flex_css, fullbleed)
+import Models.InputAction exposing (InputAction)
+import Models.Model exposing (Model)
+import Views.Pane exposing (show_pane)
+import Tools.Flex exposing (flex_css, fullbleed)
 
 view : Address InputAction -> Model -> Html
 view address model =

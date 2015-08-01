@@ -1,10 +1,10 @@
-module Model.InputAction where
+module Models.InputAction where
 
 import Keyboard exposing (KeyCode)
 import Maybe exposing (Maybe)
 import Set exposing (Set)
 
-import Model.Pane exposing (ComponentPath)
+import Models.Pane exposing (ComponentPath)
 
 type InputAction
   = InputActionNothing

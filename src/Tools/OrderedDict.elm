@@ -1,9 +1,9 @@
---module Tool.OrderedDict where
+--module Tools.OrderedDict where
 
 --import Dict exposing (Dict)
 --import List
 
---import Tool.Util exposing (list_element_unique, list_unordered_identical)
+--import Tools.Util exposing (list_element_unique, list_unordered_identical)
 
 ---- TODO: check that do we still need ordered dict or not
 ---- constrain:

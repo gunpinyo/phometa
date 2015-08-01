@@ -1,11 +1,11 @@
-module View.Welcome where
+module Views.Welcome where
 
 import Signal exposing (Address)
 
 import Html exposing (Html, text)
 
-import Model.InputAction exposing (InputAction)
-import Model.Model exposing (Model)
+import Models.InputAction exposing (InputAction)
+import Models.Model exposing (Model)
 
 show_welcome : Address InputAction -> Model -> Html
 show_welcome address model =
