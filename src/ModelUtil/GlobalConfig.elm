@@ -18,8 +18,8 @@ initial_global_config =
           , dropable_border_color = "#FFFF00"
           }
       , pane =
-          { border = "1px solid brown"
-          , padding = "1px"
+          { border = "2px solid brown"
+          , padding = "2px"
           , background_color = "#E9C062"
           }
       , module' =

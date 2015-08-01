@@ -2,7 +2,7 @@ module View.MiniBuffer where
 
 import Signal exposing (Address)
 
-import Html exposing (Html, button, text)
+import Html exposing (Html, text)
 
 import Model.InputAction exposing (InputAction)
 import Model.Model exposing (Model)

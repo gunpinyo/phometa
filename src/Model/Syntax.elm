@@ -3,7 +3,7 @@ module Model.Syntax where
 import Array exposing (Array)
 import Maybe exposing (Maybe(..))
 
-import Tool.Style exposing (CssColor)
+import Tool.Css exposing (CssColor)
 
 -- constrain:
 --   - `SyntaxIndex` must be in range of

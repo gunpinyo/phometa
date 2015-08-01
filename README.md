@@ -10,6 +10,11 @@ Phometa is an application that can build formal system based on visualization.
 - use **lower_case_with_underscores** for defined functions and constants
 - but still use **mixedCase** for packages functions and constants
 - use **CamelCase** for modules, types and type aliases
+- use full word(s) to name an identifier, except
+  - `r` for record
+      (since it use so frequent and will be followed by a long identifier)
+  - `*_str` means thing that has type string
+  - `*_func` means function that has been created dynamically
 
 ### indentation
 - 2 spaces for each indention
@@ -84,3 +89,6 @@ note on example of defined modules
   each other we have freedom to put anything first, but I decide to put
   `Model.InputAction` first because input_action is normal come before when
   both of them are arguments in a function
+
+### module and package
+- don't use plural as module or package name

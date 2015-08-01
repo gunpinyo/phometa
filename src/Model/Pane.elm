@@ -9,14 +9,14 @@ type Pane
                   -- False if this is horizontal, subpanes are left/right panes
                   , is_vertical : Bool
                   -- correspond to flexN of flex-html package
-                  -- constrain:
-                  --   - both of element in a pair can't be negative
-                  --   - if any of element in a pair is zero
-                  --       means its size depend on another subpane
-                  --   - both element in a pair can't be zero at the same time
-                  , size_ratio : (Int, Int)  -- correspond to flexN
+                  -- negative ratio means the subpane size vary on another one
+                  --   e.g. (-1, 0) means the first subpane will use remaining
+                  --        height/width after the second use all it need.
+                  -- if both values are negative
+                  --   default html behavior will be used.
+                  , size_ratio : (Int, Int)
+                  -- True if user can drag handle to resize subpanes
                   , is_resizable : Bool
-                  , are_minimizable : (Bool, Bool)
                   }
   | PaneWelcome                -- For new Pane, will be convert later
   | PaneRepository             -- TODO: give arguements and explaination
