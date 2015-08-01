@@ -2,27 +2,20 @@ module View.View where
 
 import Signal exposing (Address)
 
-import Flex exposing (row, column, flexDiv, fullbleed)
-import Html exposing (Html, button, text)
---import Html.Events exposing (onClick)
+import Html exposing (Html, div)
 
-import Model.Action exposing (Action)
+import Model.InputAction exposing (InputAction)
 import Model.Model exposing (Model)
+import View.Pane exposing (show_pane)
+import Tool.Flex exposing (flex_css, fullbleed)
 
-view : Address Action -> Model -> Html
+view : Address InputAction -> Model -> Html
 view address model =
-  fullbleed <| column
-    [ row
-        [ flexDiv [("background-color", "yellow"),("width", "30%")] [] [ text "nw" ]
-        , flexDiv [("background-color", "red"),("width", "70%")] [] [ text "ne" ]
+  let html = show_pane address model model.main_pane
+      view_style = model.repository.global_config.style.view
+      css_block =
+        [ ("font-family", view_style.font_family)
+        , ("font-size", view_style.font_size)
+        , ("color", view_style.foreground_color)
         ]
-    , row
-        [ flexDiv [("background-color", "blue")] [] [ text "sw" ]
-        , flexDiv [("background-color", "green")] [] [ text "se" ]
-        ]
-    ]
-  --div []
-  --  [ button [ onClick address Decrement ] [ text "-" ]
-  --  , div [] [ text (toString model) ]
-  --  , button [ onClick address Increment ] [ text "+" ]
-  --  ]
+   in fullbleed <| flex_css css_block html

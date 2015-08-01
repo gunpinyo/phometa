@@ -1,8 +1,8 @@
 module Update.Update where
 
 import Model.Model exposing (Model)
-import Model.Action exposing (Action)
+import Model.InputAction exposing (InputAction)
 
-update : Action -> Model -> Model
-update action model =
+update : InputAction -> Model -> Model
+update input_action model =
   model -- TODO: finish this
