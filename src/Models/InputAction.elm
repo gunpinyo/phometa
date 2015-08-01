@@ -4,7 +4,7 @@ import Keyboard exposing (KeyCode)
 import Maybe exposing (Maybe)
 import Set exposing (Set)
 
-import Models.Pane exposing (ComponentPath)
+import Models.Model exposing (ComponentPath)
 
 type InputAction
   = InputActionNothing

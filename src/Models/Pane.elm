@@ -1,8 +1,5 @@
 module Models.Pane where
 
-type alias ComponentPath
-  = List Int
-
 type Pane
   = PaneContainer { subpanes : (Pane, Pane)
                   -- True if this is vertical, subpanes are upper/lower panes

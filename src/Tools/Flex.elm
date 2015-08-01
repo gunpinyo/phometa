@@ -5,34 +5,34 @@ import Maybe exposing (Maybe(..))
 import Html exposing (Html, Attribute, div)
 import Html.Attributes exposing (style)
 
-import Tools.Css exposing (CssKey, CssValue)
+import Tools.Css exposing (Css)
 
-flex_div : List (CssKey, CssValue) -> List Attribute -> List Html -> Html
-flex_div css_block attribute_list =
-  let css_block' =
+flex_div : Css -> List Attribute -> List Html -> Html
+flex_div css attribute_list =
+  let css' =
         [ ("flex", "1 1 auto")
         , ("display", "flex")
-        ] ++ css_block
-   in div (style css_block' :: attribute_list)
+        ] ++ css
+   in div (style css' :: attribute_list)
 
-flex_css : List (CssKey, CssValue) -> Html -> Html
-flex_css css_block html =
-  flex_div css_block [] [html]
+flex_css : Css -> Html -> Html
+flex_css css html =
+  flex_div css [] [html]
 
 flex_grow : Int -> Html -> Html
 flex_grow factor html =
-  let css_block =
+  let css =
         [ ("flex-grow", toString factor)
         , ("display", "flex")
         , ("flex-basis", "0px")
         ]
-   in flex_div css_block [] [html]
+   in flex_div css [] [html]
 
 fullbleed : Html -> Html
 fullbleed html =
-  let css_block =
+  let css =
         [ ("width", "100vw")
         , ("height", "100vh")
         , ("display", "flex")
         ]
-   in flex_div css_block [] [html]
+   in flex_div css [] [html]

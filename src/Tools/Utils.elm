@@ -1,10 +1,13 @@
---module Tools.Util where
+module Tools.Utils where
 
 ----import Array exposing (Array)
 ----import Dict exposing (Dict)
---import List
+import List
 --import Set
 
+parity_pair_extract : Int -> (a, a) -> a
+parity_pair_extract parity =
+  if parity % 2 == 0 then fst else snd
 
 --list_element_unique : List comparable -> Bool
 --list_element_unique xs =

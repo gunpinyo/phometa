@@ -1,7 +1,8 @@
 module Models.GlobalConfig where
 
 import Tools.Css exposing
-  ( CssColor
+  ( Css
+  , CssColor
   , CssSize
   , CssValue
   )
@@ -9,40 +10,36 @@ import Tools.Css exposing
 type alias GlobalConfig
   = { style :
         { view :
-            { font_family : CssValue
-            , font_size : CssSize
-            , foreground_color : CssColor
+            { css : Css
             }
-        , input :
-            { cursor_border_color : CssColor
-            , hover_border_color : CssColor
-            , clickable_border_color : CssColor
-            , dragable_border_color : CssColor
-            , dropable_border_color : CssColor
+        , interactive :
+            { cursor_css : Css
+            , hover_css : Css
+            , editable_css : Css
+            , dragable_css : Css
+            , dropable_css : Css
             }
         , pane :
-            { border : CssValue
-            , padding : CssSize
-            , background_color : CssColor
+            { css : Css
             }
         , module' :
-            { comment_background_color : CssColor
-            , dependency_background_color : CssColor
+            { comment_bg_color : CssColor
+            , dependency_bg_color : CssColor
             , show_header_description : Bool
             }
         , repository :
-            { syntax_background_color : CssColor
-            , semantics_background_color : CssColor
-            , theory_background_color : CssColor
-            , package_background_color_pair : (CssColor, CssColor)
+            { syntax_bg_color : CssColor
+            , semantics_bg_color : CssColor
+            , theory_bg_color : CssColor
+            , package_bg_color_pair : (CssColor, CssColor)
             }
         , term :
-            { background_color_pair : (CssColor, CssColor)
-            , variable_background_color : CssColor
+            { bg_color_pair : (CssColor, CssColor)
+            , variable_bg_color : CssColor
             , show_grammar_reference : Bool
             }
         , theory :
-            { proof_background_color_pair : (CssColor, CssColor)
+            { proof_bg_color_pair : (CssColor, CssColor)
             }
         }
     }
