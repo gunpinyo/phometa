@@ -6,7 +6,7 @@ initial_global_config : GlobalConfig
 initial_global_config =
   { style =
       { view =
-          { css =
+          { css_style =
               [ ("font-family", "monospace")
               , ("font-size", "100%")
               , ("color", "DarkBlue")
@@ -14,20 +14,20 @@ initial_global_config =
               ]
           }
       , interactive =
-          { cursor_css =
+          { cursor_css_style =
               [ ("border-color", "DarkGreen")
               , ("border-width", "5px")
               ]
-          , hover_css =
+          , hover_css_style =
               [ ("border-color", "Lime")
               , ("border-width", "5px")
               ]
-          , editable_css = [("border-color", "#8800FF")]
-          , dragable_css = [("border-color", "#FFFF00")]
-          , dropable_css = [("border-color", "#FFFF00")]
+          , editable_css_style = [("border-color", "#8800FF")]
+          , dragable_css_style = [("border-color", "#FFFF00")]
+          , dropable_css_style = [("border-color", "#FFFF00")]
           }
       , pane =
-          { css =
+          { css_style =
               [ ("border-style", "solid")
               , ("border-color", "brown")
               , ("border-width", "2px")

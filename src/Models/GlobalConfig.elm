@@ -1,26 +1,26 @@
 module Models.GlobalConfig where
 
 import Tools.Css exposing
-  ( Css
-  , CssColor
+  ( CssColor
   , CssSize
   , CssValue
+  , CssStyle
   )
 
 type alias GlobalConfig
   = { style :
         { view :
-            { css : Css
+            { css_style : CssStyle
             }
         , interactive :
-            { cursor_css : Css
-            , hover_css : Css
-            , editable_css : Css
-            , dragable_css : Css
-            , dropable_css : Css
+            { cursor_css_style : CssStyle
+            , hover_css_style : CssStyle
+            , editable_css_style : CssStyle
+            , dragable_css_style : CssStyle
+            , dropable_css_style : CssStyle
             }
         , pane :
-            { css : Css
+            { css_style : CssStyle
             }
         , module' :
             { comment_bg_color : CssColor

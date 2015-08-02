@@ -6,7 +6,7 @@ import List
 import Html exposing (Html, div)
 
 import Tools.Utils exposing (parity_pair_extract)
-import Tools.Flex exposing (flex_div, flex_css, flex_grow)
+import Tools.Flex exposing (flex_div, flex_css_style, flex_grow)
 import Tools.HtmlExtra exposing (on_click)
 import Models.InputAction exposing (InputAction(..))
 import Models.Model exposing (ComponentPath, Model)
@@ -35,11 +35,11 @@ show_pane address model pane component_path =
                     )
                   else if fst r.size_ratio >= 0 then
                     ( fst_subpane
-                    , flex_css [("flex", "0 auto")] snd_subpane
+                    , flex_css_style [("flex", "0 auto")] snd_subpane
                     , "flex_end"
                     )
                   else if snd r.size_ratio >= 0 then
-                    ( flex_css [("flex", "0 auto")] fst_subpane
+                    ( flex_css_style [("flex", "0 auto")] fst_subpane
                     , snd_subpane
                     , "flex_start"
                     )
@@ -48,21 +48,21 @@ show_pane address model pane component_path =
                     , snd_subpane
                     , "center"
                     )
-                css =
+                css_style =
                   [ ("flex-direction", direction_str)
                   , ("justify-content", justify_str)
                   , ("align-items", "stretch")
                   ]
-             in flex_div css [] [fst_item, snd_item]
+             in flex_div css_style [] [fst_item, snd_item]
           PaneWelcome -> show_welcome address model -- TODO: component_path
           PaneMiniBuffer -> show_mini_buffer address model -- TODO: component_path
-      css =
+      css_style =
         let global_style = model.repository.global_config.style
-            maybe_cursor_css =
+            maybe_cursor_css_style =
               if is_at_cursor_path model component_path
-                then global_style.interactive.cursor_css else []
-         in global_style.pane.css ++ maybe_cursor_css
+                then global_style.interactive.cursor_css_style else []
+         in global_style.pane.css_style ++ maybe_cursor_css_style
       attributes =
         [ on_click address <| InputActionClick component_path
         ]
-   in flex_div css attributes [html]
+   in flex_div css_style attributes [html]
