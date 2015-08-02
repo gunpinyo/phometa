@@ -1,12 +1,11 @@
 module Views.Pane where
 
 import Signal exposing (Address)
-import List
 
 import Html exposing (Html, div)
+import Html.Attributes exposing (classList)
 
-import Tools.Utils exposing (parity_pair_extract)
-import Tools.Flex exposing (flex_div, flex_css_style, flex_grow)
+import Tools.Flex exposing (flex_div, flex_grow)
 import Tools.HtmlExtra exposing (on_click)
 import Models.InputAction exposing (InputAction(..))
 import Models.Model exposing (ComponentPath, Model)
@@ -35,11 +34,11 @@ show_pane address model pane component_path =
                     )
                   else if fst r.size_ratio >= 0 then
                     ( fst_subpane
-                    , flex_css_style [("flex", "0 auto")] snd_subpane
+                    , flex_div [("flex", "0 auto")] [] [snd_subpane]
                     , "flex_end"
                     )
                   else if snd r.size_ratio >= 0 then
-                    ( flex_css_style [("flex", "0 auto")] fst_subpane
+                    ( flex_div [("flex", "0 auto")] [] [fst_subpane]
                     , snd_subpane
                     , "flex_start"
                     )
@@ -56,13 +55,11 @@ show_pane address model pane component_path =
              in flex_div css_style [] [fst_item, snd_item]
           PaneWelcome -> show_welcome address model -- TODO: component_path
           PaneMiniBuffer -> show_mini_buffer address model -- TODO: component_path
-      css_style =
-        let global_style = model.repository.global_config.style
-            maybe_cursor_css_style =
-              if is_at_cursor_path model component_path
-                then global_style.interactive.cursor_css_style else []
-         in global_style.pane.css_style ++ maybe_cursor_css_style
       attributes =
-        [ on_click address <| InputActionClick component_path
+        [ classList
+            [ ("pane", True)
+            , ("pane-cursor", is_at_cursor_path model component_path)
+            ]
+        , on_click address <| InputActionClick component_path
         ]
-   in flex_div css_style attributes [html]
+   in flex_div [] attributes [html]

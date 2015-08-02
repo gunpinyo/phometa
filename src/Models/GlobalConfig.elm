@@ -9,18 +9,11 @@ import Tools.Css exposing
 
 type alias GlobalConfig
   = { style :
-        { view :
-            { css_style : CssStyle
-            }
-        , interactive :
-            { cursor_css_style : CssStyle
-            , hover_css_style : CssStyle
+        { interactive :
+            { hover_css_style : CssStyle
             , editable_css_style : CssStyle
             , dragable_css_style : CssStyle
             , dropable_css_style : CssStyle
-            }
-        , pane :
-            { css_style : CssStyle
             }
         , module' :
             { comment_bg_color : CssColor

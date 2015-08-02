@@ -15,10 +15,6 @@ flex_div css_style attribute_list =
         ] ++ css_style
    in div (style css_style' :: attribute_list)
 
-flex_css_style : CssStyle -> Html -> Html
-flex_css_style css_style html =
-  flex_div css_style [] [html]
-
 flex_grow : Int -> Html -> Html
 flex_grow factor html =
   let css_style =
