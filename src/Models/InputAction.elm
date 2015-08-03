@@ -9,6 +9,8 @@ import Models.Model exposing (ComponentPath)
 type InputAction
   = InputActionNothing
   | InputActionClick ComponentPath
+  | InputActionHover ComponentPath
+  | InputActionCurserLeavesWindow
   | InputActionDrag ComponentPath
   | InputActionDrop (Maybe ComponentPath)
   | InputActionKeysDown (Set KeyCode)
