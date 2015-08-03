@@ -26,4 +26,8 @@ update input_action model =
         hovered_path_maybe <- Nothing
       , mini_buffer <- MiniBufferDebug "Curser leaves window!!!!!"
       }
+    InputActionKeysDown keycode_set ->
+      { model |
+        mini_buffer <- MiniBufferDebug ("keys down!!" ++ toString keycode_set)
+      }
   -- TODO: finish this
