@@ -5,37 +5,14 @@ import Models.GlobalConfig exposing (GlobalConfig)
 initial_global_config : GlobalConfig
 initial_global_config =
   { style =
-      { view =
-          { css =
-              [ ("font-family", "monospace")
-              , ("font-size", "100%")
-              , ("color", "DarkBlue")
-              , ("background-color", "#E9C062")
-              ]
-          }
-      , interactive =
-          { cursor_css =
-              [ ("border-color", "DarkGreen")
-              , ("border-width", "5px")
-              ]
-          , hover_css =
+      { interactive =
+          { hover_css_style =
               [ ("border-color", "Lime")
               , ("border-width", "5px")
               ]
-          , editable_css = [("border-color", "#8800FF")]
-          , dragable_css = [("border-color", "#FFFF00")]
-          , dropable_css = [("border-color", "#FFFF00")]
-          }
-      , pane =
-          { css =
-              [ ("border-style", "solid")
-              , ("border-color", "brown")
-              , ("border-width", "2px")
-              , ("padding", "2px")
-              , ("margin", "2px")
-              , ("background-color", "#E9C062")
-              , ("overflow", "auto")
-              ]
+          , editable_css_style = [("border-color", "#8800FF")]
+          , dragable_css_style = [("border-color", "#FFFF00")]
+          , dropable_css_style = [("border-color", "#FFFF00")]
           }
       , module' =
           { comment_bg_color = "#FFDDDD"

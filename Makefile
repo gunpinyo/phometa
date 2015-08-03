@@ -1,8 +1,11 @@
 interactive:
 	elm-repl --interpreter=nodejs
 
-run-program:
+reactor:
 	elm-reactor
+
+compile:
+	elm-make src/Main.elm
 
 clean:
 	rm -rf elm-stuff/ && rm elm.js

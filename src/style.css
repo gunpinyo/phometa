@@ -1,0 +1,26 @@
+.view {
+    font-family: monospace;
+    font-size: 100%;
+    color: DarkBlue;
+    background-color: #E9C062;
+}
+
+.pane {
+    border-style: solid;
+    border-color: brown;
+    border-width: 2px;
+    padding: 2px;
+    margin: 2px;
+    background-color: #E9C062;
+    overflow: auto;
+}
+
+.pane-cursor {
+    border-color: DarkGreen !important;
+    border-width: 5px;
+}
+
+.pane:hover {
+    border-color: Lime;
+    border-width: 5px;
+}

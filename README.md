@@ -13,8 +13,8 @@ Phometa is an application that can build formal system based on visualization.
 - use full word(s) to name an identifier, except
   - `r` for record
       (since it use so frequent and will be followed by a long identifier)
-  - `*_str` means thing that has type string
-  - `*_func` means function that has been created dynamically
+  - `str` means thing that has type string
+  - `func` means function that has been created dynamically
   - `fg_color` means foreground color
   - `bg_color` means background color
 - use word that describe identifier as prefix

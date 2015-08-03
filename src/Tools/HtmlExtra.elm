@@ -3,8 +3,13 @@ module Tools.HtmlExtra where
 import Json.Decode as Json
 import Signal exposing (Address)
 
-import Html exposing (Attribute)
+import Html exposing (Html, Attribute, node)
+import Html.Attributes exposing (rel, href)
 import Html.Events exposing (onWithOptions)
+
+get_css_link_node : String -> Html
+get_css_link_node css_location =
+  node "link" [rel "stylesheet", href css_location] []
 
 on_mouse_event : String -> Address a -> a -> Attribute
 on_mouse_event event_str address action =
