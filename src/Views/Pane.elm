@@ -6,11 +6,11 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (classList)
 
 import Tools.Flex exposing (flex_div, flex_grow)
-import Tools.HtmlExtra exposing (on_click)
+import Tools.HtmlExtra exposing (on_click, on_mouse_enter)
 import Models.InputAction exposing (InputAction(..))
 import Models.Model exposing (ComponentPath, Model)
 import Models.Pane exposing (Pane(..))
-import ModelUtils.Model exposing (is_at_cursor_path)
+import ModelUtils.Model exposing (is_at_cursor_path, is_at_hovered_path)
 import Views.Welcome exposing (show_welcome)
 import Views.MiniBuffer exposing (show_mini_buffer)
 
@@ -59,7 +59,9 @@ show_pane address model pane component_path =
         [ classList
             [ ("pane", True)
             , ("pane-cursor", is_at_cursor_path model component_path)
+            , ("pane-hovered", is_at_hovered_path model component_path)
             ]
         , on_click address <| InputActionClick component_path
+        , on_mouse_enter address <| InputActionHover component_path
         ]
    in flex_div [] attributes [html]

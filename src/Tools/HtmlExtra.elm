@@ -23,3 +23,9 @@ on_mouse_event event_str address action =
 
 on_click : Address a -> a -> Attribute
 on_click = on_mouse_event "click"
+
+on_mouse_enter : Address a -> a -> Attribute
+on_mouse_enter = on_mouse_event "mouseover"
+
+on_mouse_leave : Address a -> a -> Attribute
+on_mouse_leave = on_mouse_event "mouseleave"

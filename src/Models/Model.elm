@@ -13,6 +13,7 @@ type alias Model
   = { repository : Repository
     , main_pane : Pane
     , cursor_path_maybe : Maybe ComponentPath
-    , holding_path_maybe : Maybe ComponentPath        -- for drag and drop
+    , hovered_path_maybe : Maybe ComponentPath
+    , dragged_path_maybe : Maybe ComponentPath        -- for drag and drop
     , mini_buffer : MiniBuffer
     }

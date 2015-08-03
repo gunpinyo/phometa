@@ -1,4 +1,4 @@
-.view {
+.window {
     font-family: monospace;
     font-size: 100%;
     color: DarkBlue;
@@ -16,11 +16,11 @@
 }
 
 .pane-cursor {
-    border-color: DarkGreen !important;
+    border-color: DarkGreen;
     border-width: 5px;
 }
 
-.pane:hover {
+.pane-hovered {
     border-color: Lime;
     border-width: 5px;
 }

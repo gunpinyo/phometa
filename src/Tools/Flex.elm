@@ -16,19 +16,19 @@ flex_div css_style attribute_list =
    in div (style css_style' :: attribute_list)
 
 flex_grow : Int -> Html -> Html
-flex_grow factor html =
+flex_grow factor sub_html =
   let css_style =
         [ ("flex-grow", toString factor)
         , ("display", "flex")
         , ("flex-basis", "0px")
         ]
-   in flex_div css_style [] [html]
+   in flex_div css_style [] [sub_html]
 
 fullbleed : Html -> Html
-fullbleed html =
+fullbleed sub_html =
   let css_style =
         [ ("width", "100vw")
         , ("height", "100vh")
         , ("display", "flex")
         ]
-   in flex_div css_style [] [html]
+   in flex_div css_style [] [sub_html]
