@@ -3,13 +3,13 @@ module Models.Theory where
 import Array exposing (Array)
 import Dict exposing (Dict)
 
+import Models.ModuleHeader exposing (ModulePath)
 import Models.Term exposing (RootTerm)
 import Models.Semantics exposing (RuleReference)
 
 
 -- constrain:
---   - `TheoryIndex` must be in range of
---       `dependent_theories` of `ModuleTheory` in `Model.Repository`
+--   - `TheoryIndex` must be in range of `dependent_theories`
 type alias TheoryIndex = Int
 
 -- constrain:
@@ -42,12 +42,11 @@ type alias Theorem
     , comment : String
     }
 
--- constrain:
---   - `dependent_theories_aliases` must correspond
---       `dependent_theories` of `ModuleTheory` in `Model.Repository`
+-- each existence of `ModulePath` will be handle at module level
 type alias Theory
   = { theorems : Array Theorem
-    , dependent_theories_aliases : Array String
+    , dependent_semantics : ModulePath
+    , dependent_theories : Array { module_path : ModulePath, alias : String}
     , has_locked : Bool
     , comment : String
     }

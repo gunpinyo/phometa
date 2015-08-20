@@ -1,12 +1,8 @@
 module ModelUtils.Repository where
 
-import Dict exposing (Dict)
-
-import Models.Repository exposing (Module(..), Repository)
+import Models.Repository exposing (Repository)
 import ModelUtils.GlobalConfig exposing (initial_global_config)
-
-initial_package : Module
-initial_package = ModulePackage (Dict.empty)
+import ModelUtils.Module exposing (initial_package)
 
 initial_repository : Repository
 initial_repository =

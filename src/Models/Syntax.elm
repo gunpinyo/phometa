@@ -4,10 +4,10 @@ import Array exposing (Array)
 import Maybe exposing (Maybe(..))
 
 import Tools.Css exposing (CssColor)
+import Models.ModuleHeader exposing (ModulePath)
 
 -- constrain:
---   - `SyntaxIndex` must be in range of
---       `dependent_syntaxes` of `ModuleSyntax` in `Model.Repository`
+--   - `SyntaxIndex` must be in range of `dependent_syntaxes`
 type alias SyntaxIndex = Int
 
 -- constrain:
@@ -46,12 +46,10 @@ type alias Grammar
     , comment : String
     }
 
--- constrain:
---   - `dependent_syntax_aliases` must correspond
---       `dependent_syntaxes` of `ModelSyntax` in `Model.Repository`
+-- each existence of `ModulePath` will be handle at module level
 type alias Syntax
   = { grammars : Array Grammar
-    , dependent_syntax_aliases : Array String
+    , dependent_syntaxes : Array { module_path : ModulePath, alias : String}
     , has_locked : Bool
     , comment : String
     }

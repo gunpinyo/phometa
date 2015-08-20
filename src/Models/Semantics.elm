@@ -3,12 +3,12 @@ module Models.Semantics where
 import Array exposing (Array)
 import Dict exposing (Dict)
 
+import Models.ModuleHeader exposing (ModulePath)
 import Models.Term exposing (RootTerm)
 
 
 -- constrain:
---   - `SemanticsIndex` must be in range of
---       `dependent_semanticses` of `ModuleSemantics` in `Model.Repository`
+--   - `SemanticsIndex` must be in range of `dependent_semanticses`
 type alias SemanticsIndex = Int
 
 -- constrain:
@@ -40,12 +40,11 @@ type alias Rule
     , comment : String
     }
 
--- constrain:
---   - `dependent_semantics_aliases` must correspond
---       `dependent_semanticses` of `ModelSemantics` in `Model.Repository`
+-- each existence of `ModulePath` will be handle at module level
 type alias Semantics
   = { rules : Array Rule
-    , dependent_semantics_aliases : Array String
+    , dependent_syntax : ModulePath
+    , dependent_semanticses : Array { module_path : ModulePath, alias : String}
     , has_locked : Bool
     , comment : String
     }
