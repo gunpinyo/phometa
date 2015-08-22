@@ -1,7 +1,5 @@
 module Updates.SetHoveredPath where
 
-import Maybe exposing (Maybe(..))
-
 import Models.ComponentPath exposing (ComponentPath)
 import Models.ProcessCommand exposing (ProcessCommand)
 

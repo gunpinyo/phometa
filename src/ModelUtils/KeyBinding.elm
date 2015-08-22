@@ -1,7 +1,5 @@
 module ModelUtils.KeyBinding where
 
-import Maybe exposing (Maybe(..))
-
 import Models.Command exposing (Command(..))
 import Models.KeyBinding exposing (KeyBinding)
 

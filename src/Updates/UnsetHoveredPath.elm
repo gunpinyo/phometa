@@ -1,7 +1,5 @@
 module Updates.UnsetHoveredPath where
 
-import Maybe exposing (Maybe(..))
-
 import Models.ProcessCommand exposing (ProcessCommand)
 
 unset_hovered_path_pcmd : ProcessCommand

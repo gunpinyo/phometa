@@ -1,9 +1,10 @@
 module Tools.HtmlExtra where
 
 import Json.Decode as Json
+import Regex exposing (HowMany(..), replace, regex)
 import Signal exposing (Address)
 
-import Html exposing (Html, Attribute, node)
+import Html exposing (Html, Attribute, node, text)
 import Html.Attributes exposing (rel, href)
 import Html.Events exposing (onWithOptions)
 

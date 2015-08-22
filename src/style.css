@@ -1,3 +1,7 @@
+div {
+    white-space: pre;
+}
+
 .window {
     font-family: monospace;
     font-size: 100%;

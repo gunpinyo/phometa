@@ -1,7 +1,6 @@
 module Models.Syntax where
 
 import Array exposing (Array)
-import Maybe exposing (Maybe(..))
 
 import Tools.Css exposing (CssColor)
 import Models.ModuleHeader exposing (ModulePath)

@@ -1,7 +1,5 @@
 module Models.Model where
 
-import Maybe exposing (Maybe)
-
 import Models.ComponentPath exposing (ComponentPath)
 import Models.Repository exposing (Repository)
 import Models.Pane exposing (Pane)
