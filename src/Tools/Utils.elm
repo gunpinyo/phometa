@@ -2,7 +2,6 @@ module Tools.Utils where
 
 ----import Array exposing (Array)
 ----import Dict exposing (Dict)
-import List
 --import Set
 
 parity_pair_extract : Int -> (a, a) -> a

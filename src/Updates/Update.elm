@@ -1,33 +1,59 @@
 module Updates.Update where
 
-import Maybe exposing (Maybe(..))
+import String
 
+import Tools.Verification as Verification exposing (VerificationResult, valid)
+import Models.Command exposing (Command(..))
 import Models.Model exposing (Model)
-import Models.InputAction exposing (InputAction(..))
+import Models.InputAction exposing (InputAction)
 import Models.MiniBuffer exposing (MiniBuffer(..))
+import ModelUtils.Model exposing (verify_model)
+import Updates.ProcessCommand exposing (command_to_process_command)
+
+type alias ProgramState
+  = { command_list : List Command
+    , model : Model
+    , verification_result : VerificationResult
+    }
 
 update : InputAction -> Model -> Model
 update input_action model =
-  case input_action of
-    InputActionNothing -> model
-    InputActionClick component_path ->
-      { model |
-        cursor_path_maybe <- Just component_path
-      , hovered_path_maybe <- Nothing
-      , mini_buffer <- MiniBufferDebug ("Click!!!" ++ toString component_path)
-      }
-    InputActionHover component_path ->
-      { model |
-        hovered_path_maybe <- Just component_path
-      , mini_buffer <- MiniBufferDebug ("Hover!!!" ++ toString component_path)
-      }
-    InputActionCurserLeavesWindow ->
-      { model |
-        hovered_path_maybe <- Nothing
-      , mini_buffer <- MiniBufferDebug "Curser leaves window!!!!!"
-      }
-    InputActionKeysDown keycode_set ->
-      { model |
-        mini_buffer <- MiniBufferDebug ("keys down!!" ++ toString keycode_set)
-      }
-  -- TODO: finish this
+  let initial_program_state =
+        { command_list =
+            [ CommandPreProcess
+            , CommandInputAction input_action
+            , CommandPostProcess
+            ]
+        , model = model
+        , verification_result = verify_model model
+        }
+      final_program_state = process_program initial_program_state
+   in if final_program_state.verification_result == valid then
+        final_program_state.model
+      else
+        { model |
+          mini_buffer <- MiniBufferError
+            <| "Internal verification fail:\n"
+            ++ "  "
+            ++ Verification.to_string
+                 final_program_state.verification_result
+            ++ "\n"
+            ++ "Please contract developer to fix this (gunpinyo@gmail.com)."
+        }
+
+process_program : ProgramState -> ProgramState
+process_program record =
+  if record.verification_result /= valid then
+    record -- if the program become invalid stop program immediately.
+  else
+    case record.command_list of
+      [] -> record
+      command :: command_tail ->
+        let process_command = command_to_process_command command
+            (command_list', model') = process_command record.model
+            record' =
+              { command_list = command_list' ++ command_tail
+              , model = model'
+              , verification_result = verify_model model'
+              }
+         in process_program record'

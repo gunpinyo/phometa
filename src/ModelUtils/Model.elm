@@ -1,14 +1,12 @@
 module ModelUtils.Model where
 
-import Maybe exposing (Maybe(..))
-
-import Models.Model exposing (ComponentPath, Model)
-import ModelUtils.Repository exposing (initial_repository)
+import Tools.Verification exposing (VerificationResult)
+import Models.ComponentPath exposing (ComponentPath)
+import Models.Model exposing (Model)
+import ModelUtils.Repository exposing (initial_repository, verify_repository)
 import ModelUtils.Pane exposing (initial_pane)
+import ModelUtils.KeyBinding exposing (initial_key_binding)
 import ModelUtils.MiniBuffer exposing (initial_mini_buffer)
-
-initial_component_path : ComponentPath
-initial_component_path = []
 
 initial_model : Model
 initial_model =
@@ -17,8 +15,13 @@ initial_model =
   , cursor_path_maybe = Just [1, 1]
   , hovered_path_maybe = Just [1, 1]
   , dragged_path_maybe = Nothing
+  , key_binding = initial_key_binding
   , mini_buffer = initial_mini_buffer
   }
+
+verify_model : Model -> VerificationResult
+verify_model model =
+  verify_repository model.repository
 
 is_at_cursor_path : Model -> ComponentPath -> Bool
 is_at_cursor_path model component_path =

@@ -3,51 +3,54 @@ module Models.Theory where
 import Array exposing (Array)
 import Dict exposing (Dict)
 
+import Models.ModuleHeader exposing (ModulePath)
 import Models.Term exposing (RootTerm)
-import Models.Semantics exposing (RuleReference)
+import Models.Semantics exposing (RuleRef)
 
 
--- constrain:
---   - `TheoryIndex` must be in range of
---       `dependent_theories` of `ModuleTheory` in `Model.Repository`
-type alias TheoryIndex = Int
+type alias TheoryAlias = String
 
--- constrain:
---   - `TheoremIndex` must be in range of `theorems` in `Theory`
-type alias TheoremIndex = Int
+type alias LammaName = String
 
--- if `theory_index` == `Nothing`, then it refer to current theory
-type alias TheoremReference
-  = { theory_index : Maybe TheoryIndex
-    , theorem_index : TheoremIndex
+-- if `theory_alias` == `Nothing`, then it refer to current theory
+type alias LammaRef
+  = { theory_alias : Maybe TheoryAlias
+    , lamma_name : LammaName
     }
 
 
 -- constrain:
---   `TheoremRef` in `ProofByLemma` must be a theorem BEFORE this `Theorem`
---     ie. theorem that is in dependent theory or theorem above this
+--   `LammaRef` in `ProofByLemma` must be a lamma than come BEFORE this lamma
 type Proof
-  = ProofByRule { rule : RuleReference
+  = ProofByRule { rule : RuleRef
                 , subproofs : (Array Proof)
                 }
-  | ProofByLemma TheoremReference
+  | ProofByLemma LammaRef
 
 -- constrain:
 --   - `name` can't be empty string
---       nor the same name with in another `theorem` in `Theory`
-type alias Theorem
-  = { term : RootTerm
+--       nor the same name with in another `lamma` in `Theory`
+type alias Lamma
+  = { name : String
+    , term : RootTerm
     , proof : Proof
-    , name : String
     , comment : String
     }
 
 -- constrain:
---   - `dependent_theories_aliases` must correspond
---       `dependent_theories` of `ModuleTheory` in `Model.Repository`
+--   - `dependent_syntax` must match `dependent_semantics.dependent_syntax`
+--   - everything that has type `ModulePath` must exists in `RootPackage`
+--       and must has correct format
+--       e.g. module_path has format `ModuleTheory _`
+--   - in `dependent_theories`, both of `module_path` and `alias`
+--       must not duplicate to other elements
 type alias Theory
-  = { theorems : Array Theorem
-    , dependent_theories_aliases : Array String
+  = { module_path : ModulePath
+    , dependent_syntax : ModulePath
+    , dependent_semantics : ModulePath
+    , dependent_theories :
+        Array { module_path : ModulePath, alias : TheoryAlias }
+    , lammas : Array Lamma
     , has_locked : Bool
     , comment : String
     }

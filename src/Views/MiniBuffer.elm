@@ -11,5 +11,6 @@ import Models.MiniBuffer exposing (MiniBuffer(..))
 show_mini_buffer : Address InputAction -> Model -> Html
 show_mini_buffer address model =
   case model.mini_buffer of
-    MiniBufferDebug message -> text message
+    MiniBufferDebug message -> text ("DEBUG: " ++ message)
+    MiniBufferError message -> text ("ERROR: " ++ message)
     -- TODO: write more

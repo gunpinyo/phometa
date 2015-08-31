@@ -1,7 +1,5 @@
 module Tools.Flex where
 
-import Maybe exposing (Maybe(..))
-
 import Html exposing (Html, Attribute, div)
 import Html.Attributes exposing (style)
 

@@ -10,7 +10,7 @@ import Tools.Flex exposing (flex_div, fullbleed)
 import Tools.HtmlExtra exposing (get_css_link_node, on_mouse_leave)
 import Models.InputAction exposing (InputAction(..))
 import Models.Model exposing (Model)
-import ModelUtils.Model exposing (initial_component_path)
+import ModelUtils.ComponentPath exposing (initial_component_path)
 import Views.Pane exposing (show_pane)
 
 show_window : Address InputAction -> Model -> Html
