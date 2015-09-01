@@ -11,7 +11,6 @@ Phometa is an application that can build formal system based on visualization.
 - but still use **mixedCase** for packages functions and constants
 - use **CamelCase** for modules, types and type aliases
 - use full word(s) to name an identifier, except
-  - `r` for record
       (since it use so frequent and will be followed by a long identifier)
   - `str` means thing that has type string
   - `func` means function that has been created dynamically

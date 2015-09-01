@@ -1,4 +1,3 @@
 module Models.ComponentPath where
 
-type alias ComponentPath
-  = List Int
+type alias ComponentPath = List Int

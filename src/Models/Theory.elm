@@ -3,7 +3,7 @@ module Models.Theory where
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import Models.ModuleHeader exposing (ModulePath)
+import Models.Module exposing (ModulePath, Module, ModuleElement)
 import Models.Term exposing (RootTerm)
 import Models.Semantics exposing (RuleRef)
 
@@ -28,29 +28,23 @@ type Proof
   | ProofByLemma LammaRef
 
 -- constrain:
---   - `name` can't be empty string
---       nor the same name with in another `lamma` in `Theory`
+--   - inherit from `ModuleElement` constrain
 type alias Lamma
-  = { name : String
-    , term : RootTerm
-    , proof : Proof
-    , comment : String
-    }
+  = ModuleElement (RootTerm { proof : Proof })
 
 -- constrain:
---   - `dependent_syntax` must match `dependent_semantics.dependent_syntax`
---   - everything that has type `ModulePath` must exists in `RootPackage`
---       and must has correct format
---       e.g. module_path has format `ModuleTheory _`
+--   - inherit from `Module` constrain
+--   - `dependent_syntax` must match `dependent_semantics`'s `dependent_syntax`
 --   - in `dependent_theories`, both of `module_path` and `alias`
 --       must not duplicate to other elements
+--   - theory dependency hierarchy must be acyclic graph
+--       i.e. theory cannot import itself
+--              nor import theory that depend on this theory
 type alias Theory
-  = { module_path : ModulePath
-    , dependent_syntax : ModulePath
-    , dependent_semantics : ModulePath
-    , dependent_theories :
-        Array { module_path : ModulePath, alias : TheoryAlias }
-    , lammas : Array Lamma
-    , has_locked : Bool
-    , comment : String
-    }
+  = Module
+      { dependent_syntax : ModulePath
+      , dependent_semantics : ModulePath
+      , dependent_theories :
+          Array { module_path : ModulePath, alias : TheoryAlias }
+      , lammas : Array Lamma
+      }

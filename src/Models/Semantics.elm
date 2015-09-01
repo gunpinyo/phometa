@@ -3,7 +3,7 @@ module Models.Semantics where
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import Models.ModuleHeader exposing (ModulePath)
+import Models.Module exposing (ModulePath, Module, ModuleElement)
 import Models.Term exposing (RootTerm)
 import Models.Syntax exposing (GrammarChoiceIndex, GrammarRef)
 
@@ -24,40 +24,38 @@ type alias RuleRef
     }
 
 -- constrain:
---   - `name` can't be empty string
---       nor the same name with in another `rule` in `Semantics`
---   - `name` and `comment` are compulsory fields for each of Rule
---       if new alternative has been added, make sure these fields are included
---       (this constrain is not for verification but for reminder only)
+--   - inherit from `ModuleElement` constrain
 type Rule
-  = RuleBasic
-      { name : String
-      , promises : (Array RootTerm)
-      , conclusion : RootTerm
-      , comment : String
-      }
+  = RuleBasic (ModuleElement
+      { -- `hint` is a rule that will be apply to promise
+        --   when a proof is build in automatic mode
+        --   if `hint` == Nothing or hint fail during unification
+        --   then user need to construct that part manually
+        promises : Array (RootTerm { hint : Maybe RuleRef })
+      , conclusion : RootTerm {}
+      })
   -- constrain:
   --   - each of grammar in `subrules` must match main `grammar`
   --       (`conclusion.grammar` for `RuleBasic`)
-  | RuleDerived
-      { name : String
-      , grammar : GrammarRef
+  | RuleDerived (ModuleElement
+      { grammar : GrammarRef
       , subrules : Array RuleRef
-      , comment : String
-      }
+      })
 
 -- constrain:
---   - everything that has type `ModulePath` must exists in `RootPackage`
+--   - inherit from `Module` constrain
+--   - everything that has type `ModulePath` must exists in `RootPackage`,
 --       and must has correct format
 --       e.g. module_path has format `ModuleSemantics _`
 --   - in `dependent_semanticses`, both of `module_path` and `alias`
---       must not duplicate to other elements
+--       must not duplicate to other one in the array
+--   - semantics dependency hierarchy must be acyclic graph
+--       i.e. semantics cannot import itself
+--              nor import semantics that depend on this semantics
 type alias Semantics
-  = { module_path : ModulePath
-    , dependent_syntax : ModulePath
-    , dependent_semanticses :
-        Array { module_path : ModulePath, alias : SemanticsAlias }
-    , rules : Array Rule
-    , has_locked : Bool
-    , comment : String
-    }
+  = Module
+      { dependent_syntax : ModulePath
+      , dependent_semanticses :
+          Array { module_path : ModulePath, alias : SemanticsAlias }
+      , rules : Array Rule
+      }

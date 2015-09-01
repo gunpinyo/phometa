@@ -3,7 +3,7 @@ module Models.Syntax where
 import Array exposing (Array)
 
 import Tools.Css exposing (CssColor)
-import Models.ModuleHeader exposing (ModulePath)
+import Models.Module exposing (ModulePath, Module, ModuleElement)
 
 
 type alias SyntaxAlias = String
@@ -34,37 +34,33 @@ type alias GrammarChoice
     }
 
 -- constrain:
---   - `name` can't be empty string
---       nor the same with in another `grammar` in `Syntax`
+--   - inherit from `ModuleElement` constrain
 --   - variable_regex must contain string which has well-form regex pattern
 type alias Grammar
-  = { name : String
-    , base_grammar : Maybe GrammarRef -- if `base_grammar` == `Nothing`
-                                      --   then it extends nothing
-    , variable_regex : Maybe String   -- if `variable_regex` == `Nothing`
-                                      --   then any string as variable name
-                                      -- we don't store compiled regex
-                                      --   but store string instead
-                                      --   since we need to show regex to user
-    , choices : Array GrammarChoice
-    , use_distinction : Bool          -- if True, additional build-in style
-                                      --   will be apply to distinct between
-                                      --   parent and child term
-    , fg_color : CssColor
-    , comment : String
-    }
+  = ModuleElement
+      { -- if `base_grammar` == `Nothing`, then it extends nothing
+        base_grammar : Maybe GrammarRef
+        -- if `variable_regex` == `Nothing`, then any string as variable name
+        -- we don't store compiled regex but rather store string instead
+        --   this is because we need to show regex to user
+      , variable_regex : Maybe String
+      , choices : Array GrammarChoice
+        -- if True, additional build-in style will be apply
+        --   to distinct between parent and child term
+      , use_distinction : Bool
+      , fg_color : CssColor
+      }
 
 -- constrain:
---   - everything that has type `ModulePath` must exists in `RootPackage`
---       and must has correct format
---       e.g. module_path has format `ModuleSyntax _`
+--   - inherit from `Module` constrain
 --   - in `dependent_syntaxes`, both of `module_path` and `alias`
 --       must not duplicate to other elements
+--   - syntax dependency hierarchy must be acyclic graph
+--       i.e. syntax cannot import itself
+--              nor import syntax that depend on this syntax
 type alias Syntax
-  = { module_path : ModulePath
-    , dependent_syntaxes :
-        Array { module_path : ModulePath, alias : SyntaxAlias }
-    , grammars : Array Grammar
-    , has_locked : Bool
-    , comment : String
-    }
+  = Module
+      { dependent_syntaxes :
+          Array { module_path : ModulePath, alias : SyntaxAlias }
+      , grammars : Array Grammar
+      }

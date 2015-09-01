@@ -1,16 +1,25 @@
 module Models.Module where
 
-import Array exposing (Array)
-import Dict exposing (Dict)
+type alias ModuleName = String
 
-import Models.ModuleHeader exposing (ModuleName, ModulePath)
-import Models.Syntax exposing (Syntax)
-import Models.Semantics exposing (Semantics)
-import Models.Theory exposing (Theory)
+type alias ModulePath = List ModuleName
 
+-- constrain:
+--   - `name` can't be empty string
+--   - this will be put inside array
+--       `name` must be unique for each `ModuleElement` inside array
+type alias ModuleElement a =
+  { a |
+    name : String
+  , comment : String
+  }
 
-type Module
-  = ModuleSyntax Syntax
-  | ModuleSemantics Semantics
-  | ModuleTheory Theory
-  | ModulePackage (Dict ModuleName Module)
+-- constrain:
+--   - everything that has type `ModulePath` must exists in root package
+--       (including extended fields that have this type as well)
+type alias Module a
+  = { a |
+      module_path : ModulePath
+    , has_locked : Bool
+    , comment : String
+    }

@@ -25,7 +25,8 @@ type Term
 -- root term need to know its grammar in advance
 -- but subterms will we be able to figure out themselves
 -- by using root term knowledge
-type alias RootTerm
-  = { grammar : GrammarRef
+type alias RootTerm a
+  = { a |
+      grammar : GrammarRef
     , term : Term
     }
