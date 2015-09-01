@@ -12,9 +12,9 @@ div {
 .pane {
     border-style: solid;
     border-color: brown;
-    border-width: 2px;
-    padding: 2px;
-    margin: 2px;
+    border-width: 1px;
+    /*padding: 1px;*/
+    margin: 1px;
     background-color: #E9C062;
     overflow: auto;
 }

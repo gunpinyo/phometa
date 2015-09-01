@@ -19,35 +19,37 @@ show_pane : Address InputAction -> Model -> Pane -> ComponentPath -> Html
 show_pane address model pane component_path =
   let html =
         case pane of
-          PaneContainer r ->
+          PaneContainer record ->
             let fst_subpane =
                   show_pane address model
-                    (fst r.subpanes) (0 :: component_path)
+                    (fst record.subpanes) (0 :: component_path)
                 snd_subpane =
                   show_pane address model
-                    (snd r.subpanes) (1 :: component_path)
-                direction_str = if r.is_vertical then "column" else "row"
+                    (snd record.subpanes) (1 :: component_path)
+                direction_str = if record.is_vertical then "column" else "row"
                 (fst_item, snd_item, justify_str) =
-                  if fst r.size_ratio >= 0 && snd r.size_ratio >= 0 then
-                    ( flex_grow (fst r.size_ratio) fst_subpane
-                    , flex_grow (snd r.size_ratio) snd_subpane
-                    , "center"
-                    )
-                  else if fst r.size_ratio >= 0 then
-                    ( fst_subpane
-                    , flex_div [("flex", "0 auto")] [] [snd_subpane]
-                    , "flex_end"
-                    )
-                  else if snd r.size_ratio >= 0 then
-                    ( flex_div [("flex", "0 auto")] [] [fst_subpane]
-                    , snd_subpane
-                    , "flex_start"
-                    )
-                  else
-                    ( fst_subpane
-                    , snd_subpane
-                    , "center"
-                    )
+                  let fst_valid_size = fst record.size_ratio >= 0
+                      snd_valid_size = snd record.size_ratio >= 0
+                   in if fst_valid_size && snd_valid_size then
+                        ( flex_grow (fst record.size_ratio) fst_subpane
+                        , flex_grow (snd record.size_ratio) snd_subpane
+                        , "center"
+                        )
+                      else if fst_valid_size then
+                        ( fst_subpane
+                        , flex_div [("flex", "0 auto")] [] [snd_subpane]
+                        , "flex_end"
+                        )
+                      else if snd_valid_size then
+                        ( flex_div [("flex", "0 auto")] [] [fst_subpane]
+                        , snd_subpane
+                        , "flex_start"
+                        )
+                      else
+                        ( fst_subpane
+                        , snd_subpane
+                        , "center"
+                        )
                 css_style =
                   [ ("flex-direction", direction_str)
                   , ("justify-content", justify_str)

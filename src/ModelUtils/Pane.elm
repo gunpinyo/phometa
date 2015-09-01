@@ -9,24 +9,24 @@ initial_pane =
     { subpanes =
         ( PaneContainer
             { subpanes =
-                ( PaneWelcome
-                , PaneMiniBuffer
-                )
-            , is_vertical = True
-            , size_ratio = (1, -1)
-            , is_resizable = True
-            }
-        , PaneContainer
-            { subpanes =
-                ( PaneMiniBuffer
+                ( PaneContainer
+                    { subpanes =
+                        ( PaneWelcome
+                        , PaneMiniBuffer
+                        )
+                    , is_vertical = True
+                    , size_ratio = (1, 1)
+                    , is_resizable = True
+                    }
                 , PaneWelcome
                 )
-            , is_vertical = True
-            , size_ratio = (2, 5)
+            , is_vertical = False
+            , size_ratio = (3, 7)
             , is_resizable = True
             }
+        , PaneMiniBuffer
         )
-    , is_vertical = False
-    , size_ratio = (-1, 1)
+    , is_vertical = True
+    , size_ratio = (1, -1)
     , is_resizable = True
     }
