@@ -5,12 +5,19 @@ import Regex exposing (HowMany(..), replace, regex)
 import Signal exposing (Address)
 
 import Html exposing (Html, Attribute, node, text)
-import Html.Attributes exposing (rel, href)
+import Html.Attributes exposing (attribute, rel, href)
 import Html.Events exposing (onWithOptions)
 
-get_css_link_node : String -> Html
-get_css_link_node css_location =
+import_css : String -> Html
+import_css css_location =
   node "link" [rel "stylesheet", href css_location] []
+
+-- we shouldn't import javascript since it might effect elm internal
+-- use this function only when we need to
+-- e.g. some feature that elm doesn't have
+import_javascript : String -> Html
+import_javascript javascript_location =
+  node "script" [attribute "src" javascript_location] []
 
 on_mouse_event : String -> Address a -> a -> Attribute
 on_mouse_event event_str address action =

@@ -11,7 +11,7 @@ import ModelUtils.MiniBuffer exposing (initial_mini_buffer)
 initial_model : Model
 initial_model =
   { repository = initial_repository
-  , main_pane = initial_pane
+  , root_pane = initial_pane
   , cursor_path_maybe = Just [1, 1]
   , hovered_path_maybe = Just [1, 1]
   , dragged_path_maybe = Nothing

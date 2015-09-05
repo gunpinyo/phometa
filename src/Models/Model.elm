@@ -8,7 +8,7 @@ import Models.MiniBuffer exposing (MiniBuffer)
 
 type alias Model
   = { repository : Repository
-    , main_pane : Pane
+    , root_pane : Pane
     , cursor_path_maybe : Maybe ComponentPath
     , hovered_path_maybe : Maybe ComponentPath
     , dragged_path_maybe : Maybe ComponentPath        -- for drag and drop

@@ -13,6 +13,7 @@ initial_package =
     , syntaxes = Dict.empty
     , semanticses = Dict.empty
     , theories = Dict.empty
+    , is_folded = False
     }
 
 verify_package : Package -> VerificationResult

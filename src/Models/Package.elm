@@ -14,4 +14,5 @@ type Package
       , syntaxes : Dict ModuleName Syntax
       , semanticses : Dict ModuleName Semantics
       , theories : Dict ModuleName Theory
+      , is_folded : Bool                        -- for ui fold/unfold
       }
