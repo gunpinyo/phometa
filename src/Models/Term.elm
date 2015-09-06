@@ -4,7 +4,6 @@ import Array exposing (Array)
 
 import Models.Syntax exposing (GrammarChoiceIndex, GrammarRef)
 
-
 type alias VariableName = String
 
 type Term

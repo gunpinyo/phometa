@@ -1,7 +1,6 @@
 module Models.Command where
 
-import Models.ComponentPath exposing (ComponentPath)
-import Models.InputAction exposing (InputAction)
+import Models.InputAction exposing (ComponentPath, InputAction)
 
 type Command
  = CommandNothing

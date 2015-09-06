@@ -7,7 +7,6 @@ import Models.Syntax exposing (Syntax)
 import Models.Semantics exposing (Semantics)
 import Models.Theory exposing (Theory)
 
-
 type Package
   = PackageConstruct
       { packages : Dict ModuleName Package

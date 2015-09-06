@@ -1,14 +1,11 @@
 module Views.MiniBuffer where
 
-import Signal exposing (Address)
+import Html exposing (text)
 
-import Html exposing (Html, text)
-
-import Models.InputAction exposing (InputAction)
-import Models.Model exposing (Model)
 import Models.MiniBuffer exposing (MiniBuffer(..))
+import Models.EtcAlias exposing (View)
 
-show_mini_buffer : Address InputAction -> Model -> Html
+show_mini_buffer : View
 show_mini_buffer address model =
   case model.mini_buffer of
     MiniBufferDebug message -> text ("DEBUG: " ++ message)

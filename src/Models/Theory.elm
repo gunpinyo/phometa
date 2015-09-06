@@ -7,7 +7,6 @@ import Models.Module exposing (ModulePath, ModuleBase, ModuleElementBase)
 import Models.Term exposing (RootTermBase)
 import Models.Semantics exposing (RuleRef)
 
-
 type alias TheoryAlias = String
 
 type alias LammaName = String

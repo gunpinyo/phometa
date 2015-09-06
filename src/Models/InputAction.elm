@@ -3,7 +3,7 @@ module Models.InputAction where
 import Keyboard exposing (KeyCode)
 import Set exposing (Set)
 
-import Models.ComponentPath exposing (ComponentPath)
+type alias ComponentPath = List Int
 
 type InputAction
   = InputActionNothing

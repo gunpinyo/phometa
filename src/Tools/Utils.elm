@@ -8,9 +8,9 @@ parity_pair_extract : Int -> (a, a) -> a
 parity_pair_extract parity =
   if parity % 2 == 0 then fst else snd
 
---list_element_unique : List comparable -> Bool
---list_element_unique xs =
---  (xs |> Set.fromList |> Set.toList |> List.length) == List.length xs
+list_element_unique : List comparable -> Bool
+list_element_unique xs =
+  List.length (xs |> Set.fromList |> Set.toList) == List.length xs
 
 ---- if any list is not unique, return False immediately
 --list_is_subset_of_list : List comparable -> List comparable -> Bool

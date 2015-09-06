@@ -2,9 +2,11 @@ module ModelUtils.Package where
 
 import Dict exposing (Dict)
 
-import Tools.Verification exposing
-  (VerificationResult, valid, to_invalid, sequentially_verify)
+import Tools.Verification exposing (VerificationResult, sequentially_verify)
 import Models.Package exposing (Package(..))
+import Models.Model exposing (Model)
+import Models.EtcAlias exposing(VerifyModel)
+import ModelUtils.Syntax exposing (verify_syntax)
 
 initial_package : Package
 initial_package =
@@ -16,18 +18,24 @@ initial_package =
     , is_folded = False
     }
 
-verify_package : Package -> VerificationResult
-verify_package package =
+verify_package : Package -> VerifyModel
+verify_package package model =
   case package of
     PackageConstruct record ->
-      valid
-  -- TODO:
-  --sequentially_verify
-  --  [(\() -> -- verify that `root_package` is actually a package
-  --      case root_package of
-  --        ModulePackage _ -> valid
-  --        _ -> to_invalid "root_package: `root_package` should be a package."
+      sequentially_verify
+        <| List.map
+             (\package -> (\() -> verify_package package model))
+             (Dict.values record.packages)
+        ++ List.map
+             (\syntax -> (\() -> verify_syntax syntax model))
+             (Dict.values record.syntaxes)
+        -- TODO: enable this when finish implement semantics and theory
+        --++ List.map
+        --     (\semantics -> (\() -> verify_semantics model semantics))
+        --     (Dict.values record.semanticses)
+        --++ List.map
+        --     (\theory -> (\() -> verify_theory model theory))
+        --     (Dict.values record.theories)
 
-  --   )
-  --  -- TODO: finish this
-  --  ]
+--exist_in_package : Package -> M
+-- TODO:

@@ -1,31 +1,29 @@
 module Views.Pane where
 
-import Signal exposing (Address)
-
-import Html exposing (Html, div)
+import Html exposing (div)
 import Html.Attributes exposing (classList)
 
 import Tools.Flex exposing (flex_div, flex_grow)
 import Tools.HtmlExtra exposing (on_click, on_mouse_enter)
 import Models.InputAction exposing (InputAction(..))
-import Models.ComponentPath exposing (ComponentPath)
-import Models.Model exposing (Model)
+import Models.InputAction exposing (ComponentPath)
 import Models.Pane exposing (Pane(..))
+import Models.EtcAlias exposing (View)
 import ModelUtils.Model exposing (is_at_cursor_path, is_at_hovered_path)
 import Views.Welcome exposing (show_welcome)
 import Views.MiniBuffer exposing (show_mini_buffer)
 
-show_pane : Address InputAction -> Model -> Pane -> ComponentPath -> Html
-show_pane address model pane component_path =
+show_pane : Pane -> ComponentPath -> View
+show_pane pane component_path address model =
   let html =
         case pane of
           PaneContainer record ->
             let fst_subpane =
-                  show_pane address model
-                    (fst record.subpanes) (0 :: component_path)
+                  show_pane
+                    (fst record.subpanes) (0 :: component_path) address model
                 snd_subpane =
-                  show_pane address model
-                    (snd record.subpanes) (1 :: component_path)
+                  show_pane
+                    (snd record.subpanes) (1 :: component_path) address model
                 direction_str = if record.is_vertical then "column" else "row"
                 (fst_item, snd_item, justify_str) =
                   let fst_valid_size = fst record.size_ratio >= 0

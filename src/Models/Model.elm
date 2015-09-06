@@ -1,6 +1,6 @@
 module Models.Model where
 
-import Models.ComponentPath exposing (ComponentPath)
+import Models.InputAction exposing (ComponentPath)
 import Models.Repository exposing (Repository)
 import Models.Pane exposing (Pane)
 import Models.KeyBinding exposing (KeyBinding)

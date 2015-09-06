@@ -7,7 +7,6 @@ import Models.Module exposing (ModulePath, ModuleBase, ModuleElementBase)
 import Models.Term exposing (RootTermBase)
 import Models.Syntax exposing (GrammarChoiceIndex, GrammarRef)
 
-
 type alias SemanticsAlias = String
 
 type alias RuleName = String

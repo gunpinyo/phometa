@@ -1,6 +1,6 @@
 module Updates.PreProcess where
 
-import Models.ProcessCommand exposing (ProcessCommand)
+import Models.EtcAlias exposing (ProcessCommand)
 import ModelUtils.KeyBinding exposing (initial_key_binding)
 
 pre_process_pcmd : ProcessCommand

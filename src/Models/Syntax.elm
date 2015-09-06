@@ -5,7 +5,6 @@ import Array exposing (Array)
 import Tools.Css exposing (CssColor)
 import Models.Module exposing (ModulePath, ModuleBase, ModuleElementBase)
 
-
 type alias SyntaxAlias = String
 
 type alias GrammarName = String
