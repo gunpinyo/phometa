@@ -3,8 +3,8 @@ module Models.Theory where
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import Models.Module exposing (ModulePath, Module, ModuleElement)
-import Models.Term exposing (RootTerm)
+import Models.Module exposing (ModulePath, ModuleBase, ModuleElementBase)
+import Models.Term exposing (RootTermBase)
 import Models.Semantics exposing (RuleRef)
 
 
@@ -30,7 +30,7 @@ type Proof
 -- constrain:
 --   - inherit from `ModuleElement` constrain
 type alias Lamma
-  = ModuleElement (RootTerm { proof : Proof })
+  = ModuleElementBase (RootTermBase { proof : Proof })
 
 -- constrain:
 --   - inherit from `Module` constrain
@@ -41,7 +41,7 @@ type alias Lamma
 --       i.e. theory cannot import itself
 --              nor import theory that depend on this theory
 type alias Theory
-  = Module
+  = ModuleBase
       { dependent_syntax : ModulePath
       , dependent_semantics : ModulePath
       , dependent_theories :

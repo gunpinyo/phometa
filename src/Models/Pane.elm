@@ -1,5 +1,7 @@
 module Models.Pane where
 
+import Models.Module exposing (ModulePath)
+
 type Pane
   = PaneContainer { subpanes : (Pane, Pane)
                   -- True if this is vertical, subpanes are upper/lower panes
@@ -16,10 +18,16 @@ type Pane
                   , is_resizable : Bool
                   }
   | PaneWelcome                -- For new Pane, will be convert later
-  | PaneRepository             -- TODO: give arguements and explaination
-  | PaneSyntax                 -- TODO: give arguements and explaination
-  | PaneSemantics              -- TODO: give arguements and explaination
-  | PaneTheory                 -- TODO: give arguements and explaination
+  | PaneRootPackage            -- TODO: give explaination
+  -- constrain:
+  --   `ModulePath` must exist in `RootPackage` with type `Syntax`
+  | PaneSyntax ModulePath      -- TODO: give explaination
+  -- constrain:
+  --   `ModulePath` must exist in `RootPackage` with type `Semantics`
+  | PaneSemantics ModulePath   -- TODO: give explaination
+  -- constrain:
+  --   `ModulePath` must exist in `RootPackage` with type `Theory`
+  | PaneTheory ModulePath      -- TODO: give arguements and explaination
   | PaneGlobalConfig           -- TODO: give arguements and explaination
   | PaneCommand                -- TODO: give arguements and explaination
   | PaneHistoryTree            -- TODO: give arguements and explaination
