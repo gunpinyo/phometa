@@ -2,12 +2,11 @@ module Updates.InputAction where
 
 import Models.InputAction exposing (InputAction(..))
 import Models.Command exposing (Command(..))
-import Models.ProcessCommand exposing (ProcessCommand)
-import ModelUtils.ProcessCommand exposing (from_composite_command)
+import Models.EtcAlias exposing (ProcessCommand)
 
 input_action_pcmd : InputAction -> ProcessCommand
 input_action_pcmd input_action =
-  from_composite_command <|
+  (,) <|
     case input_action of
       InputActionNothing -> []
       InputActionClick component_path ->

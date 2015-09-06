@@ -9,8 +9,8 @@ type alias VerificationFunction = (() -> VerificationResult)
 valid : VerificationResult
 valid = Nothing
 
-to_invalid : InvalidReason -> VerificationResult
-to_invalid reason = Just reason
+invalid : InvalidReason -> VerificationResult
+invalid reason = Just reason
 
 to_string : VerificationResult -> String
 to_string result =

@@ -1,7 +1,7 @@
 module Updates.SetCursorPath where
 
-import Models.ComponentPath exposing (ComponentPath)
-import Models.ProcessCommand exposing (ProcessCommand)
+import Models.InputAction exposing (ComponentPath)
+import Models.EtcAlias exposing (ProcessCommand)
 
 set_cursor_path_pcmd : ComponentPath -> ProcessCommand
 set_cursor_path_pcmd component_path model =

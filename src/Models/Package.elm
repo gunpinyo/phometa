@@ -7,11 +7,11 @@ import Models.Syntax exposing (Syntax)
 import Models.Semantics exposing (Semantics)
 import Models.Theory exposing (Theory)
 
-
 type Package
   = PackageConstruct
       { packages : Dict ModuleName Package
       , syntaxes : Dict ModuleName Syntax
       , semanticses : Dict ModuleName Semantics
       , theories : Dict ModuleName Theory
+      , is_folded : Bool                        -- for ui fold/unfold
       }

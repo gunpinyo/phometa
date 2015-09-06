@@ -3,10 +3,9 @@ module Models.Semantics where
 import Array exposing (Array)
 import Dict exposing (Dict)
 
-import Models.Module exposing (ModulePath, Module, ModuleElement)
-import Models.Term exposing (RootTerm)
+import Models.Module exposing (ModulePath, ModuleBase, ModuleElementBase)
+import Models.Term exposing (RootTermBase)
 import Models.Syntax exposing (GrammarChoiceIndex, GrammarRef)
-
 
 type alias SemanticsAlias = String
 
@@ -26,18 +25,18 @@ type alias RuleRef
 -- constrain:
 --   - inherit from `ModuleElement` constrain
 type Rule
-  = RuleBasic (ModuleElement
+  = RuleBasic (ModuleElementBase
       { -- `hint` is a rule that will be apply to promise
         --   when a proof is build in automatic mode
         --   if `hint` == Nothing or hint fail during unification
         --   then user need to construct that part manually
-        promises : Array (RootTerm { hint : Maybe RuleRef })
-      , conclusion : RootTerm {}
+        promises : Array (RootTermBase { hint : Maybe RuleRef })
+      , conclusion : RootTermBase {}
       })
   -- constrain:
   --   - each of grammar in `subrules` must match main `grammar`
   --       (`conclusion.grammar` for `RuleBasic`)
-  | RuleDerived (ModuleElement
+  | RuleDerived (ModuleElementBase
       { grammar : GrammarRef
       , subrules : Array RuleRef
       })
@@ -53,7 +52,7 @@ type Rule
 --       i.e. semantics cannot import itself
 --              nor import semantics that depend on this semantics
 type alias Semantics
-  = Module
+  = ModuleBase
       { dependent_syntax : ModulePath
       , dependent_semanticses :
           Array { module_path : ModulePath, alias : SemanticsAlias }

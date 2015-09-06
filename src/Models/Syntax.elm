@@ -3,8 +3,7 @@ module Models.Syntax where
 import Array exposing (Array)
 
 import Tools.Css exposing (CssColor)
-import Models.Module exposing (ModulePath, Module, ModuleElement)
-
+import Models.Module exposing (ModulePath, ModuleBase, ModuleElementBase)
 
 type alias SyntaxAlias = String
 
@@ -37,7 +36,7 @@ type alias GrammarChoice
 --   - inherit from `ModuleElement` constrain
 --   - variable_regex must contain string which has well-form regex pattern
 type alias Grammar
-  = ModuleElement
+  = ModuleElementBase
       { -- if `base_grammar` == `Nothing`, then it extends nothing
         base_grammar : Maybe GrammarRef
         -- if `variable_regex` == `Nothing`, then any string as variable name
@@ -59,7 +58,7 @@ type alias Grammar
 --       i.e. syntax cannot import itself
 --              nor import syntax that depend on this syntax
 type alias Syntax
-  = Module
+  = ModuleBase
       { dependent_syntaxes :
           Array { module_path : ModulePath, alias : SyntaxAlias }
       , grammars : Array Grammar

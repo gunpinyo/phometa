@@ -1,6 +1,6 @@
 module Updates.UnsetHoveredPath where
 
-import Models.ProcessCommand exposing (ProcessCommand)
+import Models.EtcAlias exposing (ProcessCommand)
 
 unset_hovered_path_pcmd : ProcessCommand
 unset_hovered_path_pcmd model =

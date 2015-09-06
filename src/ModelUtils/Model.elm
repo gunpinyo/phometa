@@ -1,8 +1,8 @@
 module ModelUtils.Model where
 
-import Tools.Verification exposing (VerificationResult)
-import Models.ComponentPath exposing (ComponentPath)
+import Models.InputAction exposing (ComponentPath)
 import Models.Model exposing (Model)
+import Models.EtcAlias exposing(VerifyModel)
 import ModelUtils.Repository exposing (initial_repository, verify_repository)
 import ModelUtils.Pane exposing (initial_pane)
 import ModelUtils.KeyBinding exposing (initial_key_binding)
@@ -11,7 +11,7 @@ import ModelUtils.MiniBuffer exposing (initial_mini_buffer)
 initial_model : Model
 initial_model =
   { repository = initial_repository
-  , main_pane = initial_pane
+  , root_pane = initial_pane
   , cursor_path_maybe = Just [1, 1]
   , hovered_path_maybe = Just [1, 1]
   , dragged_path_maybe = Nothing
@@ -19,9 +19,9 @@ initial_model =
   , mini_buffer = initial_mini_buffer
   }
 
-verify_model : Model -> VerificationResult
+verify_model : VerifyModel
 verify_model model =
-  verify_repository model.repository
+  verify_repository model.repository model
 
 is_at_cursor_path : Model -> ComponentPath -> Bool
 is_at_cursor_path model component_path =

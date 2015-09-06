@@ -1,7 +1,7 @@
 module Updates.ProcessCommand where
 
 import Models.Command exposing (Command(..))
-import Models.ProcessCommand exposing (ProcessCommand)
+import Models.EtcAlias exposing (ProcessCommand)
 import Updates.InputAction exposing (input_action_pcmd)
 import Updates.PreProcess exposing (pre_process_pcmd)
 import Updates.PostProcess exposing (post_process_pcmd)
