@@ -23,13 +23,3 @@ type alias ModuleBase a
     , has_locked : Bool
     , comment : String
     }
-
-type ModuleType
-  = ModuleTypeSyntax
-  | ModuleTypeSemantics
-  | ModuleTypeTheory
-  -- Although, theoretically package is not a module
-  -- But most of time, package share common functionality with other package
-  -- e.g. adding a package procedure is similar to adding other module
-  -- so it worth to add it here
-  | ModuleTypePackage
