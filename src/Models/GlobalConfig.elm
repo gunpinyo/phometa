@@ -20,7 +20,7 @@ type alias GlobalConfig
             , dependency_bg_color : CssColor
             , show_header_description : Bool
             }
-        , repository :
+        , package :
             { syntax_bg_color : CssColor
             , semantics_bg_color : CssColor
             , theory_bg_color : CssColor
