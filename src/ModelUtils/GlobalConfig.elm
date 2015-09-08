@@ -19,7 +19,7 @@ initial_global_config =
           , dependency_bg_color = "#DDFFDD"
           , show_header_description = True
           }
-      , repository =
+      , package =
           { syntax_bg_color = "#FF0000"
           , semantics_bg_color = "#00FF00"
           , theory_bg_color = "#0000FF"

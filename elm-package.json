@@ -1,7 +1,6 @@
 {
     "version": "0.0.1",
-    "summary":
-        "An application that can build a formal system based on visualization.",
+    "summary": "An application that can build a formal system based on visualization.",
     "repository": "https://github.com/gunpinyo/phometa.git",
     "license": "BSD3",
     "source-directories": [
@@ -10,7 +9,9 @@
     "exposed-modules": [],
     "dependencies": {
         "elm-lang/core": "2.0.1 <= v < 3.0.0",
-        "evancz/elm-html": "4.0.0 <= v < 5.0.0"
+        "evancz/elm-html": "4.0.0 <= v < 5.0.0",
+        "deadfoxygrandpa/Elm-Test": "1.0.4 <= v < 2.0.0",
+        "maxsnew/IO": "1.0.1 <= v < 2.0.0"
     },
     "elm-version": "0.15.0 <= v < 0.16.0"
 }
