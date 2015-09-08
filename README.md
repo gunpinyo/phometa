@@ -4,6 +4,12 @@ Phometa is an application that can build formal system based on visualization.
 **NOTE: This project is just start and I am still designing the architectue.**
 **Please do not use this until this note is disappear.**
 
+## System Requirement
+- Makefile
+- elm 0.15
+- nodejs (>= 0.12.7)
+- npm (>= 2.11.3)
+
 ## My elm coding convention
 
 ### name convention
