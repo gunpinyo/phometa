@@ -1,7 +1,8 @@
 module Models.InputAction where
 
-import Keyboard exposing (KeyCode)
 import Set exposing (Set)
+
+import Tools.KeyboardExtra exposing (KeyCode)
 
 type alias ComponentPath = List Int
 

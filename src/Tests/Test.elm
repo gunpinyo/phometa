@@ -1,15 +1,18 @@
+-- conventionally this should be `module Tests.Test where`
+-- but it clashes elm-test, so need to declare it as `Main` module
+module Main where
+
 import IO.IO exposing (..)
 import IO.Runner exposing (Request, Response, run)
-import ElmTest.Assertion exposing (assert, assertEqual)
 import ElmTest.Runner.Console exposing (runDisplay)
-import ElmTest.Test exposing (Test, test, suite)
+import ElmTest.Test exposing (Test, suite)
 
--- TODO: this is example test, the real tests will be written later
+import Tests.ModelUtils.Model
+
 tests : Test
 tests =
-  suite "Root"
-    [ test "Addition" (assertEqual (3 + 7) 10)
-    , test "This test should pass" (assert True)
+  suite "Tests"
+    [ Tests.ModelUtils.Model.tests
     ]
 
 port requests : Signal Request

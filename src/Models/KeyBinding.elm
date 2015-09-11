@@ -1,8 +1,8 @@
 module Models.KeyBinding where
 
-import Keyboard exposing (KeyCode)
 import Set exposing (Set)
 
+import Tools.KeyboardExtra exposing (KeyCode)
 import Models.Command exposing (Command)
 
 type alias KeyBinding
