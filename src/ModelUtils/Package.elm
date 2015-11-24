@@ -2,6 +2,7 @@ module ModelUtils.Package where
 
 import Maybe exposing (andThen)
 import Dict exposing (Dict)
+import Debug exposing (crash)
 
 import Tools.Verification exposing (VerificationResult, sequentially_verify)
 import Models.Module exposing (ModuleName, ModulePath, ModuleBase)
@@ -61,7 +62,7 @@ set_package value_package package_path package =
           subpackage' = set_package value_package package_path' subpackage
           subpackage_datatype' = PackageConstruct subpackage'
        in { package |
-            packages <-
+            packages =
               Dict.insert package_name subpackage_datatype' package.packages
           }
 
@@ -72,7 +73,7 @@ get_syntax =
 set_syntax : Syntax -> Package -> Package
 set_syntax =
   set_module .syntaxes
-    <| (\module_dict package -> { package | syntaxes <- module_dict })
+    <| (\module_dict package -> { package | syntaxes = module_dict })
 
 get_semantics : ModulePath -> Package -> Maybe Semantics
 get_semantics =
@@ -81,7 +82,7 @@ get_semantics =
 set_semantics : Semantics -> Package -> Package
 set_semantics =
   set_module .semanticses
-    <| (\module_dict package -> { package | semanticses <- module_dict })
+    <| (\module_dict package -> { package | semanticses = module_dict })
 
 get_theory : ModulePath -> Package -> Maybe Theory
 get_theory =
@@ -90,7 +91,7 @@ get_theory =
 set_theory : Theory -> Package -> Package
 set_theory =
   set_module .theories
-    <| (\module_dict package -> { package | theories <- module_dict })
+    <| (\module_dict package -> { package | theories = module_dict })
 
 -----------------------
 -- private functions --
@@ -134,3 +135,4 @@ set_module getter_func setter_func value_module package =
           module_parent_package' =
             setter_func module_dict' module_parent_package
        in set_package module_parent_package' package_path package
+    _ -> crash "Impossible to come here"

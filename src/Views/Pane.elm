@@ -1,5 +1,7 @@
 module Views.Pane where
 
+import Debug exposing (crash)
+
 import Html exposing (div)
 import Html.Attributes exposing (classList)
 
@@ -56,6 +58,8 @@ show_pane pane component_path address model =
              in flex_div css_style [] [fst_item, snd_item]
           PaneWelcome -> show_welcome address model -- TODO: component_path
           PaneMiniBuffer -> show_mini_buffer address model -- TODO: component_path
+          _ -> crash "TODO: write more"
+          -- TODO: write more
       attributes =
         [ classList
             [ ("pane", True)

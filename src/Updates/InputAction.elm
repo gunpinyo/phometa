@@ -25,4 +25,5 @@ input_action_pcmd input_action =
       InputActionKeysDown keycode_set ->
         [ CommandLogToConsole "KeysDown" (toString keycode_set)
         ]
+      _ -> []
       -- TODO: write about dragging

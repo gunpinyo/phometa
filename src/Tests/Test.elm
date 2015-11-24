@@ -2,20 +2,22 @@
 -- but it clashes elm-test, so need to declare it as `Main` module
 module Main where
 
-import IO.IO exposing (..)
-import IO.Runner exposing (Request, Response, run)
-import ElmTest.Runner.Console exposing (runDisplay)
-import ElmTest.Test exposing (Test, suite)
+import Task
 
+import Console
+import ElmTest exposing (Test, suite)
+
+-- order alphabetically (not the same as our convention)
 import Tests.ModelUtils.Model
+import Tests.ModelUtils.Package
 
 tests : Test
 tests =
   suite "Tests"
     [ Tests.ModelUtils.Model.tests
+    , Tests.ModelUtils.Package.tests
     ]
 
-port requests : Signal Request
-port requests = run responses (runDisplay tests)
-
-port responses : Signal Response
+port runner : Signal (Task.Task x ())
+port runner =
+    Console.run (ElmTest.consoleRunner tests)
