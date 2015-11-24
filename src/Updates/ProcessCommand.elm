@@ -1,7 +1,11 @@
 module Updates.ProcessCommand where
 
+import Debug exposing (crash)
+
 import Models.Command exposing (Command(..))
 import Models.EtcAlias exposing (ProcessCommand)
+
+-- order alphabetically (not the same as our convention)
 import Updates.InputAction exposing (input_action_pcmd)
 import Updates.PreProcess exposing (pre_process_pcmd)
 import Updates.PostProcess exposing (post_process_pcmd)
@@ -25,3 +29,5 @@ command_to_process_command command =
     CommandSetCursorPath p -> set_cursor_path_pcmd p
     CommandSetHoveredPath p -> set_hovered_path_pcmd p
     CommandUnsetHoveredPath -> unset_hovered_path_pcmd
+    _ -> crash "TODO: write more"
+    -- TODO: write more

@@ -32,7 +32,7 @@ update input_action model =
         final_program_state.model
       else
         { model |
-          mini_buffer <- MiniBufferError
+          mini_buffer = MiniBufferError
             <| "Internal verification fail:\n"
             ++ "  "
             ++ Verification.to_string

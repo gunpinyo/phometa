@@ -1,18 +1,23 @@
-import IO.IO exposing (..)
-import IO.Runner exposing (Request, Response, run)
-import ElmTest.Assertion exposing (assert, assertEqual)
-import ElmTest.Runner.Console exposing (runDisplay)
-import ElmTest.Test exposing (Test, test, suite)
+-- conventionally this should be `module Tests.Test where`
+-- but it clashes elm-test, so need to declare it as `Main` module
+module Main where
 
--- TODO: this is example test, the real tests will be written later
+import Task
+
+import Console
+import ElmTest exposing (Test, suite)
+
+-- order alphabetically (not the same as our convention)
+import Tests.ModelUtils.Model
+import Tests.ModelUtils.Package
+
 tests : Test
 tests =
-  suite "Root"
-    [ test "Addition" (assertEqual (3 + 7) 10)
-    , test "This test should pass" (assert True)
+  suite "Tests"
+    [ Tests.ModelUtils.Model.tests
+    , Tests.ModelUtils.Package.tests
     ]
 
-port requests : Signal Request
-port requests = run responses (runDisplay tests)
-
-port responses : Signal Response
+port runner : Signal (Task.Task x ())
+port runner =
+    Console.run (ElmTest.consoleRunner tests)

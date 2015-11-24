@@ -5,3 +5,8 @@ install:
   - cabal install elm-package
   - make init
 script: make test
+notifications:
+  email:
+    - gunpinyo@gmail.com
+  on_success: always
+  on_failure: always

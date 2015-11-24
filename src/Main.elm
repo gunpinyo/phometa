@@ -1,7 +1,8 @@
 module Main where
 
 import Html exposing (Html)
-import Keyboard exposing (KeyCode, keysDown)
+import Char exposing (KeyCode)
+import Keyboard exposing (keysDown)
 import Signal exposing (Mailbox, Address)
 
 import Models.InputAction exposing (InputAction(..))
