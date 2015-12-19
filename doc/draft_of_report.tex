@@ -1,0 +1,1045 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[lmargin=1.5cm,rmargin=1.5cm,a4paper]{geometry}
+% \usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{parskip}
+% \setlength{\parskip}{0.8pt}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{xcolor}
+
+% \usepackage{fontspec}
+% \setmainfont{Arial}
+
+\usepackage{tikz}
+\usepackage[framemethod=tikz]{mdframed}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+\usepackage{stackengine}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{Phometa \\ a proof assistant that can build a formal system based on visualisation}
+\author{
+Gun Pinyo (Under supervision of Dr. Krysia Broda)
+}
+\maketitle
+
+% \newpage
+
+% \tableofcontents
+
+% \newpage
+
+\section{Introduction}
+
+Phometa is a proof assistant that can build a formal system based on visualisation.
+
+Phometa runs via web browser. This has advantage over traditional text-based proof assistant like Coq or Agda, such as
+
+\begin{itemize}
+    \item Users can use arbitrary string for syntax, no more "reserve words" or "name collusion". It is possible to include Unicode or LaTeX for string as well.
+    \item Terms must have a proper tree structure at the very beginning when user create it via input method, no more ambiguity.
+    \item Because we can control the way that user interact with phometa, so a formal system is alway in a valid state,
+    \item Easier on eyes for new comers which encourage them to play more with phometa.
+\end{itemize}
+
+Phometa pronounces as "po-met-ta", which come from,
+
+\begin{itemize}
+    \item \textbf{pho}, it is the Thai name of a tree specie which has heart-shape. This reminded me about $\lambda$ shape.
+    \item \textbf{meta}, because we want to build a system that describe other systems, word meta is suitable since it is related to meta-theory.
+\end{itemize}
+
+\section{Placeholders}
+
+We will use placeholders to distinguish between different intention of string. The advantage of GUI-base prover is that you can use any string that you like. No more reserve word or name clash. For example, we can use keyword as normal string as it will be label differently.
+
+\definecolor{defaultColor}{HTML}{eeeeee}
+
+% string
+\definecolor{pstrColor}{HTML}{330055}
+\newcommand{\pstr}[1]{
+    \tcbox[on line, frame empty, colback = pstrColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{pstrColor}{#1}}}
+    }
+}
+\subsection{\pstr{string}} Represent newly created string, which is not linked from anywhere else before. This is useful when created new identifier since we can't use a proper one as it doesn't exist before.
+
+% keyword
+\definecolor{pkwColor}{HTML}{8B4513}
+\newcommand{\pkw}[1]{
+    \texttt{\textbf{\color{pkwColor}{#1}}}
+}
+\subsection{\pkw{keyword}} Keywords are built-in. We can't create a new keyword.
+
+% comment
+\definecolor{pcommentColor}{HTML}{000000}
+\newcommand{\pcomment}[1]{
+    \tcbox[on line, frame empty, colback = pcommentColor!30!defaultColor, size = small] {
+        \textcolor{pcommentColor}{#1}
+    }
+}
+\subsection{\pcomment{comment}} What ever you want to describe anything will be in this box.
+
+% identifier
+\definecolor{pidColor}{HTML}{777700}
+\newcommand{\pid}[1]{
+    \tcbox[on line, frame empty, colback = pidColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{pidColor}{#1}}}
+    }
+}
+\subsection{\pid{identifier}} Show an identifier that has been selected in this module (i.e. the name referred to each node).
+
+% grammar
+\definecolor{pgmrColor}{HTML}{002266}
+\newcommand{\pgmr}[1]{
+    \tcbox[on line, frame empty, colback = pgmrColor!30!defaultColor, size = small, grow to left by=0cm, grow to right by=0cm]{
+        \texttt{\textbf{\textcolor{pgmrColor}{#1}}}
+    }
+}
+\subsection{\pgmr{grammar}} The same as identifier but selection limited to grammar only. Grammar can be either inductive, literal, or sequence. For further information, see next section. 
+
+% regex
+\definecolor{pregexColor}{HTML}{ee0000}
+\newcommand{\pregex}[1]{
+    \tcbox[on line, frame empty, colback = pregexColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{pregexColor}{/#1/}}}
+    }
+}
+\subsection{\pregex{regex}} Represent newly created regular expression (regex) pattern.
+
+% variable
+\definecolor{pvarColor}{HTML}{220088}
+\newcommand{\pvar}[1]{
+%     \tcbox[on line, frame empty, colback = pvarColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{pvarColor}{#1}}}
+%     }
+}
+\subsection{\pvar{variable}} Represent a (meta) variable used in rules and theorems. If there are variables that have the same name on the same root term, it is the same variable, this is useful in unification.
+
+% literal
+\definecolor{plitColor}{HTML}{ee0000}
+\newcommand{\plit}[1]{
+%     \tcbox[on line, frame empty, colback = plitColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{plitColor}{#1}}}
+%     }
+}
+\subsection{\plit{literal}} Represent literal inside a term which has literal grammar.
+
+% inductive formatter
+\definecolor{pifmtColor}{HTML}{007700}
+\newcommand{\pifmt}[1]{
+%     \tcbox[on line, frame empty, colback = pifmtColor!30!defaultColor, size = small]{
+        \boldmath\texttt{\textbf{\textcolor{pifmtColor}{#1}}}
+%     }
+}
+\subsection{\pifmt{inductive formatter}} Sequent of symbol needed to construct inductive grammar.
+
+% sequential formatter
+\definecolor{psfmtColor}{HTML}{aa0088}
+\newcommand{\psfmt}[1]{
+%     \tcbox[on line, frame empty, colback = psfmtColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{psfmtColor}{#1}}}
+%     }
+}
+\subsection{\psfmt{sequential formatter}} Sequent of symbol needed to construct sequential grammar.
+
+% definition formatter
+\definecolor{pdfmtColor}{HTML}{888800}
+\newcommand{\pdfmt}[1]{
+%     \tcbox[on line, frame empty, colback = pdfmtColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{pdfmtColor}{#1}}}
+%     }
+}
+\subsection{\pdfmt{definition formatter}} Sequent of symbol needed to construct definition.
+
+% definition
+\definecolor{pdefColor}{HTML}{552288}
+\newcommand{\pdef}[1]{
+    \tcbox[on line, frame empty, colback = pdefColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{pdefColor}{#1}}}
+    }
+}
+\subsection{\pdef{definition}} The same as identifier but limited to definition only.
+
+% alias
+\definecolor{paliasColor}{HTML}{aa2277}
+\newcommand{\palias}[1]{
+    \tcbox[on line, frame empty, colback = pdefColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{paliasColor}{#1}}}
+    }
+}
+\subsection{\palias{alias}} The same as identifier but limited to alias only.
+
+% rule
+\definecolor{pruleColor}{HTML}{115533}
+\newcommand{\prule}[1]{
+    \tcbox[on line, frame empty, colback = pruleColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{pruleColor}{#1}}}
+    }
+}
+\subsection{\prule{rule}} The same as identifier but limited to rule only.
+
+% theorem
+\definecolor{pthmColor}{HTML}{667722}
+\newcommand{\pthm}[1]{
+    \tcbox[on line, frame empty, colback = pthmColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{pthmColor}{#1}}}
+    }
+}
+\subsection{\pthm{theorem}} The same as identifier but limited to theorem only.
+
+% package and module
+\definecolor{ppkgmodColor}{HTML}{dd5555}
+\newcommand{\ppkgmod}[1]{
+    \tcbox[on line, frame empty, colback = ppkgmodColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{ppkgmodColor}{#1}}}
+    }
+}
+\subsection{\ppkgmod{package or module}} This is the result of selection of a list available in package or module. Please note that this is \textbf{not} a subset of identifier so so we can have package/module and identifier with the same name. But, on the same module, subpackage and module can't have the same name.
+
+\newlength\lunderset
+\newlength\rulethick
+\lunderset=1.8pt\relax
+\rulethick=1.5pt\relax
+\def\stackalignment{l}
+\newcommand\nunderline[3][1]{\setbox0=\hbox{#2}%
+  \stackunder[#1\lunderset-\rulethick]{\strut#2}{\color{#3}\rule{\wd0}{\rulethick}}}
+
+% block as term
+\definecolor{batColor}{HTML}{888888}
+\newcommand{\bat}[1]{
+    \nunderline{#1}{batColor}
+}
+
+\subsection{\bat{block \bat{\bat{as} term}}} We use underline to group (sub)term in to tree structure. This behaves similar to parenthesis, e.g. \bat{block \bat{\bat{as} term}} is in fact "(block (as (term)))" but looks a lot nicer. This is being used in
+\begin{itemize}
+    \item \bat{\ppkgmod{identify} \ppkgmod{module} \ppkgmod{path}}
+    \item \bat{\pgmr{inductive}  \pgmr{grammar} \pifmt{declaration}}
+    \item \bat{\pifmt{inductive} \pvar{term}}
+    \item \bat{\psfmt{sequential} \pvar{term}}
+    \item \bat{\pdfmt{definition} \pvar{term}}
+\end{itemize}
+
+% block as subsequence - works only inside sequence, identify that this is a subsequence not just element
+\newcommand{\bass}[1]{
+    \nunderline{#1}{psfmtColor}
+}
+
+\subsection{\bat{block as \bass{subsequence}}}. 
+When patten match on sequential term, sometime we want to express subsequence. but we can use just normal \bat{block as term} since it will be ambiguous to another thing. So we highlight subsequence with another color. E.g. \bat{\pvar{A} \psfmt{,} \bass{\pvar{B}} \psfmt{,} \pvar{C}}. \psfmt{,} So know exactly that \pvar{B} represent subsequence of this sequential term, not just another element. \\ \\
+
+TODO: write about term, root\_term, meta\_term, and hole.
+
+TODO: write about \textbf{input method} on term and meta\_term.
+
+TODO: write about \textbf{package explorer} which is the mechanism to dealing with \ppkgmod{packages} and \ppkgmod{modules} hierarchy.
+
+\def\arraystretch{1.5}%  1 is the default, change whatever you need
+
+\definecolor{blockBackColor}{HTML}{eeeeee}
+\definecolor{termBackColor}{HTML}{dddddd}
+\definecolor{defaultFrameColor}{HTML}{888888}
+\definecolor{titleBackColor}{HTML}{cccccc}
+
+\newmdenv[
+    style=defaultoptions,
+    backgroundcolor = blockBackColor, % metablockColor,
+    topline = false, rightline = false, leftline = false, bottomline = false,
+    innerleftmargin = 5pt, innerrightmargin = 5pt,
+    innertopmargin = 2pt, innerbottommargin = 2pt,
+    frametitleaboveskip = 3pt, frametitlebelowskip = 3pt,
+    roundcorner = 7pt,
+    frametitlebackgroundcolor=titleBackColor, % metablockTitleColor
+    nobreak=true
+]{metablock}
+
+\newcommand{\node}[2]{
+    \vspace{0.2cm}
+    \begin{metablock}[frametitle={#1}]
+        \begin{tabular}{l l}
+            #2
+        \end{tabular}
+    \end{metablock}
+    \vspace{0.3cm}
+}
+
+% block as node
+\newcommand{\ban}[1]{
+    \multicolumn{1}{l}{
+        \begin{tcolorbox} [
+             skin=enhancedmiddle jigsaw,
+             colback = blockBackColor,
+             colframe = defaultFrameColor,
+             left=0mm,
+             top=0mm,
+             bottom=0mm,
+             boxrule=0mm,
+             leftrule=1mm,
+             rightrule=-1mm
+        ]
+        \begin{tabular}{l}
+            #1
+        \end{tabular}
+        \end{tcolorbox}
+    } \\
+}
+
+% block as sequence - identify the term to be a sequence
+\newcommand{\bas}[1]{
+    \nunderline{#1}{defaultFrameColor}
+}
+
+\newpage
+
+\section{Nodes and Attributes}
+
+At top level, will have a root package which consists of packages and modules
+
+each module is a collection of "nodes"
+
+there are several type of node as the following
+
+\newcommand{\kOpen}{\pkw{open}}
+\newcommand{\kShowByDefault}{\pkw{show\_by\_default}}
+\newcommand{\kHideByDefault}{\pkw{hide\_by\_default}}
+\newcommand{\kComment}{\pkw{comment}}
+\newcommand{\kGrammar}{\pkw{grammar}}
+\newcommand{\kInductive}{\pkw{inductive}}
+\newcommand{\kLiteral}{\pkw{literal}}
+\newcommand{\kSequence}{\pkw{sequence}}
+\newcommand{\kDictionary}{\pkw{dictionary}}
+\newcommand{\kDefinition}{\pkw{definition}}
+\newcommand{\kPartial}{\pkw{partial}}
+\newcommand{\kTotal}{\pkw{total}}
+\newcommand{\kAlias}{\pkw{alias}}
+\newcommand{\kRule}{\pkw{rule}}
+\newcommand{\kInference}{\pkw{inference}}
+\newcommand{\kCompound}{\pkw{compound}}
+\newcommand{\kTheorem}{\pkw{theorem}}
+\begin{itemize}
+    \item \kOpen
+    \begin{itemize}
+        \item \kShowByDefault
+        \item \kHideByDefault
+    \end{itemize}
+    \item \kComment
+    \item \kGrammar
+    \begin{itemize}
+        \item \kInductive
+        \item \kLiteral
+        \item \kSequence
+        \item \kDictionary
+    \end{itemize}
+    \item \kDefinition
+    \begin{itemize}
+        \item \kPartial
+        \item \kTotal
+    \end{itemize}
+    \item \kAlias
+    \item \kRule
+    \begin{itemize}
+        \item \kInference
+        \item \kCompound
+    \end{itemize}
+    \item \kTheorem
+\end{itemize}
+
+Note1. When we infer to "identifier", it can refer to any node since each node create new identifier except \kOpen and \kComment.
+
+Note3. Comment can be attribute of any node, if present, it must be the first attribute as well
+
+\newcommand{\kTrue}{\pkw{true}}
+\newcommand{\kFalse}{\pkw{false}}
+
+\subsection{\kOpen \bat{\ppkgmod{path} \ppkgmod{to} \ppkgmod{target module}} \{ \kShowByDefault \textbackslash \kHideByDefault \} }
+\newcommand{\kRecursive}{\pkw{recursive}}
+\newcommand{\kRename}{\pkw{rename}}
+\newcommand{\kTo}{\pkw{to}}
+\newcommand{\kHide}{\pkw{hide}}
+\newcommand{\kShow}{\pkw{show}}
+
+This is the way to import \pid{identifier} from another module to current module. Neither module name nor module path of this module will become identifier of current module (this is one of a reason why I use keyword "open" rather than "import"). The only result of this node is a set of identifier imported.
+
+\subsubsection{Common attributes}
+
+\begin{itemize}
+    \item \kRecursive \{\kTrue \textbackslash \kFalse\} \\
+    (Compulsory) If this is \kTrue, recursively import dependent identifiers which target module also use. In another word, transitive closure of dependent identifiers.
+    \item \kRename \pid{identifier from target module} \kTo \pstr{new\_name} \\
+    (Multiple) Import the target identifier and rename it as \pstr{new\_name}. Please note that this attribute is independent to show or hide by default.
+\end{itemize}
+
+\subsubsection{\kShowByDefault and its attributes}
+For each identifier inside target module, if not state otherwise, do not import this to current module.
+\begin{itemize}
+    \item \kHide \pid{identifier from target module} \\
+    (Multiple) Tell phometa not to import this identifier. If \kRecursive is \kTrue this also work with the identifier that target module import as well.
+\end{itemize}
+
+\subsubsection{\kHideByDefault and its attributes}
+For each identifier inside target module, if not state otherwise, import this to current module.
+\begin{itemize}
+    \item \kShow \pid{identifier from target module} \\
+    (Multiple) The same effect as \kHide but show identifier instead of hiding it.
+\end{itemize}
+
+\subsection{node input method}
+
+We will give an example of \kOpen node alongside with the explanation, other nodes will be similar.
+
+Once the \kOpen node has been created (from module input method), user need to give path to target module (by module\_path input method) then they need to select (on the right corner of the header) weather this \kOpen node to be \kShowByDefault or \kHideByDefault.
+
+After that, the body of the node will be generated, all of "Compulsory" attributes (in this case, just \kRecursive) will be assign to default value. User can edit this by click "edit" on the right most of the header then user can,
+
+\begin{itemize}
+    \item enable/disable optional attributes (in this case, just \kComment) 
+    \item add/remove/reorder multiple attributes
+\end{itemize}
+
+Please note that the order of attributes cannot change (except reordering in multiple attribute region).
+
+% This method is deprecate, but might be useful in the future.
+% \begin{itemize}[label={}]
+%     \item $\square$ \kComment
+%     \item $\oslash$ \kRecursive
+%     \item $\bigcirc$ show\_by\_default
+%     \begin{itemize}[label={}]
+%       \item $\oplus$ \kHide
+%     \end{itemize}
+%     \item $\bigcirc$ hide\_by\_default
+%     \begin{itemize}[label={}]
+%         \item $\oplus$ \kShow
+%     \end{itemize}
+%     \item $\oplus$ \kRename
+% \end{itemize}
+
+% \begin{itemize}
+%     \item $\oslash$ indicates that this attribute is compulsory, you can't add or delete it, it is there only for reference
+%     \item $\square$ indicates that this attribute is optional, you can toggle "tick box" to add or delete it
+%     \item $\bigcirc$ indicates that this attribute is selective, if you click circle, the attribute that you want will enable but also disable other (same level) circles
+%     \item $\oplus$ indicates that this attribute is multiple, you can click $\oplus$ to add new attribute, for reorder and delete individual you can do it directly in node body.
+% \end{itemize}
+
+\subsection{\kComment \pstr{summarise of comment, optional}}
+\newcommand{\nCommentNoHead}[1]{
+    \node{\kComment}{#1 & \\}
+}
+This is simply a node that we can use to short note. This is intended to be use as a way to describe or explain something involving multiple nodes. It is also use to explain module description.
+
+For detail of each individual node, there will be \kComment attribute of each node that node that you can use. See examples for further information.
+
+\newcommand{\kVarRegex}{\pkw{var\_regex}}
+\newcommand{\kExtend}{\pkw{extend}}
+\newcommand{\kChoice}{\pkw{choice}}
+\newcommand{\kRef}{\pkw{ref}}
+\newcommand{\kRegex}{\pkw{regex}}
+\newcommand{\kSubGrammar}{\pkw{sub\_grammar}}
+\newcommand{\kKeyGrammar}{\pkw{key\_grammar}}
+\newcommand{\kValueGrammar}{\pkw{value\_grammar}}
+\newcommand{\kSeparator}{\pkw{separator}}
+\newcommand{\kDelimiter}{\pkw{delimiter}}
+\newcommand{\kWhenEmpty}{\pkw{when\_empty}}
+\newcommand{\kCommutative}{\pkw{commutative}}
+\newcommand{\kIdempotent}{\pkw{idempotent}}
+
+\subsection{\kGrammar \pstr{new grammar} \{\kInductive \textbackslash \kLiteral \textbackslash \kSequence \textbackslash \kDictionary\} }
+Introduce new grammar for this formal system
+
+\subsubsection{Common attributes}
+
+\begin{itemize}
+    \item \kVarRegex \pregex{regex} \\
+    (Optional) Patten of string that allow to be used as variable of this grammar. If this attribute is disabled, this grammar can't be in form of variable.
+\end{itemize}
+
+\subsubsection{\kInductive and its attributes}
+This is the standard way to define a grammar, an inductive term can be one of a form in \kChoice attributes. Then the subterm will be construct according to sub-grammar described in \kChoice 
+\begin{itemize}
+    \item \kExtend \pgmr{inductive\_grammar} \\
+    (Optional) If present, it will import \kChoice from base grammar. Please note that the grammar used of this attributes must be inductive.
+    \item \kChoice \bat{\pgmr{sequent} \pifmt{of} \pgmr{grammars} \pifmt{and formatter}} \kRef \pstr{reference} \\
+    (Multiple) One of the ways to instantiate this grammar. \pstr{reference} will be used in input method to refer back in to this choice. Please note that \pstr{reference} is in local name space of this inductive grammar
+\end{itemize}
+
+  TODO: On inductive term input method, when enter "construct by reference", if there is just one \kChoice then select it automatically.
+
+\subsubsection{\kLiteral and its attributes}
+This is another way to define grammar. When you want to define something like set of atom, numbers, etc. it is better to define this way. When you instantiate this kind of grammar, simply write a string, phometa will check it against \kRegex attribute.
+\begin{itemize}
+    \item \kRegex \pregex{regex} \\
+    (Compulsory) Pattern of string that allow to be used as literal of this grammar.
+\end{itemize}
+
+\subsubsection{\kSequence and its attributes}
+TODO: we will introduce spacial mechanism (perhaps built-in definition) to deal with sequence membership.
+This is a proper way to create collection like list, set, bag, etc. The grammar which is created in this way will get extra power from built-in rule which will become handy later.
+\begin{itemize}
+    \item \kSubGrammar \pgmr{grammar} \\
+    (Compulsory) Specify the grammar of elements of this sequence.
+    \item \kDelimiter \pstr{string} \\
+    (Optional) String to show as separator of each element. If this attribute doesn't exist. This sequence will not allow more than one element. Hence, become optional grammar (simialr to Maybe in Haskell and Option in OCaml)
+    \item \kWhenEmpty \pstr{string} \\
+    (Optional) String to show when the sequence is empty. If this attribute doesn't exist. This sequence cannot be empty which is useful for some particular sequence.
+    \item \kCommutative \{\kTrue or \kFalse\} \\
+    (Compulsory) State weather order is matter in this sequence or not. If \kTrue, there will be spacial rule which allow sequent to change order freely.
+    \item \kIdempotent \{\kTrue or \kFalse\} \\
+    (Compulsory) State weather elements are idempotent or not. If \kTrue, there will be spacial rule which allow sequent to remove or add some duplication on element.
+\end{itemize}
+
+\subsubsection{\kDictionary and its attributes}
+TODO: finish this and extend the entire phometa to support \kDictionary similarity to \kSequence
+
+TODO: we will introduce spacial mechanism (perhaps built-in definition) to deal with dictionary lookup/get\_keys/get\_values.
+
+This is a proper way to create lookup table. This structure might not look primitive but it is so common, so we decide to make it built-in.
+
+\begin{itemize}
+    \item \kKeyGrammar \pgmr{grammar} \\
+    (Compulsory) Specify the grammar of keys of this dictionary.
+    \item \kValueGrammar \pgmr{grammar} \\
+    (Compulsory) Specify the grammar of values of this dictionary.
+    \item \kSeparator \pstr{string} \\
+    (Compulsory) String to show as separator between key and value of each element of this dictionary.
+    \item \kDelimiter \pstr{string} \\
+    (Compulsory) String to show as separator of each element of this dictionary.
+    \item \kWhenEmpty \pstr{string} \\
+    (Compulsory) String to show when the sequence is empty.
+\end{itemize}
+
+\newcommand{\kSignature}{\pkw{signature}}
+\newcommand{\kPattern}{\pkw{pattern}}
+\newcommand{\kReturn}{\pkw{return}}
+\newcommand{\kLet}{\pkw{let}}
+\newcommand{\kBe}{\pkw{be}}
+\newcommand{\kMatch}{\pkw{match}}
+\newcommand{\kWith}{\pkw{with}}
+\newcommand{\kTotalMatch}{\pkw{total\_match}}
+\subsection{\kDefinition \pstr{new definition} \{\kPartial \textbackslash \kSequence \} }
+TODO: finish this, please note that \kPartial is normal definition. But \kTotal in a definition that always be able to reduce (like total function), this can be achieved by not using \kMatch (use \kTotalMatch instead) and not call \kPartial \kDefinition.
+TODO: write an example involve \kLet ... \kBe and \kTotal \kDefinition
+
+\subsection{\kAlias \pstr{new alias}}
+Alias is the similar to \kDefinition but has no parameter. It can to convert any matched (sub)term to the identifier of the alias (without built-in rule like in definition, just change the (sub)term directly by clicking on (sub)term underline). This is useful when dealing with a term which has a long subterm that is not necessary at the moment. Whenever we said about definition (except \kDefinition node construction) we cover \kAlias as well.
+
+TODO: finish this
+
+\newcommand{\kPremise}{\pkw{premise}}
+\newcommand{\kConclude}{\pkw{conclude}}
+\newcommand{\kForall}{\pkw{forall}}
+\newcommand{\kExists}{\pkw{exists}}
+\newcommand{\kIn}{\pkw{in}}
+\newcommand{\kConclusionGrammar}{\pkw{conclusion\_grammar}}
+\newcommand{\kSubRule}{\pkw{sub\_rule}}
+\subsection{\kRule \pstr{new rule} \{\kInference \textbackslash \kCompound \} }
+TODO: finish this
+
+\newcommand{\kProof}{\pkw{proof}}
+% \newcommand{\kLemma}{\pkw{lemma}} % may not include this
+\newcommand{\kUseRule}{\pkw{use\_rule}}
+\newcommand{\kUseTheorem}{\pkw{use\_theorem}}
+\newcommand{\kUseBuiltIn}{\pkw{use\_built\_in}}
+\subsection{\kTheorem \pstr{new theorem}}
+TODO: finish this
+
+\subsection{Available built-in rule so far} 
+
+\subsubsection{\prule{sequence\_commutative}}
+Use this built-in rule to permute any sequential term that set \kCommutative as \kTrue.
+
+For input method, once user select to use this built-in rule, it will copy the original rule as premise then user can click on a delimiter on target sequence then the elements (including subsequences) that are adjacent to that delimiter will swap the position, keep swapping until we get the desired permutation. Once you are done click at built-in rule stop this interactive editing session.
+
+Please note that, this single command can permute several sequences at once.
+
+\subsubsection{\prule{sequence\_idempotent}}
+Use this built-in rule to duplicate or remove duplication on any sequential term. For input method, it is similar to \prule{sequence\_commutative} but user will click on element rather than delimiter (again, elements include subsequences as well, also if the element is \bat{block as term} then click its underline instead to avoid ambiguous on subterm)
+
+If the clicked element isn't the same previous element then duplicate the element, otherwise remove the element. By this mechanism, for any consecutive identical elements. We can keep duplicate by repeatly clicking the first term and keep remove duplication by repeatly clicking the second-term (or later terms)
+
+Stop this interactive editing session and ability to do on several sequences are the same as in \prule{sequence\_commutative}.
+
+\subsubsection{\prule{sequence\_commutative\_idempotent}}
+Can both permute and duplicate / remove duplicate like in \prule{sequence\_commutative} and \prule{sequence\_idempotent} in one go.
+
+
+\subsubsection{\prule{definition\_unfold}}
+Unfold target definitional term. For input method, once user select this build-in rule, user need to select one of definitional term (by clicking its underline), then it will unfold it.
+
+Please note that, this method always work for \kTotal \kDefinition but might not be the case for \kPartial \kDefinition.
+
+\subsubsection{\prule{definition\_recursively\_unfold}}
+Similar to \prule{definition\_unfold} but will recursively attempt unfold further definitional terms on result of the first unfolding.
+
+Please note that, you can also select non-definitional term, then it will recursively unfold on definitional subterm of that term.
+
+\subsubsection{\prule{definition\_fold}}
+Fold target term. For input method, once user select this build-in rule, user need to select one of term then that term will become (term input method) hole, the user need to construct a term that can unfold to original term by one step.
+
+\subsubsection{\prule{definition\_recursively\_fold}}
+Similar to \prule{definition\_fold} but allow many step rather than just one step.
+
+TODO: write built-in rule for \kDictionary
+
+\newpage
+
+\section{Example - Sequential Calculus of Propositional Logic}
+
+\subsection{Module \bat{\ppkgmod{prop\_logic} \ppkgmod{grammars}}}
+\nCommentNoHead{ This module this to describe grammars of propositional logic under equential calculus }
+
+\node{
+    \kGrammar \pstr{prop} \kInductive
+} {
+    \kComment & \pcomment{present arbitrary term of proposition} \\
+
+    \kVarRegex & \pregex{[A-Z]([1-9][0-9]+|'+)?} \\
+
+    \kChoice & \bat{\pifmt{$\top$}} \kRef \pstr{top} \\
+
+    \kChoice & \bat{\pifmt{$\bot$}} \kRef \pstr{bottom}  \\
+
+    \kChoice & \bat{\pgmr{atom}} \kRef \pstr{atom}  \\
+
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\wedge$} \pgmr{prop}} \kRef \pstr{and}\\
+
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\vee$} \pgmr{prop}} \kRef \pstr{or}\\
+
+    \kChoice & \bat{\pifmt{$\neg$} \pgmr{prop}} \kRef \pstr{not}\\
+
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\rightarrow$} \pgmr{prop}} \kRef \pstr{imp}\\
+
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\leftrightarrow$} \pgmr{prop}} \kRef \pstr{iff}\\
+}
+
+\node{
+    \kGrammar \pstr{atom} \kLiteral
+} {
+    \kComment & \pcomment{atomic proposition, can be either true or false.} \\
+
+    \kRegex & \pregex{[a-z]([1-9][0-9]+|'+)?} \\
+}
+
+\node{
+    \kGrammar \pstr{context} \kSequence
+} {
+    \kComment & \pcomment{list of proposition, will be used in judgement} \\
+
+    \kVarRegex & \pregex{[$\Gamma\Delta\Sigma\Pi$]([1-9][0-9]+|'+)?} \\
+
+    \kSubGrammar & \pgmr{prop} \\
+
+    \kDelimiter & \pstr{,} \\
+
+    \kWhenEmpty & \pstr{$\epsilon$} \\
+
+    \kCommutative & \kTrue \\
+
+    \kIdempotent & \kTrue \\
+}
+
+\node{
+    \kGrammar \pstr{judgement} \kInductive
+} {
+    \kComment & \pcomment{By convention, we use word "make" for an inductive that have just one choice.} \\
+    \kChoice & \bat{\pgmr{context} \pifmt{$\vdash$} \pgmr{context}} \pstr{make} \\
+}
+
+\subsection{Module \bat{\ppkgmod{prop\_logic} \ppkgmod{eval}}}
+
+\node{
+    \kOpen \bat{\ppkgmod{prop\_logic} \ppkgmod{grammar}} \kHideByDefault
+} {
+    \kShow & \pid{prop} \\
+    \kShow & \pid{atom} \\
+}
+
+\node{
+    \kGrammar \pstr{truth\_value} \kInductive
+}{
+    \kComment & \pcomment{Result of propositional logic evaluation} \\
+    \kVarRegex & \pregex{value-[A-Z]([1-9][0-9]+|'+)?} \\
+    \kChoice & \bat{\pifmt{true}} \kRef \pstr{tt} \\
+    \kChoice & \bat{\pifmt{false}} \kRef \pstr{ff} \\
+}
+
+\node{
+    \kDefinition \pstr{eval\_prop} \kPartial
+}{
+    \kSignature  \bat{\pdfmt{eval} \pgmr{prop}} \pgmr{truth-value} \\
+
+    \kPattern  \bat{\pdfmt{eval} \bat{\pifmt{$\top$}}} \\
+    \ban{
+        \kReturn  \bat{\pifmt{true}}\\
+    }
+
+    \kPattern  \bat{\pdfmt{eval} \bat{\pifmt{$\bot$}}} \\
+    \ban{
+        \kReturn  \bat{\pifmt{false}}\\
+    }
+
+    \kPattern  \bat{\pdfmt{eval} \bat{\pvar{P} \pifmt{$\wedge$} \pvar{Q}}} \\
+    \ban{
+        % \kLet \pvar{value-P} \kBe \bat{\pdfmt{eval} \pvar{P}} \\
+        % \kLet \pvar{value-Q} \kBe \bat{\pdfmt{eval} \pvar{Q}} \\
+        \kMatch \bat{\pdfmt{eval} \bat{\pvar{P}}} \kWith \\
+        \ban {
+            \kPattern \bat{\pifmt{true}} \\
+            \ban{
+                \kReturn  \bat{\pdfmt{eval} \bat{\pvar{Q}}} \\
+            }
+            \kPattern \bat{\pifmt{false}} \\
+            \ban{
+                \kReturn  \bat{\pifmt{false}} \\
+            }
+        }
+    }
+    and so on \dotfill
+}
+
+    TODO: implement sub\_sequence by structure, this can be done on input method section
+
+    TODO: mension about spacial rule for
+    1. definition evaluation (both of top-up and bottom down, one step and until get normal form)
+    2. sequent commutative and idempotent
+
+%     TODO(done): change term term structure form boxes to be underline
+%     e.g. +------------------------+ become
+%          |        xxxxxxxxxxxxxxx |   +-------------+
+%          | +---+  x ooooo +---+ x |   |             |
+%          | | A |  x o P o | Q | x |   |  A   P   Q  |
+%          | +---+  x ooooo +---+ x |   | --- ooo --- |
+%          |        xxxxxxxxxxxxxxx |   |     xxxxxxx |
+%          +------------------------+   +-------------+
+
+%     TODO(done): use visual indentation instead of subboxes
+%     e.g.                        become
+%         +--------------------+  +-----------------
+%         | theorem foo           | theorem foo
+%         +---------------------  +-----------------
+%         | termA gmr             | termA gmr
+%         | by\_rule r1           | by\_rule r1
+%         | --------------------  | 
+%         | termB gmr             | termB gmr
+%         | by\_rule r2           | by\_rule r2
+%         | +----------------     |
+%         | | termC gmr           | x termC gmr
+%         | | by\_rule0           | x by\_rule0
+%         | +----------------     | 
+%         | | termD gmr           | o termD gmr
+%         | | by\_rule0           | o by\_rule0
+%         | +----------------     +-----------------
+%         +----------------
+
+%     TODO(deprecate): allow, \kAlias, \kDefinition, to be subnode of \kTheorem. This allow us to state local definition in a theorem which will be become handy later. Alternatively, use namespace (like in lean) to handle local definition
+
+%     TODO(done): allow sequence of premises. E.g. some rule, the number of premise might depend on the length of some sequence grammar. E.g. \prule{conj-intro} we need a premise that every element in \pvar{conj} is hold under judgements, so number of premise depend on length of \pvar{conj}. One way to solve this is to introduce a sub-block which has a variable iterate over a sequence (this sequence, of course can be modified by definitions, this is similar to list comprehension in haskell) then write a premise inside the block which use this variable. When we use this rule in theorem, once we specify to use that particular rule, phometa will evaluate the iterated sequence and generate premise depend on each element inside that sequence.  
+
+\subsection{\bat{\ppkgmod{prop\_logic} \ppkgmod{rules}}}
+
+\node{
+    \kOpen \bat{\ppkgmod{prop\_logic} \ppkgmod{grammar}} \kShowByDefault
+} {
+    \kComment & \pcomment{Import everything from prop logic grammar} \\
+    \kRecursive & \kTrue
+}
+
+\node{
+  \kRule \pstr{I} \kInference
+}{
+  \kConclude & \bat{\pvar{A} \pifmt{$\vdash$} \pvar{A}} \pgmr{judgement}
+}
+
+
+\node{
+  \kRule \pstr{Cut} \kInference
+}{
+  \kConclude & \bat{
+      \bas{\bass{\pvar{$\Gamma$}} \psfmt{,} \bass{\pvar{$\Sigma$}}}
+        \pifmt{$\vdash$}
+        \bas{\bass{\pvar{$\Delta$}} \psfmt{,} \bass{\pvar{$\Pi$}}}
+    } \pgmr{judgement} \\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$} \pifmt{$\vdash$} \bas{\bass{\pvar{$\Delta$}} \psfmt{,} \pvar{A}}
+    } \pgmr{judgement} \\
+    \kPremise & \bat{
+      \bas{\pvar{A} \psfmt{,} \bass{\pvar{$\Sigma$}}} \pifmt{$\vdash$} \pvar{$\Pi$}
+    } \pgmr{judgement} \\
+}
+
+TODO: write all rules for sequential calculus
+
+\node {
+  \kTheorem \pstr{helper\_of\_law\_of\_exclude\_middle}
+}{
+    \kProof
+    \bat{
+        \pifmt{$\vdash$}
+        \bas{
+            \bat{\pifmt{$\neg$} \pvar{A}}
+            \psfmt{,}
+            \pvar{A}
+        }
+    } \pgmr{judgement} \\
+    \kUseRule \prule{not\_right} \\
+
+    \ban{
+        \kProof
+        \bat{
+            \bas{
+                \pvar{A}
+            }
+            \pifmt{$\vdash$}
+            \bas{
+                \pvar{A}
+            }
+        } \pgmr{judgement} \\
+        \kUseRule \prule{I}
+    }
+}
+
+\node {
+  \kTheorem \pstr{law\_of\_exclude\_middle}
+}{
+  \kProof
+  \bat{
+        \pifmt{$\vdash$}
+        \bas{
+          \bat{
+              \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+            }
+        }
+    } \pgmr{judgement} \\
+    
+    \kUseBuiltIn \prule{sequence\_idempotent} \\
+    
+    \ban{
+        \kProof
+        \bat{
+            \pifmt{$\vdash$}
+            \bas{
+                \bat{
+                    \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+                }
+                \psfmt{,}
+                \bat{
+                    \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+                }
+            }
+        } \pgmr{judgement} \\
+        \kUseRule \prule{or\_right\_1} \\
+        
+        \ban{
+            \kProof
+            \bat{
+                \pifmt{$\vdash$}
+                \bas{
+                    \pvar{A}
+                    \psfmt{,}
+                    \bat{
+                        \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+                    }
+                }
+            } \pgmr{judgement} \\
+            \kUseBuiltIn \prule{sequence\_commutative} \\
+            
+            \ban{
+                \kProof
+                \bat{
+                    \pifmt{$\vdash$}
+                    \bas{
+                        \bat{
+                            \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+                        }
+                        \psfmt{,}
+                        \pvar{A}
+                    }
+                } \pgmr{judgement} \\
+                
+                
+                \kUseRule \prule{or\_right\_1} \\
+                
+                \ban{
+                    \kProof
+                    \bat{
+                        \pifmt{$\vdash$}
+                        \bas{
+                            \bat{\pifmt{$\neg$} \pvar{A}}
+                            \psfmt{,}
+                            \pvar{A}
+                        }
+                    } \pgmr{judgement} \\
+                    \kUseTheorem \pthm{helper\_of\_law\_of\_exclude\_middle}
+                }
+            }
+        }
+    } \\
+    
+    
+}
+
+
+\subsection{Module \bat{\ppkgmod{seq\_prop\_logic} \ppkgmod{grammars}}}
+\nCommentNoHead{ This module provide alternative for conjunction and disjunction }
+
+\node{
+    \kGrammar \pstr{prop} \kInductive
+} {
+    \kComment & \pcomment{present arbitrary term of proposition} \\
+
+    \kVarRegex & \pregex{[A-Z]([1-9][0-9]+|'+)?} \\
+
+    \kChoice & \bat{\pgmr{atom}} \kRef \pstr{atom}  \\
+
+    \kChoice & \bat{\pgmr{conj}} \kRef \pstr{conj}\\
+
+    \kChoice & \bat{\pgmr{disj}} \kRef \pstr{disj}\\
+
+    \kChoice & \bat{\pifmt{$\neg$} \pgmr{prop}} \kRef \pstr{not}\\
+
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\rightarrow$} \pgmr{prop}} \kRef \pstr{imp}\\
+
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\leftrightarrow$} \pgmr{prop}} \kRef \pstr{iff}\\
+}
+
+\node{
+    \kGrammar \pstr{conj} \kSequence
+} {
+    \kComment & \pcomment{conjunction of proposition} \\
+
+    \kVarRegex & \pregex{conj([1-9][0-9]+|'+)?} \\
+
+    \kSubGrammar & \pgmr{prop} \\
+
+    \kDelimiter & \pstr{$\wedge$} \\
+
+    \kWhenEmpty & \pstr{$\top$} \\
+
+    \kCommutative & \kTrue \\
+
+    \kIdempotent & \kTrue \\
+}
+
+\node{
+    \kGrammar \pstr{disj} \kSequence
+} {
+    \kComment & \pcomment{disjunction of proposition} \\
+
+    \kVarRegex & \pregex{disj([1-9][0-9]+|'+)?} \\
+
+    \kSubGrammar & \pgmr{prop} \\
+
+    \kDelimiter & \pstr{$\vee$} \\
+
+    \kWhenEmpty & \pstr{$\bot$} \\
+
+    \kCommutative & \kTrue \\
+
+    \kIdempotent & \kTrue \\
+}
+
+\node{
+     \kGrammar \pstr{atom} \kLiteral
+} {
+    the same as in \bat{\ppkgmod{prop\_logic} \ppkgmod{grammars}}
+}
+
+\node{
+     \kGrammar \pstr{context} \kSequence
+} {
+    the same as in \bat{\ppkgmod{prop\_logic} \ppkgmod{grammars}}
+}
+
+\node{
+    \kGrammar \pstr{judgement} \kInductive
+} {
+    the same as in \bat{\ppkgmod{prop\_logic} \ppkgmod{grammars}}
+}
+
+\node{
+    \kRule \pstr{conj-intro} \kInference
+}{
+    \kConclude \bat{
+        \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{conj}
+    } \pgmr{judgement} \\
+    \kForall \pvar{P} \kIn \pvar{conj} \\
+    \ban{
+        \kPremise \bat{
+            \pvar{$\Gamma$}
+            \pifmt{$\vdash$}
+            \pvar{P}
+        } \pgmr{judgement}
+    }
+}
+
+\node{
+    \kRule \pstr{disj-intro} \kInference
+}{
+    \kConclude \bat{
+        \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{disj}
+    } \pgmr{judgement} \\
+    \kExists \pvar{P} \kIn \pvar{disj} \\
+    \ban{
+        \kPremise \bat{
+            \pvar{$\Gamma$}
+            \pifmt{$\vdash$}
+            \pvar{P}
+        } \pgmr{judgement}
+    }
+}
+
+\node{
+    \kRule \pstr{conj-disj-intro} \kCompound
+}{
+    \kConclusionGrammar \pgmr{judgement} \\
+    \kSubRule \prule{conj-intro} \\
+    \kSubRule \prule{disj-intro} \\
+}
+
+\section{Features to implement}
+
+\subsection{foldable node and subnode (extension, do it later)}
+
+We should allow user to fold/unfold any node which will hide/show all of content except header of the node. This also apply to subnodes (things that has thick vertical bar as indentation) by click on the vertical bar, everything that is indented will be hide and leave a button in front of subnode header for unfold later.
+
+\subsection{hide/show root grmmar by default, popup subterm grammar when  grammar when hover underline container}
+When we create a (root) term, usually we ask user to specify its grammar, and it will show there on the the same line with root term. This might look complicate and unreadable when dealing with complex term. So, user can set in "preference page" to hide grammar of root term by default (but it will ask grammar when root term created anyway). This might not confuse user since they always be able to hover the root term (specifically on the main underline) to see grammar of that root term. Moreover, this technique also apply to sub  apply to subterm, so whenever they hover the underline of subterm, the corresponding grammar will be shown.
+
+\subsection{manage nodes inside project explorer}
+We will list all nodes for each module on project explorer. So we can create/delete/reorder nodes inside project explorer directly. Moreover, if we click on a node, it will show just that node on main panel, this allow us to focus on complex node (of course, we can click on a module to show all nodes inside it on main panel, however, this doesn't work for packages).
+
+\subsection{variable resolution inside theorem}
+For example, in type system, sometime we construct a derivation tree in order to get type of particular term. This can be done inside phometa as well, by construct a normal judgement and leave the type as variable e.g. \bat{\pvar{$\Gamma$} \pifmt{$\vdash$} \pvar{$\phi$} \pifmt{:} \pvar{A}} you can see that we leave type as \pvar{A}. Then build its derivation tree by \kTheorem, at some point it will hit a rule involve inference on \pvar{A} (term deconstruction). let say \pvar{A} get deconstruct into \bat{\pvar{B} \pifmt{$\rightarrow$} \pvar{C}} (of course, user need to write "B" and "C" to get \pvar{B} and \pvar{C} during using particular rule) then every \pvar{A} appear inside that theorem will be replace by \bat{\pvar{B} \pifmt{$\rightarrow$} \pvar{C}} as we desire. Eventually, the type of main is in final form. Please note that this works in general not just type theory case.
+
+\subsection{construct a new (sub)term by copying an existing (sub)term (extension, do it later)}
+On the actual proof, there will a complex term that needed to be modified on the small portion and left the rest untouch. Constructing this modified term from the scratch would be tedious. So we can just copy the old term then modify it. Recall that we need to press "c" for inductive/literal/sequence/dictionary construction, "v" for variable, "d" for definition, "a" for alias. Here inside term hole, we just type "m" then we just click the underline of that term, then it will check grammar of both term which needed to be matched then we get that term. Then for the part that we want to modify we just click "h" on underline of target subterm, this would replace hold to it then you can construct that subterm. Once you finish it just press "q", so phometa we check this new term against rule if it is in theorem or something else depent on the place of that term. 
+
+\section{Common trick, that user should know}
+
+\subsection{using condition during define grammar}
+
+Some of logical framework, also have a condition that if it doesn't hold then the particular term in not well-from.
+
+Unfortunately, you can't encode general condition during grammar construction since they are created structurally. However you can solve this using \kRule.
+
+Say that whenever you want to a rule involve term \pvar{t} with (conditional related) grammar \pgmr{g} you need to state
+
+\kPremise \pvar{t} \pgmr{g}
+
+inside that rule as well. Then using other rules which control condition of grammar \pgmr{g} to prove that \pvar{t} holds. Obviously if that term is not well-form, you can't prove that term.
+
+Please note that you only need to do this at the point that \pvar{t} is introduce (or reconstruct). If \pvar{t} already exists in one of your premises, you know that this premise also contain the prove that \pvar{t} holds.
+
+TODO: give an example involve this situation.
+
+\end{document}

@@ -4,3 +4,7 @@ elm.js
 
 # nodejs, npm package
 node_modules/
+
+# document
+# doc/
+# !doc/draft_of_report.tex
