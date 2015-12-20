@@ -3,8 +3,7 @@ install:
   - nvm install 0.12
   - cabal install elm-make
   - cabal install elm-package
-  - make init
-script: make test
+script: make init && make test
 notifications:
   email:
     - gunpinyo@gmail.com
