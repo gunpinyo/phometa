@@ -6,5 +6,5 @@ elm.js
 node_modules/
 
 # document
-# doc/
-# !doc/draft_of_report.tex
+doc/
+!doc/*.tex
