@@ -1,0 +1,1049 @@
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "master"
+%%% End:
+
+\chapter{Examples}
+
+\section{Propositional logic}
+
+\subsection{Module \bat{\ppkgmod{example} \ppkgmod{propositional\_logic} \ppkgmod{grammars}}}
+\nCommentNoHead{This module describes relevant grammars of First order logic.}
+
+\node{
+    \kGrammar \pstr{prop} \kInductive
+} {
+    \kComment & \pcomment{present arbitrary term of proposition} \\
+
+    \kVarRegex & \pregex{[A-Z]([1-9][0-9]+|'+)?} \\\\
+
+    \kChoice & \bat{\pifmt{$\top$}} \kRef \pstr{top} \\
+
+    \kChoice & \bat{\pifmt{$\bot$}} \kRef \pstr{bottom}  \\
+
+    \kChoice & \bat{\pgmr{atom}} \kRef \pstr{atom}  \\
+
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\wedge$} \pgmr{prop}} \kRef \pstr{and}\\
+
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\vee$} \pgmr{prop}} \kRef \pstr{or}\\
+
+    \kChoice & \bat{\pifmt{$\neg$} \pgmr{prop}} \kRef \pstr{not}\\
+
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\rightarrow$} \pgmr{prop}} \kRef \pstr{imp}\\
+
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\leftrightarrow$} \pgmr{prop}} \kRef \pstr{iff}\\
+}
+
+\node{
+    \kGrammar \pstr{atom} \kLiteral
+} {
+    \kRegex & \pregex{[a-z]([1-9][0-9]+|'+)?} \\
+}
+
+\node{
+    \kGrammar \pstr{context} \kSequence
+} {
+    \kVarRegex & \pregex{[$\Gamma\Delta\Sigma\Pi$]([1-9][0-9]+|'+)?} \\
+
+    \kSubGrammar & \pgmr{prop} \\
+
+    \kDelimiter & \pstr{,} \\
+
+    \kWhenEmpty & \pstr{$\epsilon$} \\
+
+    \kCommutative & \kTrue \\
+
+    \kIdempotent & \kTrue \\
+}
+
+\node{
+    \kGrammar \pstr{judgement} \kInductive
+} {
+    \kComment & \pcomment{By convention, we use word "make" for an inductive that have just one choice.} \\
+    \kChoice & \bat{\pgmr{context} \pifmt{$\vdash$} \pgmr{prop}} \pstr{make} \\
+}
+
+\node{
+    \kGrammar \pstr{equivalence} \kInductive
+} {
+    \kChoice & \bat{\pgmr{prop} \pifmt{$\equiv$} \pgmr{prop}} \pstr{make} \\
+}
+
+\node{
+    \kGrammar \pstr{valid} \kInductive
+} {
+    \kChoice & \bat{\pgmr{prop} \pifmt{valid}} \pstr{make} \\
+}
+
+\subsection{Module \bat{\ppkgmod{example} \ppkgmod{propositional\_logic} \ppkgmod{rules}}}
+
+\node{
+    \kOpen \bat{\ppkgmod{example} \ppkgmod{propositional\_logic} \ppkgmod{grammars}} \kShowByDefault
+} {
+    \kRecursive & \kTrue
+}
+
+\node{
+  \kRule \pstr{hypothesis} \kInference
+}{
+  \kConclude & \bat{
+    \bas{\bass{\pvar{$\Gamma$}} \psfmt{,} \pvar{A} \psfmt{,} \bass{\pvar{$\Delta$}}}
+    \pifmt{$\vdash$} \pvar{A}
+  } \pgmr{judgement}
+}
+
+\node{
+  \kRule \pstr{and-intro} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\wedge$} \pvar{B}}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{A}
+    } \pgmr{judgement} \\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{B}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{and-elim-1} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{A}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\wedge$} \pvar{B}}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{and-elim-2} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{B}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\wedge$} \pvar{B}}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{imp-intro} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\rightarrow$} \pvar{B}}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \bas{\bass{\pvar{$\Gamma$}} \psfmt{,} \pvar{A}}
+        \pifmt{$\vdash$}
+        \pvar{B}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{imp-elim} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{B}}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\rightarrow$} \pvar{B}}
+    } \pgmr{judgement} \\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A}}
+    } \pgmr{judgement} \\
+}
+
+
+\node{
+  \kRule \pstr{or-intro-1} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\vee$} \pvar{B}}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{B}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{or-intro-2} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\vee$} \pvar{B}}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{A}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{or-elim} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{C}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\vee$} \pvar{B}}
+    } \pgmr{judgement} \\
+
+  \kPremise & \bat{
+      \bas{\bass{\pvar{$\Gamma$}} \psfmt{,} \pvar{A}}
+        \pifmt{$\vdash$}
+        \pvar{C}
+    } \pgmr{judgement} \\
+
+
+  \kPremise & \bat{
+      \bas{\bass{\pvar{$\Gamma$}} \psfmt{,} \pvar{B}}
+        \pifmt{$\vdash$}
+        \pvar{C}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{not-intro} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pifmt{$\neg$} \pvar{C}}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \bas{\bass{\pvar{$\Gamma$}} \psfmt{,} \pvar{C}}
+        \pifmt{$\vdash$}
+        \bat{\pifmt{$\bot$}}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{not-elim} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pifmt{$\bot$}}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{C}
+    } \pgmr{judgement} \\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pifmt{$\neg$} \pvar{C}}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{top-intro} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pifmt{$\top$}}
+    } \pgmr{judgement} \\\\
+}
+
+\node{
+  \kRule \pstr{bottom-elim} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{A}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pifmt{$\bot$}}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{iff-intro} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\leftrightarrow$} \pvar{B}}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\rightarrow$} \pvar{B}}
+    } \pgmr{judgement} \\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{B} \pifmt{$\rightarrow$} \pvar{A}}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{iff-elim-1} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{B}}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\leftrightarrow$} \pvar{B}}
+    } \pgmr{judgement} \\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A}}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{iff-elim-2} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A}}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\leftrightarrow$} \pvar{B}}
+    } \pgmr{judgement} \\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pvar{B}}
+    } \pgmr{judgement} \\
+}
+
+\node{
+  \kRule \pstr{eqv-intro} \kInference
+}{
+  \kConclude & \bat{
+        \pvar{A} \pifmt{$\equiv$} \pvar{B}
+    } \pgmr{equivalence} \\\\
+
+  \kPremise & \bat{
+      \bas{\psfmt{$\epsilon$}}
+        \pifmt{$\vdash$}
+        \bat{\pvar{A} \pifmt{$\leftrightarrow$} \pvar{B}}
+    } \pgmr{judgement} \\
+}
+
+
+\node{
+  \kRule \pstr{valid-intro} \kInference
+}{
+  \kConclude & \bat{
+        \pvar{A} \pifmt{valid}
+    } \pgmr{valid} \\\\
+
+  \kPremise & \bat{
+      \bas{\psfmt{$\epsilon$}}
+        \pifmt{$\vdash$}
+        \pvar{A}
+    } \pgmr{judgement} \\
+}
+
+\subsection{Module \bat{\ppkgmod{example} \ppkgmod{propositional\_logic} \ppkgmod{law\_exclude\_middle}}}
+
+\node{
+    \kOpen \bat{\ppkgmod{example} \ppkgmod{propositional\_logic} \ppkgmod{rules}} \kShowByDefault
+} {
+    \kComment & \pcomment{No need to open grammars module again, this has been done recursively via rules module} \\
+    \kRecursive & \kTrue
+}
+
+\node {
+  \kTheorem \pstr{law\_of\_exclude\_middle}
+}{
+    \kProof \bat{
+        \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}} \pifmt{valid}
+    } \pgmr{valid} \\
+    \kUseRule \prule{valid-intro} \\
+    \ban{
+        \kProof \bat{
+            \bas{\psfmt{$\epsilon$}} \pifmt{$\vdash$}
+            \bat{
+                  \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+            }
+        } \pgmr{judgement} \\
+        \kUseRule \prule{double-negation} \\
+        \ban{
+            \kProof \bat{
+                \bas{\psfmt{$\epsilon$}} \pifmt{$\vdash$}
+                \bat{
+                      \pifmt{$\neg$} \bat{\pifmt{$\neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}}
+                }
+            } \pgmr{judgement} \\
+            \kUseRule \prule{neg-intro} \\
+            \ban{
+                \kProof \bat{
+                \bas{\bat{\pifmt{$\neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}}} \pifmt{$\vdash$}
+                    \bat{
+                          \pifmt{$\bot$}
+                    }
+                } \pgmr{judgement} \\
+                \kUseRule \prule{neg-elim} \\
+                \ban{
+                    \kProof \bat{
+                    \bas{\bat{\pifmt{$\neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}}} \pifmt{$\vdash$}
+                        \bat{
+                              \pvar{A}
+                        }
+                    } \pgmr{judgement} \\
+                    TODO: \\
+
+                    \kProof \bat{
+                    \bas{\bat{\pifmt{$\neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}}} \pifmt{$\vdash$}
+                        \bat{
+                              \bat{\pifmt{$\neg$} \pvar{A}}
+                        }
+                    } \pgmr{judgement} \\
+                    TODO: \\
+                }
+            }
+        }
+    }
+}
+%   \kProof
+%   \bat{
+%         \pifmt{$\vdash$}
+%         \bas{
+%           \bat{
+%               \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+%             }
+%         }
+%     } \pgmr{judgement} \\
+
+%     \kUseBuiltIn \prule{sequence\_idempotent} \\
+
+%     \ban{
+%         \kProof
+%         \bat{
+%             \pifmt{$\vdash$}
+%             \bas{
+%                 \bat{
+%                     \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+%                 }
+%                 \psfmt{,}
+%                 \bat{
+%                     \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+%                 }
+%             }
+%         } \pgmr{judgement} \\
+%         \kUseRule \prule{or\_right\_1} \\
+
+%         \ban{
+%             \kProof
+%             \bat{
+%                 \pifmt{$\vdash$}
+%                 \bas{
+%                     \pvar{A}
+%                     \psfmt{,}
+%                     \bat{
+%                         \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+%                     }
+%                 }
+%             } \pgmr{judgement} \\
+%             \kUseBuiltIn \prule{sequence\_commutative} \\
+
+%             \ban{
+%                 \kProof
+%                 \bat{
+%                     \pifmt{$\vdash$}
+%                     \bas{
+%                         \bat{
+%                             \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+%                         }
+%                         \psfmt{,}
+%                         \pvar{A}
+%                     }
+%                 } \pgmr{judgement} \\
+
+
+%                 \kUseRule \prule{or\_right\_1} \\
+
+%                 \ban{
+%                     \kProof
+%                     \bat{
+%                         \pifmt{$\vdash$}
+%                         \bas{
+%                             \bat{\pifmt{$\neg$} \pvar{A}}
+%                             \psfmt{,}
+%                             \pvar{A}
+%                         }
+%                     } \pgmr{judgement} \\
+%                     \kUseTheorem \pthm{helper\_of\_law\_of\_exclude\_middle}
+%                 }
+%             }
+%         }
+%     } \\
+
+% \section{First order logic}
+
+% \subsection{Module \bat{\ppkgmod{example} \ppkgmod{first\_order\_logic} \ppkgmod{grammars}}}
+% \nCommentNoHead{This module describes relevant grammars of First order logic.}
+
+% \node{
+%     \kGrammar \pstr{prop} \kInductive
+% } {
+%     \kComment & \pcomment{present arbitrary term of proposition} \\
+
+%     \kVarRegex & \pregex{[A-Z]([1-9][0-9]+|'+)?} \\
+
+%     \kChoice & \bat{\pifmt{$\top$}} \kRef \pstr{top} \\
+
+%     \kChoice & \bat{\pifmt{$\bot$}} \kRef \pstr{bottom}  \\
+
+%     \kChoice & \bat{\pgmr{atom}} \kRef \pstr{atom}  \\
+
+%     \kChoice & \bat{\pgmr{prop} \pifmt{$\wedge$} \pgmr{prop}} \kRef \pstr{and}\\
+
+%     \kChoice & \bat{\pgmr{prop} \pifmt{$\vee$} \pgmr{prop}} \kRef \pstr{or}\\
+
+%     \kChoice & \bat{\pifmt{$\neg$} \pgmr{prop}} \kRef \pstr{not}\\
+
+%     \kChoice & \bat{\pgmr{prop} \pifmt{$\rightarrow$} \pgmr{prop}} \kRef \pstr{imp}\\
+
+%     \kChoice & \bat{\pgmr{prop} \pifmt{$\leftrightarrow$} \pgmr{prop}} \kRef \pstr{iff}\\
+
+%     \kChoice & \bat{\pifmt{$\forall$} \pgmr{var} \pifmt{,} \pgmr{prop}} \kRef \pstr{forall}\\
+
+%     \kChoice & \bat{\pifmt{$\exists$} \pgmr{var} \pifmt{,} \pgmr{prop}} \kRef \pstr{exists}\\
+
+%     \kChoice & \bat{\pgmr{pred}} \kRef \pstr{pred}\\
+% }
+
+% \node{
+%     \kGrammar \pstr{atom} \kLiteral
+% } {
+%     \kComment & \pcomment{atomic proposition, can be either true or false.} \\
+
+%     \kRegex & \pregex{[a-e|p-s]([1-9][0-9]+|'+)?} \\
+% }
+
+% \node{
+%     \kGrammar \pstr{var} \kLiteral
+% } {
+%     \kComment & \pcomment{variable used to } \\
+
+%     \kRegex & \pregex{[v-z]([1-9][0-9]+|'+)?} \\
+% }
+
+% \node{
+%     \kGrammar \pstr{term} \kInductive
+% } {
+%     \kChoice & \bat{\pgmr{context} \pifmt{$\vdash$} \pgmr{context}} \pstr{make} \\
+% }
+
+% \node{
+%     \kGrammar \pstr{context} \kSequence
+% } {
+%     \kComment & \pcomment{list of proposition, will be used in judgement} \\
+
+%     \kVarRegex & \pregex{[$\Gamma\Delta\Sigma\Pi$]([1-9][0-9]+|'+)?} \\
+
+%     \kSubGrammar & \pgmr{prop} \\
+
+%     \kDelimiter & \pstr{,} \\
+
+%     \kWhenEmpty & \pstr{$\epsilon$} \\
+
+%     \kCommutative & \kTrue \\
+
+%     \kIdempotent & \kTrue \\
+% }
+
+% \node{
+%     \kGrammar \pstr{judgement} \kInductive
+% } {
+%     \kComment & \pcomment{By convention, we use word "make" for an inductive that have just one choice.} \\
+%     \kChoice & \bat{\pgmr{context} \pifmt{$\vdash$} \pgmr{context}} \pstr{make} \\
+% }
+
+% \newpage
+
+% \section{Sequent Calculus of Propositional Logic}
+
+% \subsection{Module \bat{\ppkgmod{example} \ppkgmod{prop\_logic} \ppkgmod{grammars}}}
+% \nCommentNoHead{ This module this to describe grammars of propositional logic under equential calculus }
+
+% \node{
+%     \kGrammar \pstr{prop} \kInductive
+% } {
+%     \kComment & \pcomment{present arbitrary term of proposition} \\
+
+%     \kVarRegex & \pregex{[A-Z]([1-9][0-9]+|'+)?} \\
+
+%     \kChoice & \bat{\pifmt{$\top$}} \kRef \pstr{top} \\
+
+%     \kChoice & \bat{\pifmt{$\bot$}} \kRef \pstr{bottom}  \\
+
+%     \kChoice & \bat{\pgmr{atom}} \kRef \pstr{atom}  \\
+
+%     \kChoice & \bat{\pgmr{prop} \pifmt{$\wedge$} \pgmr{prop}} \kRef \pstr{and}\\
+
+%     \kChoice & \bat{\pgmr{prop} \pifmt{$\vee$} \pgmr{prop}} \kRef \pstr{or}\\
+
+%     \kChoice & \bat{\pifmt{$\neg$} \pgmr{prop}} \kRef \pstr{not}\\
+
+%     \kChoice & \bat{\pgmr{prop} \pifmt{$\rightarrow$} \pgmr{prop}} \kRef \pstr{imp}\\
+
+%     \kChoice & \bat{\pgmr{prop} \pifmt{$\leftrightarrow$} \pgmr{prop}} \kRef \pstr{iff}\\
+% }
+
+% \node{
+%     \kGrammar \pstr{atom} \kLiteral
+% } {
+%     \kComment & \pcomment{atomic proposition, can be either true or false.} \\
+
+%     \kRegex & \pregex{[a-z]([1-9][0-9]+|'+)?} \\
+% }
+
+% \node{
+%     \kGrammar \pstr{context} \kSequence
+% } {
+%     \kComment & \pcomment{list of proposition, will be used in judgement} \\
+
+%     \kVarRegex & \pregex{[$\Gamma\Delta\Sigma\Pi$]([1-9][0-9]+|'+)?} \\
+
+%     \kSubGrammar & \pgmr{prop} \\
+
+%     \kDelimiter & \pstr{,} \\
+
+%     \kWhenEmpty & \pstr{$\epsilon$} \\
+
+%     \kCommutative & \kTrue \\
+
+%     \kIdempotent & \kTrue \\
+% }
+
+% \node{
+%     \kGrammar \pstr{judgement} \kInductive
+% } {
+%     \kComment & \pcomment{By convention, we use word "make" for an inductive that have just one choice.} \\
+%     \kChoice & \bat{\pgmr{context} \pifmt{$\vdash$} \pgmr{context}} \pstr{make} \\
+% }
+
+% \subsection{Module \bat{\ppkgmod{example} \ppkgmod{prop\_logic} \ppkgmod{eval}}}
+
+% \node{
+%     \kOpen \bat{\ppkgmod{example} \ppkgmod{prop\_logic} \ppkgmod{grammar}} \kHideByDefault
+% } {
+%     \kShow & \pid{prop} \\
+%     \kShow & \pid{atom} \\
+% }
+
+% \node{
+%     \kGrammar \pstr{truth\_value} \kInductive
+% }{
+%     \kComment & \pcomment{Result of propositional logic evaluation} \\
+%     \kVarRegex & \pregex{value-[A-Z]([1-9][0-9]+|'+)?} \\
+%     \kChoice & \bat{\pifmt{true}} \kRef \pstr{tt} \\
+%     \kChoice & \bat{\pifmt{false}} \kRef \pstr{ff} \\
+% }
+
+% \node{
+%     \kDefinition \pstr{eval\_prop}
+% }{
+%     \kSignature  \bat{\pdfmt{eval} \pgmr{prop}} \pgmr{truth-value} \\
+
+%     \kPattern  \bat{\pdfmt{eval} \bat{\pifmt{$\top$}}} \\
+%     \ban{
+%         \kReturn  \bat{\pifmt{true}}\\
+%     }
+
+%     \kPattern  \bat{\pdfmt{eval} \bat{\pifmt{$\bot$}}} \\
+%     \ban{
+%         \kReturn  \bat{\pifmt{false}}\\
+%     }
+
+%     \kPattern  \bat{\pdfmt{eval} \bat{\pvar{P} \pifmt{$\wedge$} \pvar{Q}}} \\
+%     \ban{
+%         % \kLet \pvar{value-P} \kBe \bat{\pdfmt{eval} \pvar{P}} \\
+%         % \kLet \pvar{value-Q} \kBe \bat{\pdfmt{eval} \pvar{Q}} \\
+%         \kMatch \bat{\pdfmt{eval} \bat{\pvar{P}}} \kWith \\
+%         \ban {
+%             \kPattern \bat{\pifmt{true}} \\
+%             \ban{
+%                 \kReturn  \bat{\pdfmt{eval} \bat{\pvar{Q}}} \\
+%             }
+%             \kPattern \bat{\pifmt{false}} \\
+%             \ban{
+%                 \kReturn  \bat{\pifmt{false}} \\
+%             }
+%         }
+%     }
+%     and so on \dotfill
+% }
+
+%     TODO: implement sub\_sequence by structure, this can be done on input method section
+
+%     TODO: mension about spacial rule for
+%     1. definition evaluation (both of top-up and bottom down, one step and until get normal form)
+%     2. sequent commutative and idempotent
+
+% %     TODO(done): change term term structure form boxes to be underline
+% %     e.g. +------------------------+ become
+% %          |        xxxxxxxxxxxxxxx |   +-------------+
+% %          | +---+  x ooooo +---+ x |   |             |
+% %          | | A |  x o P o | Q | x |   |  A   P   Q  |
+% %          | +---+  x ooooo +---+ x |   | --- ooo --- |
+% %          |        xxxxxxxxxxxxxxx |   |     xxxxxxx |
+% %          +------------------------+   +-------------+
+
+% %     TODO(done): use visual indentation instead of subboxes
+% %     e.g.                        become
+% %         +--------------------+  +-----------------
+% %         | theorem foo           | theorem foo
+% %         +---------------------  +-----------------
+% %         | termA gmr             | termA gmr
+% %         | by\_rule r1           | by\_rule r1
+% %         | --------------------  |
+% %         | termB gmr             | termB gmr
+% %         | by\_rule r2           | by\_rule r2
+% %         | +----------------     |
+% %         | | termC gmr           | x termC gmr
+% %         | | by\_rule0           | x by\_rule0
+% %         | +----------------     |
+% %         | | termD gmr           | o termD gmr
+% %         | | by\_rule0           | o by\_rule0
+% %         | +----------------     +-----------------
+% %         +----------------
+
+% %     TODO(deprecate): allow, \kAlias, \kDefinition, to be subnode of \kTheorem. This allow us to state local definition in a theorem which will be become handy later. Alternatively, use namespace (like in lean) to handle local definition
+
+% %     TODO(done): allow sequence of premises. E.g. some rule, the number of premise might depend on the length of some sequence grammar. E.g. \prule{conj-intro} we need a premise that every element in \pvar{conj} is hold under judgements, so number of premise depend on length of \pvar{conj}. One way to solve this is to introduce a sub-block which has a variable iterate over a sequence (this sequence, of course can be modified by definitions, this is similar to list comprehension in haskell) then write a premise inside the block which use this variable. When we use this rule in theorem, once we specify to use that particular rule, phometa will evaluate the iterated sequence and generate premise depend on each element inside that sequence.
+
+% \subsection{Module \bat{\ppkgmod{example} \ppkgmod{prop\_logic} \ppkgmod{rules}}}
+
+% \node{
+%     \kOpen \bat{\ppkgmod{example} \ppkgmod{prop\_logic} \ppkgmod{grammar}} \kShowByDefault
+% } {
+%     \kComment & \pcomment{Import everything from prop logic grammar} \\
+%     \kRecursive & \kTrue
+% }
+
+% \node{
+%   \kRule \pstr{I} \kInference
+% }{
+%   \kConclude & \bat{\pvar{A} \pifmt{$\vdash$} \pvar{A}} \pgmr{judgement}
+% }
+
+
+% \node{
+%   \kRule \pstr{Cut} \kInference
+% }{
+%   \kConclude & \bat{
+%       \bas{\bass{\pvar{$\Gamma$}} \psfmt{,} \bass{\pvar{$\Sigma$}}}
+%         \pifmt{$\vdash$}
+%         \bas{\bass{\pvar{$\Delta$}} \psfmt{,} \bass{\pvar{$\Pi$}}}
+%     } \pgmr{judgement} \\
+
+%   \kPremise & \bat{
+%       \pvar{$\Gamma$} \pifmt{$\vdash$} \bas{\bass{\pvar{$\Delta$}} \psfmt{,} \pvar{A}}
+%     } \pgmr{judgement} \\
+%     \kPremise & \bat{
+%       \bas{\pvar{A} \psfmt{,} \bass{\pvar{$\Sigma$}}} \pifmt{$\vdash$} \pvar{$\Pi$}
+%     } \pgmr{judgement} \\
+% }
+
+% TODO: write all rules for sequent calculus
+
+% \node {
+%   \kTheorem \pstr{helper\_of\_law\_of\_exclude\_middle}
+% }{
+%   \kProof
+%     \bat{
+%         \pifmt{$\vdash$}
+%         \bas{
+%             \bat{\pifmt{$\neg$} \pvar{A}}
+%             \psfmt{,}
+%             \pvar{A}
+%         }
+%     } \pgmr{judgement} \\
+%     \kUseRule \prule{not\_right} \\
+
+%     \ban{
+%         \kProof
+%         \bat{
+%             \bas{
+%                 \pvar{A}
+%             }
+%             \pifmt{$\vdash$}
+%             \bas{
+%                 \pvar{A}
+%             }
+%         } \pgmr{judgement} \\
+%         \kUseRule \prule{I}
+%     }
+% }
+
+% \node {
+%   \kTheorem \pstr{law\_of\_exclude\_middle}
+% }{
+%   \kProof
+%   \bat{
+%         \pifmt{$\vdash$}
+%         \bas{
+%           \bat{
+%               \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+%             }
+%         }
+%     } \pgmr{judgement} \\
+
+%     \kUseBuiltIn \prule{sequence\_idempotent} \\
+
+%     \ban{
+%         \kProof
+%         \bat{
+%             \pifmt{$\vdash$}
+%             \bas{
+%                 \bat{
+%                     \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+%                 }
+%                 \psfmt{,}
+%                 \bat{
+%                     \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+%                 }
+%             }
+%         } \pgmr{judgement} \\
+%         \kUseRule \prule{or\_right\_1} \\
+
+%         \ban{
+%             \kProof
+%             \bat{
+%                 \pifmt{$\vdash$}
+%                 \bas{
+%                     \pvar{A}
+%                     \psfmt{,}
+%                     \bat{
+%                         \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+%                     }
+%                 }
+%             } \pgmr{judgement} \\
+%             \kUseBuiltIn \prule{sequence\_commutative} \\
+
+%             \ban{
+%                 \kProof
+%                 \bat{
+%                     \pifmt{$\vdash$}
+%                     \bas{
+%                         \bat{
+%                             \pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}
+%                         }
+%                         \psfmt{,}
+%                         \pvar{A}
+%                     }
+%                 } \pgmr{judgement} \\
+
+
+%                 \kUseRule \prule{or\_right\_1} \\
+
+%                 \ban{
+%                     \kProof
+%                     \bat{
+%                         \pifmt{$\vdash$}
+%                         \bas{
+%                             \bat{\pifmt{$\neg$} \pvar{A}}
+%                             \psfmt{,}
+%                             \pvar{A}
+%                         }
+%                     } \pgmr{judgement} \\
+%                     \kUseTheorem \pthm{helper\_of\_law\_of\_exclude\_middle}
+%                 }
+%             }
+%         }
+%     } \\
+
+
+% }
+
+% \section{Logic with conjunction and disjunction as sequence}
+
+% \subsection{Module \bat{\ppkgmod{example} \ppkgmod{sequence\_conj\_disj} \ppkgmod{grammars}}}
+% \nCommentNoHead{ This module provide alternative for conjunction and disjunction }
+
+% \node{
+%     \kGrammar \pstr{prop} \kInductive
+% } {
+%     \kComment & \pcomment{present arbitrary term of proposition} \\
+
+%     \kVarRegex & \pregex{[A-Z]([1-9][0-9]+|'+)?} \\
+
+%     \kChoice & \bat{\pgmr{atom}} \kRef \pstr{atom}  \\
+
+%     \kChoice & \bat{\pgmr{conj}} \kRef \pstr{conj}\\
+
+%     \kChoice & \bat{\pgmr{disj}} \kRef \pstr{disj}\\
+
+%     \kChoice & \bat{\pifmt{$\neg$} \pgmr{prop}} \kRef \pstr{not}\\
+
+%     \kChoice & \bat{\pgmr{prop} \pifmt{$\rightarrow$} \pgmr{prop}} \kRef \pstr{imp}\\
+
+%     \kChoice & \bat{\pgmr{prop} \pifmt{$\leftrightarrow$} \pgmr{prop}} \kRef \pstr{iff}\\
+% }
+
+% \node{
+%     \kGrammar \pstr{conj} \kSequence
+% } {
+%     \kComment & \pcomment{conjunction of proposition} \\
+
+%     \kVarRegex & \pregex{conj([1-9][0-9]+|'+)?} \\
+
+%     \kSubGrammar & \pgmr{prop} \\
+
+%     \kDelimiter & \pstr{$\wedge$} \\
+
+%     \kWhenEmpty & \pstr{$\top$} \\
+
+%     \kCommutative & \kTrue \\
+
+%     \kIdempotent & \kTrue \\
+% }
+
+% \node{
+%     \kGrammar \pstr{disj} \kSequence
+% } {
+%     \kComment & \pcomment{disjunction of proposition} \\
+
+%     \kVarRegex & \pregex{disj([1-9][0-9]+|'+)?} \\
+
+%     \kSubGrammar & \pgmr{prop} \\
+
+%     \kDelimiter & \pstr{$\vee$} \\
+
+%     \kWhenEmpty & \pstr{$\bot$} \\
+
+%     \kCommutative & \kTrue \\
+
+%     \kIdempotent & \kTrue \\
+% }
+
+% \node{
+%      \kGrammar \pstr{atom} \kLiteral
+% } {
+%     the same as in \bat{\ppkgmod{example} \ppkgmod{nature\_deduction} \ppkgmod{grammars}}
+% }
+
+% \node{
+%      \kGrammar \pstr{context} \kSequence
+% } {
+%     the same as in \bat{\ppkgmod{example} \ppkgmod{nature\_deduction} \ppkgmod{grammars}}
+% }
+
+% \node{
+%     \kGrammar \pstr{judgement} \kInductive
+% } {
+%     the same as in \bat{\ppkgmod{example} \ppkgmod{nature\_deduction} \ppkgmod{grammars}}
+% }
+
+% \node{
+%     \kRule \pstr{conj-intro} \kInference
+% }{
+%     \kConclude \bat{
+%         \pvar{$\Gamma$}
+%         \pifmt{$\vdash$}
+%         \pvar{conj}
+%     } \pgmr{judgement} \\
+%     \kForall \pvar{P} \kIn \pvar{conj} \\
+%     \ban{
+%         \kPremise \bat{
+%             \pvar{$\Gamma$}
+%             \pifmt{$\vdash$}
+%             \pvar{P}
+%         } \pgmr{judgement}
+%     }
+% }
+
+% \node{
+%     \kRule \pstr{disj-intro} \kInference
+% }{
+%     \kConclude \bat{
+%         \pvar{$\Gamma$}
+%         \pifmt{$\vdash$}
+%         \pvar{disj}
+%     } \pgmr{judgement} \\
+%     \kExists \pvar{P} \kIn \pvar{disj} \\
+%     \ban{
+%         \kPremise \bat{
+%             \pvar{$\Gamma$}
+%             \pifmt{$\vdash$}
+%             \pvar{P}
+%         } \pgmr{judgement}
+%     }
+% }
+
+% \node{
+%     \kRule \pstr{conj-disj-intro} \kCompound
+% }{
+%   \kConclusionGrammar \pgmr{judgement} \\
+%     \kSubRule \prule{conj-intro} \\
+%     \kSubRule \prule{disj-intro} \\
+% }
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "master"
+%%% End:

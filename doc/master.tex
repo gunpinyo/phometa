@@ -1,0 +1,61 @@
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+
+\documentclass[11pt, a4paper]{report}
+\usepackage[lmargin=1.5cm,rmargin=1.5cm,a4paper]{geometry}
+% \usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{parskip}
+% \setlength{\parskip}{0.8pt}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{xcolor}
+
+% \usepackage{fontspec}
+% \setmainfont{Arial}
+
+\usepackage{tikz}
+\usepackage[framemethod=tikz]{mdframed}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+\usepackage{stackengine}
+
+\input{config.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{
+    Interim Report - Phometa \\
+    a proof assistant that can build a formal system based on visualisation
+}
+\author{
+    Gun Pinyo \\
+    (Under supervision of Dr. Krysia Broda) \\
+    Department of Computing \\
+    Imperial College London
+}
+\date{\today}
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+TODO: write abstract
+\end{abstract}
+
+\tableofcontents
+
+\input{introduction.tex}
+\input{examples.tex}
+\input{specification.tex}
+\input{features_to_implement.tex}
+\input{common_tricks.tex}
+
+\end{document}

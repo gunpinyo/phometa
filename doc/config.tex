@@ -1,0 +1,275 @@
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "master"
+%%% End:
+
+\definecolor{defaultColor}{HTML}{eeeeee}
+
+% string
+\definecolor{pstrColor}{HTML}{330055}
+\newcommand{\pstr}[1]{
+    \tcbox[on line, frame empty, colback = pstrColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{pstrColor}{#1}}}
+    }
+}
+
+% keyword
+\definecolor{pkwColor}{HTML}{8B4513}
+\newcommand{\pkw}[1]{
+    \texttt{\textbf{\color{pkwColor}{#1}}}
+}
+
+% comment
+\definecolor{pcommentColor}{HTML}{000000}
+\newcommand{\pcomment}[1]{
+    \tcbox[on line, frame empty, colback = pcommentColor!30!defaultColor, size = small] {
+        \textcolor{pcommentColor}{#1}
+    }
+}
+
+% identifier
+\definecolor{pidColor}{HTML}{777700}
+\newcommand{\pid}[1]{
+    \tcbox[on line, frame empty, colback = pidColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{pidColor}{#1}}}
+    }
+}
+
+% grammar
+\definecolor{pgmrColor}{HTML}{004400}
+\newcommand{\pgmr}[1]{
+    \tcbox[on line, frame empty, colback = pgmrColor!30!defaultColor, size = small, grow to left by=0cm, grow to right by=0cm]{
+        \texttt{\textbf{\textcolor{pgmrColor}{#1}}}
+    }
+}
+
+% regex
+\definecolor{pregexColor}{HTML}{ee0000}
+\newcommand{\pregex}[1]{
+    \tcbox[on line, frame empty, colback = pregexColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{pregexColor}{/#1/}}}
+    }
+}
+
+% variable
+\definecolor{pvarColor}{HTML}{0000ee}
+\newcommand{\pvar}[1]{
+%     \tcbox[on line, frame empty, colback = pvarColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{pvarColor}{#1}}}
+%     }
+}
+
+% literal
+\definecolor{plitColor}{HTML}{ee0000}
+\newcommand{\plit}[1]{
+%     \tcbox[on line, frame empty, colback = plitColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{plitColor}{#1}}}
+%     }
+}
+
+% inductive formatter
+\definecolor{pifmtColor}{HTML}{ee0088}
+\newcommand{\pifmt}[1]{
+%     \tcbox[on line, frame empty, colback = pifmtColor!30!defaultColor, size = small]{
+        \boldmath\texttt{\textbf{\textcolor{pifmtColor}{#1}}}
+%     }
+}
+
+% sequence formatter
+\definecolor{psfmtColor}{HTML}{aa0088}
+\newcommand{\psfmt}[1]{
+%     \tcbox[on line, frame empty, colback = psfmtColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{psfmtColor}{#1}}}
+%     }
+}
+
+% definition formatter
+\definecolor{pdfmtColor}{HTML}{888800}
+\newcommand{\pdfmt}[1]{
+%     \tcbox[on line, frame empty, colback = pdfmtColor!30!defaultColor, size = small]{
+        \texttt{\textbf{\textcolor{pdfmtColor}{#1}}}
+%     }
+}
+
+% definition
+\definecolor{pdefColor}{HTML}{552288}
+\newcommand{\pdef}[1]{
+    \tcbox[on line, frame empty, colback = pdefColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{pdefColor}{#1}}}
+    }
+}
+
+% alias
+\definecolor{paliasColor}{HTML}{aa2277}
+\newcommand{\palias}[1]{
+    \tcbox[on line, frame empty, colback = pdefColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{paliasColor}{#1}}}
+    }
+}
+
+% rule
+\definecolor{pruleColor}{HTML}{118833}
+\newcommand{\prule}[1]{
+    \tcbox[on line, frame empty, colback = pruleColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{pruleColor}{#1}}}
+    }
+}
+
+% theorem
+\definecolor{pthmColor}{HTML}{667722}
+\newcommand{\pthm}[1]{
+    \tcbox[on line, frame empty, colback = pthmColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{pthmColor}{#1}}}
+    }
+}
+
+% package and module
+\definecolor{ppkgmodColor}{HTML}{dd5555}
+\newcommand{\ppkgmod}[1]{
+    \tcbox[on line, frame empty, colback = ppkgmodColor!30!defaultColor, size = small] {
+        \texttt{\textbf{\textcolor{ppkgmodColor}{#1}}}
+    }
+}
+
+\newlength\lunderset
+\newlength\rulethick
+\lunderset=1.8pt\relax
+\rulethick=1.5pt\relax
+\def\stackalignment{l}
+\newcommand\nunderline[3][1]{\setbox0=\hbox{#2}%
+  \stackunder[#1\lunderset-\rulethick]{\strut#2}{\color{#3}\rule{\wd0}{\rulethick}}}
+
+% block as term
+\definecolor{batColor}{HTML}{888888}
+\newcommand{\bat}[1]{
+    \nunderline{#1}{batColor}
+}
+
+% block as subsequence - works only inside sequence, identify that this is a subsequence not just element
+\newcommand{\bass}[1]{
+    \nunderline{#1}{psfmtColor}
+}
+
+
+\def\arraystretch{1.5}%  1 is the default, change whatever you need
+
+\definecolor{blockBackColor}{HTML}{eeeeee}
+\definecolor{termBackColor}{HTML}{dddddd}
+\definecolor{defaultFrameColor}{HTML}{888888}
+\definecolor{titleBackColor}{HTML}{cccccc}
+
+\newmdenv[
+    style=defaultoptions,
+    backgroundcolor = blockBackColor, % metablockColor,
+    topline = false, rightline = false, leftline = false, bottomline = false,
+    innerleftmargin = 5pt, innerrightmargin = 5pt,
+    innertopmargin = 2pt, innerbottommargin = 2pt,
+    frametitleaboveskip = 3pt, frametitlebelowskip = 3pt,
+    roundcorner = 7pt,
+    frametitlebackgroundcolor=titleBackColor, % metablockTitleColor
+    nobreak=true
+]{metablock}
+
+\newcommand{\node}[2]{
+    \vspace{0.2cm}
+    \begin{metablock}[frametitle={#1}]
+        \begin{tabular}{l l}
+            #2
+        \end{tabular}
+    \end{metablock}
+    \vspace{0.3cm}
+}
+
+% block as node
+\newcommand{\ban}[1]{
+    \multicolumn{1}{l}{
+        \begin{tcolorbox} [
+             skin=enhancedmiddle jigsaw,
+             colback = blockBackColor,
+             colframe = defaultFrameColor,
+             left=0mm,
+             top=0mm,
+             bottom=0mm,
+             boxrule=0mm,
+             leftrule=1mm,
+             rightrule=-1mm
+        ]
+        \begin{tabular}{l}
+            #1
+        \end{tabular}
+        \end{tcolorbox}
+    } \\
+}
+
+% block as sequence - identify the term to be a sequence
+\newcommand{\bas}[1]{
+    \nunderline{#1}{defaultFrameColor}
+}
+
+\newcommand{\nCommentNoHead}[1]{
+    \node{\kComment}{#1 & \\}
+}
+
+\newcommand{\kOpen}{\pkw{open}}
+\newcommand{\kShowByDefault}{\pkw{show\_by\_default}}
+\newcommand{\kHideByDefault}{\pkw{hide\_by\_default}}
+\newcommand{\kComment}{\pkw{comment}}
+\newcommand{\kGrammar}{\pkw{grammar}}
+\newcommand{\kInductive}{\pkw{inductive}}
+\newcommand{\kLiteral}{\pkw{literal}}
+\newcommand{\kSequence}{\pkw{sequence}}
+\newcommand{\kDictionary}{\pkw{dictionary}}
+\newcommand{\kDefinition}{\pkw{definition}}
+\newcommand{\kAlias}{\pkw{alias}}
+\newcommand{\kRule}{\pkw{rule}}
+\newcommand{\kInference}{\pkw{inference}}
+\newcommand{\kCompound}{\pkw{compound}}
+\newcommand{\kTheorem}{\pkw{theorem}}
+
+\newcommand{\kTrue}{\pkw{true}}
+\newcommand{\kFalse}{\pkw{false}}
+
+\newcommand{\kRecursive}{\pkw{recursive}}
+\newcommand{\kRename}{\pkw{rename}}
+\newcommand{\kTo}{\pkw{to}}
+\newcommand{\kInject}{\pkw{inject}}
+\newcommand{\kInjectable}{\pkw{injectable}}
+\newcommand{\kHide}{\pkw{hide}}
+\newcommand{\kShow}{\pkw{show}}
+
+\newcommand{\kVarRegex}{\pkw{var\_regex}}
+\newcommand{\kExtend}{\pkw{extend}}
+\newcommand{\kChoice}{\pkw{choice}}
+\newcommand{\kRef}{\pkw{ref}}
+\newcommand{\kRegex}{\pkw{regex}}
+\newcommand{\kSubGrammar}{\pkw{sub\_grammar}}
+\newcommand{\kKeyGrammar}{\pkw{key\_grammar}}
+\newcommand{\kValueGrammar}{\pkw{value\_grammar}}
+\newcommand{\kSeparator}{\pkw{separator}}
+\newcommand{\kDelimiter}{\pkw{delimiter}}
+\newcommand{\kWhenEmpty}{\pkw{when\_empty}}
+\newcommand{\kCommutative}{\pkw{commutative}}
+\newcommand{\kIdempotent}{\pkw{idempotent}}
+
+\newcommand{\kSignature}{\pkw{signature}}
+\newcommand{\kPattern}{\pkw{pattern}}
+\newcommand{\kReturn}{\pkw{return}}
+\newcommand{\kLet}{\pkw{let}}
+\newcommand{\kBe}{\pkw{be}}
+\newcommand{\kMatch}{\pkw{match}}
+\newcommand{\kWith}{\pkw{with}}
+
+\newcommand{\kPremise}{\pkw{premise}}
+\newcommand{\kConclude}{\pkw{conclude}}
+\newcommand{\kForall}{\pkw{forall}}
+\newcommand{\kExists}{\pkw{exists}}
+\newcommand{\kIn}{\pkw{in}}
+\newcommand{\kConclusionGrammar}{\pkw{conclusion\_grammar}}
+\newcommand{\kSubRule}{\pkw{sub\_rule}}
+
+\newcommand{\kProof}{\pkw{proof}}
+% \newcommand{\kLemma}{\pkw{lemma}} % may not include this
+\newcommand{\kUseRule}{\pkw{use\_rule}}
+\newcommand{\kUseTheorem}{\pkw{use\_theorem}}
+\newcommand{\kUseBuiltIn}{\pkw{use\_built\_in}}

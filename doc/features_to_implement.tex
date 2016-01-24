@@ -1,0 +1,27 @@
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "master"
+%%% End:
+
+\chapter{Features to implement}
+
+\section{foldable node and subnode (extension, do it later)}
+
+We should allow user to fold/unfold any node which will hide/show all of content except header of the node. This also apply to subnodes (things that has thick vertical bar as indentation) by click on the vertical bar, everything that is indented will be hide and leave a button in front of subnode header for unfold later.
+
+\section{hide/show root grmmar by default, popup subterm grammar when  grammar when hover underline container}
+
+When we create a (root) term, usually we ask user to specify its grammar, and it will show there on the the same line with root term. This might look complicate and unreadable when dealing with complex term. So, user can set in "preference page" to hide grammar of root term by default (but it will ask grammar when root term created anyway). This might not confuse user since they always be able to hover the root term (specifically on the main underline) to see grammar of that root term. Moreover, this technique also apply to sub  apply to subterm, so whenever they hover the underline of subterm, the corresponding grammar will be shown.
+
+\section{manage nodes inside project explorer}
+
+We will list all nodes for each module on project explorer. So we can create/delete/reorder nodes inside project explorer directly. Moreover, if we click on a node, it will show just that node on main panel, this allow us to focus on complex node (of course, we can click on a module to show all nodes inside it on main panel, however, this doesn't work for packages).
+
+\section{variable resolution inside theorem}
+
+For example, in type system, sometime we construct a derivation tree in order to get type of particular term. This can be done inside phometa as well, by construct a normal judgement and leave the type as variable e.g. \bat{\pvar{$\Gamma$} \pifmt{$\vdash$} \pvar{$\phi$} \pifmt{:} \pvar{A}} you can see that we leave type as \pvar{A}. Then build its derivation tree by \kTheorem, at some point it will hit a rule involve inference on \pvar{A} (term deconstruction). let say \pvar{A} get deconstruct into \bat{\pvar{B} \pifmt{$\rightarrow$} \pvar{C}} (of course, user need to write "B" and "C" to get \pvar{B} and \pvar{C} during using particular rule) then every \pvar{A} appear inside that theorem will be replace by \bat{\pvar{B} \pifmt{$\rightarrow$} \pvar{C}} as we desire. Eventually, the type of main is in final form. Please note that this works in general not just type theory case.
+
+\section{construct a new (sub)term by copying an existing (sub)term (extension, do it later)}
+
+On the actual proof, there will a complex term that needed to be modified on the small portion and left the rest untouch. Constructing this modified term from the scratch would be tedious. So we can just copy the old term then modify it. Recall that we need to press "c" for inductive/literal/sequence/dictionary construction, "v" for variable, "d" for definition, "a" for alias. Here inside term hole, we just type "m" then we just click the underline of that term, then it will check grammar of both term which needed to be matched then we get that term. Then for the part that we want to modify we just click "h" on underline of target subterm, this would replace hold to it then you can construct that subterm. Once you finish it just press "q", so phometa we check this new term against rule if it is in theorem or something else depent on the place of that term.
