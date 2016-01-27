@@ -6,7 +6,51 @@
 
 \chapter{Introduction}
 
+\section{What is ``phometa'' ?}
+
+Phometa is a proof assistant that can build a formal system based on visualisation. It runs via web browser. This has advantage over traditional text-based proof assistant like Coq or Agda, such as
+
+
+\section{Motivation}
+Many of formal systems such as first-order logic\footnote{First-order logic is a logical system, but we can see it as formal system by exclude semantics part.} and lambda calculus are considered to be the most fundamental components Mathematics and Computer Science. Each of them has been designed and implemented separately, however, these formal systems have something in common, for examples,
+
+\begin{itemize}
+  \item first-order logic consists of
+  \begin{itemize}%[label={}]
+      \item \textbf{Syntax} Grammars of propositions, atoms, terms, variables, etc.
+      \item \textbf{Reductions} How to reduce complex proposition into simpler one, how to define substitution, etc.
+      \item \textbf{Proof Rules} $\wedge$-intro, $\wedge$-elim, $\rightarrow-intro$, $\rightarrow$-elim, etc.
+      \item \textbf{Theorems} T
+  \end{itemize}
+  \item lambda calculus consists of
+  \begin{itemize}%[label={}]
+      \item \textbf{Syntax} Grammars of propositions, atoms, terms, variables, etc.
+      \item \textbf{Reduction} How to reduce complex proposition into simpler one, how to define substitution, etc.
+      \item \textbf{Proof Rules} $\wedge$-intro, $\wedge$-elim, $\rightarrow-intro$, $\rightarrow$-elim, etc.
+  \end{itemize}
+\end{itemize}
+
+Since
+
+\section{Objectives}
+\begin{itemize}
+  \item To show that most of formal systems have a similar meta-structure which can be implemented using common framework.
+  \item To make a construction of derivation-tree become more systematic. Hence, user become more productive and has less chance to introduce an error.
+  \item To encourage users (especially students and newcomers) to create their own formal systems and reason about it.
+  \item To show advantages of visualised proof assistant over traditional one.
+\end{itemize}
+
+\section{Adventages of visualisation}
+
+This project aims to design and implement ``phometa''. \ which is web application that allow user design arbitrary formal system (e.g. \ first order logic, lambda calculus, while language, etc.) and proof its property using derivation tree.
+
+\section{Motivation}
+
+In computer science, there lots of
+
 In logic, there are lots of formal systems, each of them has pros and cons. However, most of them has some pattern in common. This project intends to show that these formal systems can be materialised using a common application which is called ``phometa''.
+
+\section{What is ``phometa'' ?}
 
 Phometa is a proof assistant that can build a formal system based on visualisation. It runs via web browser. This has advantage over traditional text-based proof assistant like Coq or Agda, such as
 
@@ -23,3 +67,7 @@ Phometa pronounces as ``po-met-ta'', which come from,
     \item \textbf{pho}, it is the Thai name of a tree specie which has heart-shape. This reminded me about $\lambda$ shape.
     \item \textbf{meta}, because we want to build a system that describe other systems, word ``meta'' is suitable since it is related to meta-theory.
 \end{itemize}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "master"
+%%% End:
