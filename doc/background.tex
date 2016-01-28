@@ -10,15 +10,46 @@
 \subsection{model checking vs theorem proving}
 
 \section{Formal System}
-There are
+Since phometa aims to be a tool and can create arbitrary formal system. So syntax and derivation rule part are vital as well. We try In fact, most of preliminary
+Although proof assistant related mainly on proving mechanism but we
+If we keep thinking
+
+
+ Formally proving a line of proposition might need a page of derivation tree. This is worse than its sound since the width of a tree grows exponentially to its height.
+
+
+Many of formal systems such as first-order logic\footnote{First-order logic is a logical system, but we can see it as formal system by exclude semantics part.} and lambda calculus are considered to be the most fundamental components Mathematics and Computer Science. Each of them has been designed and implemented separately, however, these formal systems have something in common, for examples,
+
+\begin{itemize}
+  \item first-order logic consists of
+  \begin{itemize}%[label={}]
+      \item \textbf{Syntax} Grammars of propositions, atoms, terms, variables, etc.
+      \item \textbf{Reductions} How to reduce complex proposition into simpler one, how to define substitution, etc.
+      \item \textbf{Proof Rules} $\wedge$-intro, $\wedge$-elim, $\rightarrow-intro$, $\rightarrow$-elim, etc.
+      \item \textbf{Theorems} T
+  \end{itemize}
+  \item lambda calculus consists of
+  \begin{itemize}%[label={}]
+      \item \textbf{Syntax} Grammars of propositions, atoms, terms, variables, etc.
+      \item \textbf{Reduction} How to reduce complex proposition into simpler one, how to define substitution, etc.
+      \item \textbf{Proof Rules} $\wedge$-intro, $\wedge$-elim, $\rightarrow-intro$, $\rightarrow$-elim, etc.
+  \end{itemize}
+\end{itemize}
+
+Since
+
 
 \section{Natrual Deduction}
 
-\section{Related Proof Assistant}
+\section{Related Traditional Proof Assistant}
 \subsection{Coq}
 \subsection{Agda}
 \subsection{Lean}
+
+\section{Related Visualised Proof Assistant}
+\subsection{Pandora}
 \subsection{http://logitext.mit.edu/tutorial}
+\subsection{Why3}
 
 \section{Phometa with Carry-Howard isomorphism}
 phometa \kRule corresponded to a function declaration TODO

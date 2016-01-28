@@ -8,6 +8,7 @@
 \usepackage[a4paper]{geometry}
 % \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
+\usepackage{hyperref}
 
 \usepackage{parskip}
 % \setlength{\parskip}{0.8pt}
@@ -26,6 +27,13 @@
 \tcbuselibrary{skins}
 
 \usepackage{stackengine}
+
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{ {images/} }
+
+\usepackage{biblatex}
+\addbibresource{bibliography.bib}
 
 \input{config.tex}
 
@@ -58,7 +66,10 @@ TODO: write abstract
 \input{background.tex}
 \input{examples.tex}
 \input{specification.tex}
-\input{project_plan.tex}
 \input{common_tricks.tex}
+\input{project_plan.tex}
+\input{evaluation_plan.tex}
+
+\printbibliography
 
 \end{document}

@@ -1,4 +1,3 @@
-
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "master"
@@ -8,9 +7,32 @@
 
 \section{Preliminary}
 
-The work that has been done so far is the specification of phometa and examples to show that this specification is good enough. In fact, some implementation has been start as well but since there is a major change on specification I need to redo it anyway.
+The work that has been done so far is the specification (see \autoref{chap:specification}) of phometa and examples (see \autoref{chap:examples}) to show that this specification is good enough.
 
-TODO: add sceenshot of phometa root directory and phometa main elm-html page.
+I have started some part of implementation, however there is a major change on specification during Autumn term and it is quite hard to update it. So I decide to redo most of work anyway. \autoref{fig:preliminary-dir} \autoref{fig:preliminary-code} \autoref{fig:preliminary-screen} show an implementation that has been done so far.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{preliminary-dir1}
+    \hspace{1cm}
+    \includegraphics[width=0.3\textwidth]{preliminary-dir2}
+    \caption{Directory of preliminary work.}
+\label{fig:preliminary-dir}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{preliminary-code}
+    \caption{Code of some part of preliminary work.}
+\label{fig:preliminary-code}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{preliminary-screen}
+    \caption{Screen shot of preliminary work.}
+\label{fig:preliminary-screen}
+\end{figure}
 
 \section{Risk management}
 Once I decide to do this project, I was aware that it could be risky. So I started to do background research since $3^{rd}$ year industial placement. This gave me an opportunity to work on this project without pressure which result in better specification and guarantee this would not be a bad project.
@@ -38,11 +60,11 @@ This was a lot harder than I expect, and I needed to change the specification se
 
 Also the ``Model'' part of Model-Controller-View (MCV) should be almost complete.
 
-\paragraph{Spring term, week 6} Implement module system and project explorer. \kOpen and \kComment node should work as well.
+\paragraph{Spring term, week 6} Implement module system and project explorer. \kOpen\ and \kComment\ node should work as well.
 
-\paragraph{Spring term, week 7} Implement \kInductive \kGrammar node and ``term'' input method.
+\paragraph{Spring term, week 7} Implement \kInductive\ \kGrammar\ node and ``term'' input method.
 
-\paragraph{Spring term, week 8 --- 9} Implement \kInference \kRule node, \kTheorem (excluding buildin rules) node and its input method. By this time, minimum working version of phometa is done.
+\paragraph{Spring term, week 8 --- 9} Implement \kInference\ \kRule\ node, \kTheorem\ (excluding buildin rules) node and its input method. By this time, minimum working version of phometa is done.
 
 \paragraph{Spring term, week 10 --- 11} Spend all time with revision and final exam.
 
@@ -50,21 +72,21 @@ Also the ``Model'' part of Model-Controller-View (MCV) should be almost complete
 
 \paragraph{1 --- 8 April} Easter holiday.
 
-\paragraph{9 --- 12 April} Implement \kDefinition and its detail including \kMatch, \kLet \kBe.
+\paragraph{9 --- 12 April} Implement \kDefinition\ and its detail including \kMatch, \kLet\ \kBe.
 
-\paragraph{12 --- 17 April} Implement \kSequence and \kLiteral \kGrammar. And its input method.
+\paragraph{12 --- 17 April} Implement \kSequence\ and \kLiteral\ \kGrammar. And its input method.
 
 \paragraph{17 --- 22 April} Implement all builtin rules.
 
-\paragraph{Summer term, early week 1} Implement \kCompound \kRule and \kAlias
+\paragraph{Summer term, early week 1} Implement \kCompound\ \kRule\ and \kAlias\
 
-\paragraph{Summer term, late week 1} Spare time unfinished work, otherwise write more on report. By this time all specification should have been completed.
+\paragraph{Summer term, late week 1} Spare time for unfinished work, otherwise write more on report. By this time all specification should have been completed.
 
 \paragraph{Summer term, week 2} Implement famous formal systems as examples that will be included in the final product
 
 \paragraph{Summer term, week 3} Extension, if get any idea.
 
-\paragraph{Summer term, week 4 --- 5} Evaluation, ask other student to use and implement thier own formal system. Then ask them to do questionnaire then analyse it.
+\paragraph{Summer term, week 4 --- 5} Project evaluation.
 
 \paragraph{Summer term, week 6 --- the firnal report due} Working on report, attempt to write full reference to phometa as appendiex.
 
@@ -85,8 +107,8 @@ We will list all nodes for each module on project explorer. So we can create/del
 
 \subsection{variable resolution inside theorem}
 
-For example, in type system, sometime we construct a derivation tree in order to get type of particular term. This can be done inside phometa as well, by construct a normal judgement and leave the type as variable e.g. \bat{\pvar{$\Gamma$} \pifmt{$\vdash$} \pvar{$\phi$} \pifmt{:} \pvar{A}} you can see that we leave type as \pvar{A}. Then build its derivation tree by \kTheorem, at some point it will hit a rule involve inference on \pvar{A} (term deconstruction). let say \pvar{A} get deconstruct into \bat{\pvar{B} \pifmt{$\rightarrow$} \pvar{C}} (of course, user need to write "B" and "C" to get \pvar{B} and \pvar{C} during using particular rule) then every \pvar{A} appear inside that theorem will be replace by \bat{\pvar{B} \pifmt{$\rightarrow$} \pvar{C}} as we desire. Eventually, the type of main is in final form. Please note that this works in general not just type theory case.
+For example, in type system, sometime we construct a derivation tree in order to get type of particular term. This can be done inside phometa as well, by construct a normal judgement and leave the type as variable e.g. \bat{\pvar{$\Gamma$} \pifmt{$\vdash$} \pvar{$\phi$} \pifmt{:} \pvar{A}} you can see that we leave type as \pvar{A}. Then build its derivation tree by \kTheorem, at some point it will hit a rule involve inference on \pvar{A} (term deconstruction). Let say \pvar{A} get deconstruct into \bat{\pvar{B} \pifmt{$\rightarrow$} \pvar{C}} (of course, user need to write ``B'' and ``C'' to get \pvar{B} and \pvar{C} during using particular rule) then every \pvar{A} appear inside that theorem will be replace by \bat{\pvar{B} \pifmt{$\rightarrow$} \pvar{C}} as we desire. Eventually, the type of main is in final form. Please note that this works in general not just type theory case.
 
-\subsection{construct a new (sub)term by copying an existing (sub)term (extension, do it later)}
+\subsection{construct a new (sub) term by copying an existing (sub) term (extension, do it later)}
 
-On the actual proof, there will a complex term that needed to be modified on the small portion and left the rest untouch. Constructing this modified term from the scratch would be tedious. So we can just copy the old term then modify it. Recall that we need to press "c" for inductive/literal/sequence/dictionary construction, "v" for variable, "d" for definition, "a" for alias. Here inside term hole, we just type "m" then we just click the underline of that term, then it will check grammar of both term which needed to be matched then we get that term. Then for the part that we want to modify we just click "h" on underline of target subterm, this would replace hold to it then you can construct that subterm. Once you finish it just press "q", so phometa we check this new term against rule if it is in theorem or something else depent on the place of that term.
+On the actual proof, there will a complex term that needed to be modified on the small portion and left the rest untouch. Constructing this modified term from the scratch would be tedious. So we can just copy the old term then modify it. Recall that we need to press ``c'' for inductive/literal/sequence/dictionary construction, ``v'' for variable, ``d'' for definition, ``a'' for alias. Here inside term hole, we just type ``m'' then we just click the underline of that term, then it will check grammar of both term which needed to be matched then we get that term. Then for the part that we want to modify we just click ``h'' on underline of target subterm, this would replace hold to it then you can construct that subterm. Once you finish it just press ``q'', so phometa we check this new term against rule if it is in theorem or something else depent on the place of that term.
