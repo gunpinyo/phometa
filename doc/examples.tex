@@ -287,6 +287,22 @@
 }
 
 \node{
+  \kRule \pstr{double-negation} \kInference
+}{
+  \kConclude & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \pvar{A}
+    } \pgmr{judgement} \\\\
+
+  \kPremise & \bat{
+      \pvar{$\Gamma$}
+        \pifmt{$\vdash$}
+        \bat{\pifmt{$\neg$} \bat{\pifmt{$\neg$} \pvar{A}}}
+    } \pgmr{judgement} \\\\
+}
+
+\node{
   \kRule \pstr{top-intro} \kInference
 }{
   \kConclude & \bat{
@@ -451,18 +467,52 @@
                     \kProof \bat{
                     \bas{\bat{\pifmt{$\neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}}} \pifmt{$\vdash$}
                         \bat{
-                              \pvar{A}
+                              \bat{\pifmt{$\neg$} \pvar{A}}
                         }
                     } \pgmr{judgement} \\
-                    TODO: \\
+                    \kUseRule \prule{neg-intro} \\
+                    \ban{
+                        \kProof \bat{
+                           \bas{\bat{\pifmt{$\neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}} \psfmt{,} \bat{\pvar{A}}} \pifmt{$\vdash$}
+                           \bat{
+                                \pifmt{$\bot$}
+                           }
+                        } \pgmr{judgement} \\
+                        \kUseRule \prule{neg-elim} \\
+
+                        \ban{
+                          \kProof \bat{
+                            \bas{\bat{\pifmt{$\neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}} \psfmt{,} \bat{\pvar{A}}} \pifmt{$\vdash$}
+                            \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}
+                          } \pgmr{judgement} \\
+                          \kUseRule \prule{neg-elim} \\
+
+                          % \kProof \bat{
+                          %   \bas{\bat{\pifmt{$\neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}} \psfmt{,} \bat{\pvar{A}}} \pifmt{$\vdash$}
+                          %   \bat{\ipfmt{$neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}}
+                          % } \pgmr{judgement} \\
+                          % \kUseRule \prule{hyp} \\
+
+                        }
+
+                    }
 
                     \kProof \bat{
                     \bas{\bat{\pifmt{$\neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}}} \pifmt{$\vdash$}
                         \bat{
-                              \bat{\pifmt{$\neg$} \pvar{A}}
+                              \bat{\pifmt{$\neg$} \bat{\pifmt{$\neg$} \pvar{A}}}
                         }
                     } \pgmr{judgement} \\
-                    TODO: \\
+                    \kUseRule \prule{neg-intro} \\
+                    \ban{
+                        \kProof \bat{
+                           \bas{\bat{\pifmt{$\neg$} \bat{\pvar{A} \pifmt{$\vee$} \bat{\pifmt{$\neg$} \pvar{A}}}} \psfmt{,} \bat{\pifmt{$\neg$} \pvar{A}}} \pifmt{$\vdash$}
+                           \bat{
+                                \pifmt{$\bot$}
+                           }
+                        } \pgmr{judgement} \\
+                       TODO:
+                    }
                 }
             }
         }
@@ -688,57 +738,59 @@
 %     \kChoice & \bat{\pgmr{context} \pifmt{$\vdash$} \pgmr{context}} \pstr{make} \\
 % }
 
-% \subsection{Module \bat{\ppkgmod{example} \ppkgmod{prop\_logic} \ppkgmod{eval}}}
+\newpage
 
-% \node{
-%     \kOpen \bat{\ppkgmod{example} \ppkgmod{prop\_logic} \ppkgmod{grammar}} \kHideByDefault
-% } {
-%     \kShow & \pid{prop} \\
-%     \kShow & \pid{atom} \\
-% }
+\subsection{Module \bat{\ppkgmod{example} \ppkgmod{propositional\_logic} \ppkgmod{operational\_semantics}}}
 
-% \node{
-%     \kGrammar \pstr{truth\_value} \kInductive
-% }{
-%     \kComment & \pcomment{Result of propositional logic evaluation} \\
-%     \kVarRegex & \pregex{value-[A-Z]([1-9][0-9]+|'+)?} \\
-%     \kChoice & \bat{\pifmt{true}} \kRef \pstr{tt} \\
-%     \kChoice & \bat{\pifmt{false}} \kRef \pstr{ff} \\
-% }
+\node{
+    \kOpen \bat{\ppkgmod{example} \ppkgmod{propositional\_logic} \ppkgmod{grammar}} \kHideByDefault
+} {
+    \kShow & \pid{prop} \\
+    \kShow & \pid{atom} \\
+}
 
-% \node{
-%     \kDefinition \pstr{eval\_prop}
-% }{
-%     \kSignature  \bat{\pdfmt{eval} \pgmr{prop}} \pgmr{truth-value} \\
+\node{
+    \kGrammar \pstr{truth\_value} \kInductive
+}{
+    \kComment & \pcomment{Result of propositional logic evaluation} \\
+    \kVarRegex & \pregex{value-[A-Z]([1-9][0-9]+|'+)?} \\
+    \kChoice & \bat{\pifmt{true}} \kRef \pstr{tt} \\
+    \kChoice & \bat{\pifmt{false}} \kRef \pstr{ff} \\
+}
 
-%     \kPattern  \bat{\pdfmt{eval} \bat{\pifmt{$\top$}}} \\
-%     \ban{
-%         \kReturn  \bat{\pifmt{true}}\\
-%     }
+\node{
+    \kDefinition \pstr{eval\_prop}
+}{
+    \kSignature  \bat{\pdfmt{eval} \pgmr{prop}} \pgmr{truth-value} \\
 
-%     \kPattern  \bat{\pdfmt{eval} \bat{\pifmt{$\bot$}}} \\
-%     \ban{
-%         \kReturn  \bat{\pifmt{false}}\\
-%     }
+    \kPattern  \bat{\pdfmt{eval} \bat{\pifmt{$\top$}}} \\
+    \ban{
+        \kReturn  \bat{\pifmt{true}}\\
+    }
 
-%     \kPattern  \bat{\pdfmt{eval} \bat{\pvar{P} \pifmt{$\wedge$} \pvar{Q}}} \\
-%     \ban{
-%         % \kLet \pvar{value-P} \kBe \bat{\pdfmt{eval} \pvar{P}} \\
-%         % \kLet \pvar{value-Q} \kBe \bat{\pdfmt{eval} \pvar{Q}} \\
-%         \kMatch \bat{\pdfmt{eval} \bat{\pvar{P}}} \kWith \\
-%         \ban {
-%             \kPattern \bat{\pifmt{true}} \\
-%             \ban{
-%                 \kReturn  \bat{\pdfmt{eval} \bat{\pvar{Q}}} \\
-%             }
-%             \kPattern \bat{\pifmt{false}} \\
-%             \ban{
-%                 \kReturn  \bat{\pifmt{false}} \\
-%             }
-%         }
-%     }
-%     and so on \dotfill
-% }
+    \kPattern  \bat{\pdfmt{eval} \bat{\pifmt{$\bot$}}} \\
+    \ban{
+        \kReturn  \bat{\pifmt{false}}\\
+    }
+
+    \kPattern  \bat{\pdfmt{eval} \bat{\pvar{P} \pifmt{$\wedge$} \pvar{Q}}} \\
+    \ban{
+        % \kLet \pvar{value-P} \kBe \bat{\pdfmt{eval} \pvar{P}} \\
+        % \kLet \pvar{value-Q} \kBe \bat{\pdfmt{eval} \pvar{Q}} \\
+        \kMatch \bat{\pdfmt{eval} \bat{\pvar{P}}} \kWith \\
+        \ban {
+            \kPattern \bat{\pifmt{true}} \\
+            \ban{
+                \kReturn  \bat{\pdfmt{eval} \bat{\pvar{Q}}} \\
+            }
+            \kPattern \bat{\pifmt{false}} \\
+            \ban{
+                \kReturn  \bat{\pifmt{false}} \\
+            }
+        }
+    }
+    and so on \dotfill
+}
 
 %     TODO: implement sub\_sequence by structure, this can be done on input method section
 

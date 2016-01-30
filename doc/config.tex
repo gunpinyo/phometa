@@ -4,6 +4,48 @@
 %%% TeX-master: "master"
 %%% End:
 
+
+\usepackage[a4paper]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+
+\usepackage{parskip}
+% \setlength{\parskip}{0.8pt}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{xcolor}
+
+% \usepackage{fontspec}
+% \setmainfont{Arial}
+
+\usepackage{tikz}
+\usepackage[framemethod=tikz]{mdframed}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+\usepackage{stackengine}
+
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{ {images/} }
+
+\usepackage[backend=biber]{biblatex}
+\addbibresource{bibliography.bib}
+\DeclareCiteCommand{\supercite}[\mkbibsuperscript]
+  {\iffieldundef{prenote}
+     {}
+     {\BibliographyWarning{Ignoring prenote argument}}%
+   \iffieldundef{postnote}
+     {}
+     {\BibliographyWarning{Ignoring postnote argument}}}
+  {\usebibmacro{citeindex}%
+   \bibopenbracket\usebibmacro{cite}\bibclosebracket}
+  {\supercitedelim}
+  {}
+
 \definecolor{defaultColor}{HTML}{eeeeee}
 
 % string
