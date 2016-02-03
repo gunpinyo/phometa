@@ -1,10 +1,19 @@
 # phometa
-Phometa is an application that can build formal system based on visualization.
+Phometa is an application that can build formal system based on visualisation.
 
-**NOTE: This project is just start and I am still designing the architectue.**
+This is individual project of Gun Pinyo
+Supervisor: Dr. Krysia Broda
+Second Marker: Prof. Alessio R. Lomuscio
+MEng Computing (4YFT)
+Imperial College London
+
+For full report of this project, please compile master.tex in `doc/` directory.
+**TODO: once the project complete, redirect this to pdf file.**
+
+**NOTE: This project is just start and I am still designing the architecture.**
 **Please do not use this until this note is disappear.**
 
-## System Requirement
+## System Requirement for development
 - Makefile
 - elm 0.16
 - nodejs (>= 0.12.7)
@@ -12,9 +21,8 @@ Phometa is an application that can build formal system based on visualization.
 
 ## My elm coding convention
 
-### name convention
+### naming convention
 - use **lower_case_with_underscores** for defined functions and constants
-- but still use **mixedCase** for packages functions and constants
 - use **CamelCase** for modules, types and type aliases
 - append `Base` to name that will be used for extensible record
   e.g. `ModuleBase`, `RootTermBase`
