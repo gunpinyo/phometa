@@ -14,10 +14,9 @@ For full report of this project, please compile master.tex in `doc/` directory.
 **Please do not use this until this note is disappear.**
 
 ## System Requirement for development
-- Makefile
+- nodejs (>= 0.10.25)
+- npm (>= 1.4.21)
 - elm 0.16
-- nodejs (>= 0.12.7)
-- npm (>= 2.11.3)
 
 ## My elm coding convention
 

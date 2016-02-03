@@ -1,11 +1,12 @@
--- conventionally this should be `module Tests.Test where`
--- but it clashes elm-test, so need to declare it as `Main` module
+-- The test suite entry has to have name "Main"
+-- since during testing, it is just another elm execution
+-- which require entry point to name "Main".
 module Main where
 
 import Task
 
-import Console
-import ElmTest exposing (Test, suite)
+import Console exposing (run)
+import ElmTest exposing (Test, suite, consoleRunner)
 
 -- order alphabetically (not the same as our convention)
 import Tests.ModelUtils.Model
@@ -20,4 +21,4 @@ tests =
 
 port runner : Signal (Task.Task x ())
 port runner =
-    Console.run (ElmTest.consoleRunner tests)
+    run (consoleRunner tests)
