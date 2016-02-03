@@ -5,6 +5,9 @@
 %%% End:
 
 \documentclass[11pt, a4paper]{report}
+
+\includeonly{examples.tex}
+
 \input{config.tex}
 
 \title{
@@ -32,45 +35,16 @@ TODO: write abstract
 
 \tableofcontents
 
-\section{advice and todo (need to remove this before final report due)}
-\subsection{advice from Dr Krysia Broda}
-for interim report
-\begin{itemize}
-  \item background can be done later, don't worry
-  \item for introduction, there should be an example to give an initial idea
-    what is program will look like.
-  \item for examples, really need to give more information for what current
-    piece of example do, this is just for when the new idea has been introduce
-    for each example. Examples will be on several chapters to give intuition
-    along main story.
-  \item specification, this should spilt into several chapters (perhaps lift
-    specification from chapter to part)
-  \item specification, again, need to explain every briefly topdown (package ->
-    module -> node -> attribute -> placeholder),  then we can explain more
-    detail with bottom up
-  \item placeholder section on specification, it should be rewritten as a
-    paragraph not bullet point since this specific case, it is easier to read
-    as paragraph
-  \item need to write high-level/low-level implementation chapters, this can be
-    done along with real implementation which force myself to have a clear
-    organisation every time.
-  \item project plan --- preliminaries, need explain more what I have done so
-    far
-  \item we should focus on implementation first, specification could change
-    later and we would have more time for if something is wrong with
-    implementation
-  \item screenshot in general shouldn't have dark theme as when they print out
-    it will be unreadable.
-\end{itemize}
+% this need to be deleted before final report due
+\subfile{advice_and_todo.tex}
 
-
-\input{introduction.tex}
-\input{background.tex}
-\input{examples.tex}
-\input{specification.tex}
-\input{common_tricks.tex}
-\input{project_plan.tex}
-\input{evaluation_plan.tex}
+\subfile{introduction.tex}
+\subfile{background.tex}
+\subfile{examples.tex}
+\subfile{specification.tex}
+\subfile{common_tricks.tex}
+\subfile{project_plan.tex}
+\subfile{evaluation_plan.tex}
 
 \printbibliography\
 

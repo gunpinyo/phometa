@@ -1,7 +1,4 @@
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: "master"
-%%% End:
+\documentclass[master.tex]{subfiles}
 
 \chapter{Project Plan}
 
@@ -111,4 +108,20 @@ For example, in type system, sometime we construct a derivation tree in order to
 
 \subsection{construct a new (sub) term by copying an existing (sub) term (extension, do it later)}
 
-On the actual proof, there will a complex term that needed to be modified on the small portion and left the rest untouch. Constructing this modified term from the scratch would be tedious. So we can just copy the old term then modify it. Recall that we need to press ``c'' for inductive/literal/sequence/dictionary construction, ``v'' for variable, ``d'' for definition, ``a'' for alias. Here inside term hole, we just type ``m'' then we just click the underline of that term, then it will check grammar of both term which needed to be matched then we get that term. Then for the part that we want to modify we just click ``h'' on underline of target subterm, this would replace hold to it then you can construct that subterm. Once you finish it just press ``q'', so phometa we check this new term against rule if it is in theorem or something else depent on the place of that term.
+On the actual proof, there will a complex term that needed to be modified on the
+small portion and left the rest untouch. Constructing this modified term from
+the scratch would be tedious. So we can just copy the old term then modify it.
+Recall that we need to press ``c'' for inductive/literal/sequence/dictionary
+construction, ``v'' for variable, ``d'' for definition, ``a'' for alias. Here
+inside term hole, we just type ``m'' then we just click the underline of that
+term, then it will check grammar of both term which needed to be matched then we
+get that term. Then for the part that we want to modify we just click ``h'' on
+underline of target subterm, this would replace hold to it then you can
+construct that subterm. Once you finish it just press ``q'', so phometa we check
+this new term against rule if it is in theorem or something else depent on the
+place of that term.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "master"
+%%% End:
