@@ -9,15 +9,15 @@ import Console exposing (run)
 import ElmTest exposing (Test, suite, consoleRunner)
 
 -- order alphabetically (not the same as our convention)
-import Tests.ModelUtils.Model
-import Tests.ModelUtils.Package
+-- import Tests.ModelUtils.Model
+-- import Tests.ModelUtils.Package
 
 tests : Test
 tests =
-  suite "Tests"
-    [ Tests.ModelUtils.Model.tests
-    , Tests.ModelUtils.Package.tests
-    ]
+  suite "Tests" []
+    -- [ Tests.ModelUtils.Model.tests
+    -- , Tests.ModelUtils.Package.tests
+    -- ]
 
 port runner : Signal (Task.Task x ())
 port runner =
