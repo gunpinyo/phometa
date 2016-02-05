@@ -2,16 +2,11 @@ module Tools.Utils where
 
 ----import Array exposing (Array)
 ----import Dict exposing (Dict)
-import Set exposing (Set)
+import Set
 
 parity_pair_extract : Int -> (a, a) -> a
 parity_pair_extract parity =
   if parity % 2 == 0 then fst else snd
-
--- need to write this function
--- since, eg Set.fromList([4, 5]) /= Set.fromList([5, 4])
-are_set_equal : Set comparable -> Set comparable -> Bool
-are_set_equal a b = Set.diff a b == Set.empty && Set.diff b a == Set.empty
 
 are_list_elements_unique : List comparable -> Bool
 are_list_elements_unique xs =

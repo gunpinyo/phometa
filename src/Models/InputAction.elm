@@ -1,16 +1,13 @@
-module Models.InputAction where
+module Models.C where
 
+import Char exposing (KeyCode)
 import Set exposing (Set)
 
-import Tools.KeyboardExtra exposing (KeyCode)
-
+-- address that can identify a component from the entire view
 type alias ComponentPath = List Int
+
 
 type InputAction
   = InputActionNothing
-  | InputActionClick ComponentPath
-  | InputActionHover ComponentPath
-  | InputActionCurserLeavesWindow
-  | InputActionDrag ComponentPath
-  | InputActionDrop (Maybe ComponentPath)
+  | InputActionMouse
   | InputActionKeysDown (Set KeyCode)

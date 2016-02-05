@@ -1,3 +1,0 @@
- - Make sure that we check TODO in src (grep -nr "TODO" *) regularly.
- - There is potential bug regarding to order of PackagePath or ComponentPath
- - There is huge change during discussion with Dr Krysia Broda make sure we make everything consistence

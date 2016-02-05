@@ -1,6 +1,7 @@
 module Main where
 
 import Html exposing (Html)
+import Char exposing (KeyCode)
 import Keyboard exposing (keysDown)
 import Signal exposing (Mailbox, Address)
 
