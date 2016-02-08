@@ -1,0 +1,54 @@
+\documentclass[master.tex]{subfiles}
+\begin{document}
+\chapter{Implementation}
+
+This part we will talk about the implementation of phometa which is written in elm
+hosted at \url{https://github.com/gunpinyo/phometa}.
+
+\section{Primary programming language --- Elm}
+Elm\supercite{elm-official-website} is a functional reactive programming
+language. It allows programmer to create web application by declaratively
+coding in Haskell-like language then compile the program to JavaScript. For more
+information, please see elm official website at \url{elm-lang.org}.
+
+One of the most attractive feture of elm is its reactivity. This idea introduces
+a new data type called ``signal'' which is a data type that can change over
+time. For example, let $c$ be a signal of integer defined as $a + b$ where $a$
+and $b$ are other signal of  integers. If $a = 2$ and $b = 3$, then surely
+$c = 5$. If later $a$ is change to $4$, then $c$ will got automatically updated
+to $7$.
+
+Reactivity work very well with functional paradigm since all variables are
+immutable, so it is impossible for the program to be in inconsistent state in
+the sense that programmer forget to update value. In fact, this can lead to a
+good fit of model-controller-view (MCV) architecture.
+
+Here are summery of reasons why I choose elm to implement phometa,
+\begin{itemize}
+  \item Phometa is a web application, and elm is created to build something like
+    this
+  \item Phometa mainly dealing with declarative object, it is better to use
+    funcation  language to build it.
+  \item Elm by its very nature, leads to MCV architecture which is good for
+    application like phometa.
+\end{itemize}
+
+\section{Architecture --- Enforcing MCV}
+
+
+
+% at run-time, the only thing that can change is signal which together
+% can form dependency graph , programmer
+% simply link each signal
+
+
+% It allows programmer to write
+% ac code in functional style similar to Haskell
+
+% This fit with
+
+% \chapter{Architecture}
+
+
+
+\end{document}

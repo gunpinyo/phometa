@@ -1,0 +1,12 @@
+- change ComponentPath, ModulePath to more elegent way
+ e.g.  type alias ModulePath = [ModuleName]
+     this could be ModulePath = (PackagePath, ModuleName)
+     PackagePath
+      = PackagePathNil
+      | PackagePathCons PackageName PackagePath
+
+- try to find a third party package that can save file
+
+- introduce MajorMode in phomata, e.g. package navigation, modulerenameing
+
+- getCommand in Updates.Update

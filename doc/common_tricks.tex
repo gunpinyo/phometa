@@ -1,0 +1,22 @@
+\documentclass[master.tex]{subfiles}
+\begin{document}
+
+\chapter{Common tricks, that user should know}
+
+\section{using condition during define grammar}
+
+Some of logical framework, also have a condition that if it doesn't hold then the particular term in not well-from.
+
+Unfortunately, you can't encode general condition during grammar construction since they are created structurally. However you can solve this using \kRule.
+
+Say that whenever you want to a rule involve term \pvar{t} with (conditional related) grammar \pgmr{g} you need to state
+
+\kPremise \pvar{t} \pgmr{g}
+
+inside that rule as well. Then using other rules which control condition of grammar \pgmr{g} to prove that \pvar{t} holds. Obviously if that term is not well-form, you can't prove that term.
+
+Please note that you only need to do this at the point that \pvar{t} is introduce (or reconstruct). If \pvar{t} already exists in one of your premises, you know that this premise also contain the prove that \pvar{t} holds.
+
+TODO: give an example involve this situation.
+
+\end{document}

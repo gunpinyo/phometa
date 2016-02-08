@@ -1,44 +1,40 @@
 # phometa
-Phometa is an application that can build formal system based on visualization.
+Phometa is an application that can build formal system based on visualisation.
 
-**NOTE: This project is just start and I am still designing the architectue.**
+This is individual project of Gun Pinyo
+Supervisor: Dr. Krysia Broda
+Second Marker: Prof. Alessio R. Lomuscio
+MEng Computing (4YFT)
+Imperial College London
+
+For full report of this project, please compile master.tex in `doc/` directory.
+**TODO: once the project complete, redirect this to pdf file.**
+
+**NOTE: This project is just start and I am still designing the architecture.**
 **Please do not use this until this note is disappear.**
 
-## System Requirement
-- Makefile
+## System Requirement for development
+- nodejs (>= 0.10.25)
+- npm (>= 1.4.21)
 - elm 0.16
-- nodejs (>= 0.12.7)
-- npm (>= 2.11.3)
 
-## My elm coding convention
+## My elm additional coding convention
 
-### name convention
-- use **lower_case_with_underscores** for defined functions and constants
-- but still use **mixedCase** for packages functions and constants
-- use **CamelCase** for modules, types and type aliases
-- append `Base` to name that will be used for extensible record
-  e.g. `ModuleBase`, `RootTermBase`
-- use full word(s) to name an identifier, except
-      (since it use so frequent and will be followed by a long identifier)
-  - `str` means thing that has type string
-  - `func` means function that has been created dynamically
-  - `fg_color` means foreground color
-  - `bg_color` means background color
-- use word that describe identifier as prefix
-    e.g. `maybe_cursor_css ` means this may or may not be css of cursor
-- and use word that describe type as postfix
-    e.g. `cursor_path_maybe` means this is cursor_path that has type `Maybe a`
-
+### naming convention
+- use **lower_case_with_underscores** for defined functions and constants,
+  these will be different from standard elm convention which even better
+  so we can distinguish functions from packages and defined function easily
+- use **CamelCase** for modules, types, and type aliases
 
 ### indentation
 - 2 spaces for each indention
 - 79 characters per line
 
-
 ### (union) types, and type aliases
-- put `=` in new line
+- for (union) types, put `=` at the end of that line
+- for (union) types, put the entire name as prefix for each constructor
+- for type aliases, put `=` in new line
 - for type aliases, if it is very short and fit on one line, so do it
-- for (union) types, put the entire name for each constructor
 
 e.g.
 
@@ -47,10 +43,10 @@ type MyType
   = MyTypeNum Int
   | MyTypeStr Str
 
-type alias AliasType
-  = { my_type : MyType
-    , age : Int
-    }
+type alias AliasType =
+  { my_type : MyType
+  , age : Int
+  }
 
 type alias TypeName = String
 ```
@@ -76,7 +72,7 @@ main = start app
 
 ### import declaraion
 - put all import decoration before any types or functions
-    (but after module declaraion)
+    (but after module declaration)
 - it will be divided in to 3 block
   - from core package
   - from community packages
@@ -88,10 +84,9 @@ main = start app
   - a general guideline of order between each package is
     - `Tools`
     - `Models`
-    - `ModelUtils`
-    - `Validators`
     - `Updates`
     - `Views`
+    - `Tests`
 
 e.g.
 
@@ -102,11 +97,10 @@ import Flex exposing (row, column, flexDiv, fullbleed)
 import Html exposing (Html, button, text)
 import Html.Events exposing (onClick)
 
-import Model.InputAction exposing (InputAction)
-import Model.Model exposing (Model)
+import Models.Package exposing (Package)
+import Models.Model exposing (Model)
 ```
 note on example of defined modules
-  in this case `Model.InputAction` and `Model.Model` are not depend on
-  each other we have freedom to put anything first, but I decide to put
-  `Model.InputAction` first because input_action is normal come before when
-  both of them are arguments in a function
+  in this case `Models.Model` depends on `Model.Packages` so it must come after,
+  but if there are modules which are not depend to each other, we are free to
+  any on them first

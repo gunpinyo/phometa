@@ -1,24 +1,22 @@
 module Tools.Utils where
 
-----import Array exposing (Array)
-----import Dict exposing (Dict)
-import Set
+import Set exposing (Set)
 
 parity_pair_extract : Int -> (a, a) -> a
 parity_pair_extract parity =
   if parity % 2 == 0 then fst else snd
 
-list_element_unique : List comparable -> Bool
-list_element_unique xs =
-  List.length (xs |> Set.fromList |> Set.toList) == List.length xs
+-- for each element if there is the same element on RHS, remove it self
+remove_list_duplicate : List comparable -> List comparable
+remove_list_duplicate xs =
+  List.foldr (\x acc -> if List.member x acc then acc else x :: acc ) [] xs
 
----- if any list is not unique, return False immediately
---list_is_subset_of_list : List comparable -> List comparable -> Bool
---list_is_subset_of_list xs ys =
---  list_element_unique xs && list_element_unique ys
---    && List.foldl (\x acc -> acc && List.member x ys) True xs
+-- need to write this function, can't use technique "convert to set and compare"
+-- since, eg Set.fromList([4, 5]) /= Set.fromList([5, 4])
+are_list_unorderly_equal_to : List comparable -> List comparable -> Bool
+are_list_unorderly_equal_to xs ys =
+  List.sort xs == List.sort ys
 
----- if any list is not unique, return False immediately
---list_unordered_identical : List comparable -> List comparable -> Bool
---list_unordered_identical xs ys =
---  list_is_subset_of_list xs ys && list_is_subset_of_list ys xs
+are_list_elements_unique : List comparable -> Bool
+are_list_elements_unique xs =
+  xs == remove_list_duplicate xs

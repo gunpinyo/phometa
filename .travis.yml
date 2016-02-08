@@ -1,10 +1,10 @@
 language: haskell
 install:
-  - nvm install 0.12
-  - cabal install elm-make
-  - cabal install elm-package
-  - make init
-script: make test
+  - npm install -g elm
+  - elm-package install -y
+before_script:
+  - bash scripts/gen-tests.sh
+script: node tests.js
 notifications:
   email:
     - gunpinyo@gmail.com

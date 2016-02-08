@@ -1,59 +1,37 @@
 module Updates.Update where
 
-import String
+import Maybe
+import Dict
 
-import Tools.Verification as Verification exposing (VerificationResult, valid)
-import Models.Command exposing (Command(..))
-import Models.Model exposing (Model)
-import Models.InputAction exposing (InputAction)
-import Models.MiniBuffer exposing (MiniBuffer(..))
-import ModelUtils.Model exposing (verify_model)
-import Updates.ProcessCommand exposing (command_to_process_command)
+import Models.Popup exposing (Popup(..))
+import Models.Model exposing (Command, KeyBinding(..), check_model)
+import Models.Action exposing (Action(..))
+import Updates.KeyBinding exposing (cmd_press_prefix_key,
+                                    cmd_assign_root_keymap)
+import Updates.CommonCmd exposing (cmd_nothing)
 
-type alias ProgramState
-  = { command_list : List Command
-    , model : Model
-    , verification_result : VerificationResult
-    }
+update : Action -> Command
+update action =
+  case action of
+    ActionNothing          -> cmd_nothing
+    ActionCommand command  -> add_pre_post_cmd command
+    ActionPreTask pre_task -> cmd_nothing -- handled by `task_signal` in `Main`
+    ActionKeystroke keystroke ->
+      (\model -> model |>
+         case Dict.get keystroke model.root_keymap of
+           Just (KeyBindingCommand _ command) -> add_pre_post_cmd command
+           Just (KeyBindingPrefix _ keymap)   -> cmd_press_prefix_key keymap
+           _                                  -> cmd_nothing)
 
-update : InputAction -> Model -> Model
-update input_action model =
-  let initial_program_state =
-        { command_list =
-            [ CommandPreProcess
-            , CommandInputAction input_action
-            , CommandPostProcess
-            ]
-        , model = model
-        , verification_result = verify_model model
-        }
-      final_program_state = process_program initial_program_state
-   in if final_program_state.verification_result == valid then
-        final_program_state.model
-      else
-        { model |
-          mini_buffer = MiniBufferError
-            <| "Internal verification fail:\n"
-            ++ "  "
-            ++ Verification.to_string
-                 final_program_state.verification_result
-            ++ "\n"
-            ++ "Please contract developer to fix this (gunpinyo@gmail.com)."
-        }
+add_pre_post_cmd : Command -> Command
+add_pre_post_cmd command =
+  let cmd_pre  = cmd_nothing -- currently, there is no pre-command
+      cmd_post = cmd_assign_root_keymap >> cmd_sanity_check
+   in cmd_pre >> command >> cmd_post
 
-process_program : ProgramState -> ProgramState
-process_program record =
-  if record.verification_result /= valid then
-    record -- if the program become invalid stop program immediately.
-  else
-    case record.command_list of
-      [] -> record
-      command :: command_tail ->
-        let process_command = command_to_process_command command
-            (command_list', model') = process_command record.model
-            record' =
-              { command_list = command_list' ++ command_tail
-              , model = model'
-              , verification_result = verify_model model'
-              }
-         in process_program record'
+cmd_sanity_check : Command
+cmd_sanity_check model =
+  case check_model model of
+    Nothing     -> model
+    Just reason -> { model |
+                     popup_list = (PopupProgError reason) :: model.popup_list }
