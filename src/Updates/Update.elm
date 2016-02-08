@@ -1,10 +1,11 @@
 module Updates.Update where
 
 import Maybe
+import Dict
 
-import Tools.SanityCheck exposing (valid, invalid)
 import Models.Popup exposing (Popup(..))
-import Models.Model exposing (Action, Command, merge_keymaps)
+import Models.Model exposing (Command, KeyBinding(..), check_model)
+import Models.Action exposing (Action(..))
 import Updates.KeyBinding exposing (cmd_press_prefix_key,
                                     cmd_assign_root_keymap)
 import Updates.CommonCmd exposing (cmd_nothing)
@@ -14,14 +15,13 @@ update action =
   case action of
     ActionNothing          -> cmd_nothing
     ActionCommand command  -> add_pre_post_cmd command
-    ActionPreTask pre_task -> Nothing -- task_signal in `Main` will handle this
+    ActionPreTask pre_task -> cmd_nothing -- handled by `task_signal` in `Main`
     ActionKeystroke keystroke ->
-      (\model ->
-         (case Dict.get keystroke model.root_keymap of
+      (\model -> model |>
+         case Dict.get keystroke model.root_keymap of
            Just (KeyBindingCommand _ command) -> add_pre_post_cmd command
            Just (KeyBindingPrefix _ keymap)   -> cmd_press_prefix_key keymap
            _                                  -> cmd_nothing)
-         |> model)
 
 add_pre_post_cmd : Command -> Command
 add_pre_post_cmd command =
@@ -32,6 +32,6 @@ add_pre_post_cmd command =
 cmd_sanity_check : Command
 cmd_sanity_check model =
   case check_model model of
-    valid          -> model
-    invalid reason ->
-      { model | popup_list = (PopupProgError reason) :: model.popup_list }
+    Nothing     -> model
+    Just reason -> { model |
+                     popup_list = (PopupProgError reason) :: model.popup_list }

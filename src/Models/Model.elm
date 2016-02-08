@@ -6,7 +6,7 @@ import Task exposing (Task)
 import Tools.KeyboardExtra exposing (Keystroke)
 import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Config exposing (GlobalConfig, init_global_config)
-import Models.PkgMod exposing (Package, init_package)
+import Models.PkgMod exposing (Package, init_package, check_package)
 import Models.Mode exposing (MajorMode, init_major_mode)
 import Models.Popup exposing (PopupList, init_popup_list)
 
@@ -37,7 +37,7 @@ type KeyBinding
   | KeyBindingPreTask String PreTask
   | KeyBindingPrefix String Keymap    -- similar to prefix key bindings in emacs
 
-type alias Keymap = Dict Keystroke Keybinding
+type alias Keymap = Dict Keystroke KeyBinding
 
 init_model : Model
 init_model =

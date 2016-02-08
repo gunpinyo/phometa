@@ -1,8 +1,9 @@
-module Updates where
+module Updates.KeyBinding where
 
 import Dict
 
 import Tools.KeyboardExtra exposing (to_keystroke)
+import Models.Mode exposing (MajorMode(..))
 import Models.Model exposing (Command, Keymap)
 
 cmd_assign_root_keymap : Command
@@ -16,7 +17,7 @@ cmd_press_prefix_key keymap model =
 
 -- if there a collision
 merge_keymaps : Keymap -> Keymap -> Keymap
-merge_keymaps = Dict.union flip
+merge_keymaps = flip Dict.union
 
 global_keymap : Keymap
 global_keymap =

@@ -2,8 +2,11 @@ module Models.PkgMod where
 
 import Dict exposing (Dict)
 
+import Tools.OrderedDict exposing (OrderedDict)
 import Tools.SanityCheck exposing (CheckResult, valid)
-import Models.Node exposing (Node)
+import Models.Node exposing (Node, NodeName)
+
+type alias PkgModName = String
 
 type alias ModuleName = PkgModName
 
@@ -18,12 +21,10 @@ type PackagePath
   = PackagePathCur
   | PackagePathPkg PackageName PackagePath
 
-type alias
+type alias PkgMod a =
+  { a | is_folded : Bool }                       -- for view ui fold/unfold
 
-type PkgMod =
-  { is_folded : Bool }                       -- for view ui fold/unfold
-
-type Module =
+type alias Module =
   PkgMod { nodes : OrderedDict NodeName Node }
 
 type alias Package =

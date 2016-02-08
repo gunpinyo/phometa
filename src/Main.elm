@@ -5,7 +5,7 @@ import Keyboard exposing (keysDown)
 import Set exposing (Set)
 import Task exposing (Task)
 
-import Models.Model exposing (Model, PreTask, initial_model)
+import Models.Model exposing (Model, PreTask, init_model)
 import Models.Action exposing (Action(..), mailbox)
 import Updates.Task exposing (extract_maybe_task)
 import Updates.Update exposing (update)
@@ -19,7 +19,7 @@ action_signal : Signal Action
 action_signal = Signal.merge mailbox.signal keyboard_signal
 
 model_signal : Signal Model
-model_signal = Signal.foldp update initial_model action_signal
+model_signal = Signal.foldp update init_model action_signal
 
 main : Signal Html
 main = Signal.map view model_signal

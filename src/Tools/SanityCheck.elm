@@ -13,7 +13,7 @@ valid : CheckResult
 valid = Nothing
 
 invalid : InvalidReason -> CheckResult
-invalid reason = Just reason
+invalid = Just
 
 to_string : CheckResult -> String
 to_string result = withDefault "" result
@@ -23,5 +23,5 @@ to_string result = withDefault "" result
 --   stop immediately (i.e. do not execute later functions)
 -- this is useful for function that might make assumption upon previous one
 sequentially_check : List CheckFunction -> CheckResult
-sequentially_check func_list =
-  foldl (\func acc -> if valid then func () else acc) valid func_list
+sequentially_check funcs =
+  List.foldl (\func acc -> if acc == valid then func () else acc) valid funcs

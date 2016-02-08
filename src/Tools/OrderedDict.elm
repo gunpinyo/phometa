@@ -2,7 +2,8 @@ module Tools.OrderedDict where
 
 import Dict exposing (Dict)
 
-import Tools.Util exposing (are_list_elements_unique, list_unordered_identical)
+import Tools.Utils exposing (are_list_elements_unique,
+                             are_list_unorderly_equal_to)
 
 -- has constrain, see `check_ordered_dict`
 type alias OrderedDict comparable a

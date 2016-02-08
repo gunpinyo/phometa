@@ -1,4 +1,6 @@
-module Node where
+module Models.Node where
+
+type alias NodeName = String
 
 type Node
   = NodeOpen -- TODO: implement open module

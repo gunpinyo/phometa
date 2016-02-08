@@ -2,7 +2,7 @@ module Views.View where
 
 import Html exposing (Html)
 import Html.Attributes exposing (class)
-import Html.Lazy exposing (lazy2)
+import Html.Lazy exposing (lazy)
 
 import Tools.Flex exposing (flex_div, fullbleed)
 import Tools.HtmlExtra exposing (import_css, import_javascript)
@@ -23,4 +23,4 @@ show_window model =
    in fullbleed <| flex_div [] attributes elements
 
 view : Model -> Html
-view = lazy2 show_window
+view = lazy show_window
