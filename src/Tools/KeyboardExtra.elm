@@ -5,20 +5,18 @@ import Debug exposing (crash)
 import Set exposing (Set)
 import String
 
--- this is actually define in core library named `Keyboard`
---   but we can't use it directly since it makes `elm-test` clash
---   (perhaps weird bug)
--- type alias KeyCode = Int
+type alias Keystroke = List KeyCode
 
-string_to_keycodes : String -> Set KeyCode
-string_to_keycodes string =
+-- post: the return list is sorted
+to_keystroke : String -> Keystroke
+to_keystroke string =
   string
     |> String.split " "
-    |> List.filterMap string_to_keycode
-    |> Set.fromList
+    |> List.filterMap to_maybe_keycode
+    |> List.sort
 
-string_to_keycode : String -> Maybe KeyCode
-string_to_keycode string =
+to_maybe_keycode : String -> Maybe KeyCode
+to_maybe_keycode string =
   case string of
     "enter"  -> Just 13
     "shift"  -> Just 16

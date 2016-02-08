@@ -8,20 +8,19 @@ import Tools.KeyboardExtra exposing (..)
 
 tests : Test
 tests = suite "Tools.KeyboardExtra" [
-  suite "string_to_keycodes" [
-    test "normal" <|
-      assertEqual [16, 17, 67]
-        (List.sort <| Set.toList <| string_to_keycodes "ctrl shift c"),
+  suite "to_keystroke" [
+    test "normal with correct order" <|
+      assertEqual [16, 17, 67] (to_keystroke "ctrl shift c"),
     test "when empty" <|
-      assertEqual (Set.fromList []) (string_to_keycodes "")],
-  suite "string_to_keycode" [
+      assertEqual [] (to_keystroke "")],
+  suite "to_maybe_keycode" [
     test "modifier character" <|
-      assertEqual (Just 17) (string_to_keycode "ctrl"),
+      assertEqual (Just 17) (to_maybe_keycode "ctrl"),
     test "normal" <|
-      assertEqual (Just 67) (string_to_keycode "C"),
+      assertEqual (Just 67) (to_maybe_keycode "C"),
     test "lower case character auto convert" <|
-      assertEqual (Just 67) (string_to_keycode "c"),
+      assertEqual (Just 67) (to_maybe_keycode "c"),
     test "when empty" <|
-      assertEqual Nothing (string_to_keycode ""),
+      assertEqual Nothing (to_maybe_keycode ""),
     test "garbage" <|
-      assertEqual Nothing (string_to_keycode "garbage")]]
+      assertEqual Nothing (to_maybe_keycode "garbage")]]

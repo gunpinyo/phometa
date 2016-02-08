@@ -86,7 +86,6 @@ main = start app
     - `Models`
     - `Updates`
     - `Views`
-    - `Checks`
     - `Tests`
 
 e.g.

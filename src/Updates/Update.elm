@@ -1,0 +1,37 @@
+module Updates.Update where
+
+import Maybe
+
+import Tools.SanityCheck exposing (valid, invalid)
+import Models.Popup exposing (Popup(..))
+import Models.Model exposing (Action, Command, merge_keymaps)
+import Updates.KeyBinding exposing (cmd_press_prefix_key,
+                                    cmd_assign_root_keymap)
+import Updates.CommonCmd exposing (cmd_nothing)
+
+update : Action -> Command
+update action =
+  case action of
+    ActionNothing          -> cmd_nothing
+    ActionCommand command  -> add_pre_post_cmd command
+    ActionPreTask pre_task -> Nothing -- task_signal in `Main` will handle this
+    ActionKeystroke keystroke ->
+      (\model ->
+         (case Dict.get keystroke model.root_keymap of
+           Just (KeyBindingCommand _ command) -> add_pre_post_cmd command
+           Just (KeyBindingPrefix _ keymap)   -> cmd_press_prefix_key keymap
+           _                                  -> cmd_nothing)
+         |> model)
+
+add_pre_post_cmd : Command -> Command
+add_pre_post_cmd command =
+  let cmd_pre  = cmd_nothing -- currently, there is no pre-command
+      cmd_post = cmd_assign_root_keymap >> cmd_sanity_check
+   in cmd_pre >> command >> cmd_post
+
+cmd_sanity_check : Command
+cmd_sanity_check model =
+  case check_model model of
+    valid          -> model
+    invalid reason ->
+      { model | popup_list = (PopupProgError reason) :: model.popup_list }
