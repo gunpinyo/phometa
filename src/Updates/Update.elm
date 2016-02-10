@@ -3,35 +3,33 @@ module Updates.Update where
 import Maybe
 import Dict
 
-import Models.Popup exposing (Popup(..))
-import Models.Model exposing (Command, KeyBinding(..), check_model)
+import Models.Environment exposing (Environment)
+import Models.Message exposing (Message(..))
+import Models.Model exposing (Model, Command, KeyBinding(..), check_model)
 import Models.Action exposing (Action(..))
-import Updates.KeyBinding exposing (cmd_press_prefix_key,
-                                    cmd_assign_root_keymap)
 import Updates.CommonCmd exposing (cmd_nothing)
+import Updates.KeymapUtils exposing (get_key_binding)
+import Updates.Keymap exposing (cmd_press_prefix_key, cmd_assign_root_keymap)
+import Updates.Message exposing (cmd_send_message)
 
-update : Action -> Command
-update action =
+update : (Environment, Action) -> Model -> Model
+update (environment, action) old_model =
+  let model  = { model | environment = environment }
+   in (cmd_assign_root_keymap >> cmd_sanity_check) model
+
+get_root_cmd : Action -> Command
+get_root_cmd action =
   case action of
     ActionNothing          -> cmd_nothing
-    ActionCommand command  -> add_pre_post_cmd command
-    ActionPreTask pre_task -> cmd_nothing -- handled by `task_signal` in `Main`
-    ActionKeystroke keystroke ->
-      (\model -> model |>
-         case Dict.get keystroke model.root_keymap of
-           Just (KeyBindingCommand _ command) -> add_pre_post_cmd command
-           Just (KeyBindingPrefix _ keymap)   -> cmd_press_prefix_key keymap
-           _                                  -> cmd_nothing)
-
-add_pre_post_cmd : Command -> Command
-add_pre_post_cmd command =
-  let cmd_pre  = cmd_nothing -- currently, there is no pre-command
-      cmd_post = cmd_assign_root_keymap >> cmd_sanity_check
-   in cmd_pre >> command >> cmd_post
+    ActionCommand command  -> command
+    ActionKeystroke keystroke -> (\model ->
+      case get_key_binding keystroke model.root_keymap of
+        Just (KeyBindingCommand command)  -> command model
+        Just (KeyBindingPrefix keymap) -> cmd_press_prefix_key keymap model
+        _                              -> model)
 
 cmd_sanity_check : Command
 cmd_sanity_check model =
   case check_model model of
     Nothing     -> model
-    Just reason -> { model |
-                     popup_list = (PopupProgError reason) :: model.popup_list }
+    Just reason -> cmd_send_message (MessageProgError reason) model

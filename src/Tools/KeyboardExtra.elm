@@ -5,10 +5,11 @@ import Debug exposing (crash)
 import Set exposing (Set)
 import String
 
+type alias RawKeystroke = String
 type alias Keystroke = List KeyCode
 
 -- post: the return list is sorted
-to_keystroke : String -> Keystroke
+to_keystroke : RawKeystroke -> Keystroke
 to_keystroke string =
   string
     |> String.split " "
@@ -23,6 +24,7 @@ to_maybe_keycode string =
     "ctrl"   -> Just 17
     "alt"    -> Just 18
     "space"  -> Just 32
+    "escape" -> Just 27
     _        -> case String.toList string of
                   char :: [] -> Just <| Char.toCode <| Char.toUpper char
                   _          -> Nothing

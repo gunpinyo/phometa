@@ -10,3 +10,7 @@
 - introduce MajorMode in phomata, e.g. package navigation, modulerenameing
 
 - getCommand in Updates.Update
+
+- change popup to message, as we will introduce log-message
+- refactor keymap, and provide interface for its declaration
+- introduce reactive that carry external signal e.g. timestamp, to do task
