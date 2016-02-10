@@ -8,6 +8,9 @@ import Tools.Utils exposing (..)
 
 tests : Test
 tests = suite "Tools.Utils" [
+  suite "list_skeleton" [
+    test "normal" <|
+      assertEqual [5] (list_skeleton 5)],
   suite "parity_pair_extract" [
     test "when odd" <|
       assertEqual "odd" ((parity_pair_extract 5) ("even", "odd")),
@@ -36,7 +39,7 @@ tests = suite "Tools.Utils" [
     test "when permute" <|
       assert (are_list_unorderly_equal_to [3, 8, 4, 2] [4, 3, 2, 8]),
     test "when duplicate" <|
-      (assert << not) (are_list_unorderly_equal_to [3, 8, 8, 4, 2] [4, 3, 2, 8]),
+      (assert << not) (are_list_unorderly_equal_to [3, 8, 8, 4] [4, 3, 8]),
     test "some gone" <|
       (assert << not) (are_list_unorderly_equal_to [6, 8] [7, 8, 6]),
     test "some gone both side" <|

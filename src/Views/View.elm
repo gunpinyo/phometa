@@ -7,6 +7,7 @@ import Html.Lazy exposing (lazy)
 import Tools.Flex exposing (flex_div, flex_grow, fullbleed)
 import Tools.HtmlExtra exposing (import_css, import_javascript)
 import Models.Model exposing (Model)
+import Views.Keymap exposing (show_keymap_pane)
 
 view : Model -> Html
 view = lazy show_view
@@ -35,7 +36,9 @@ show_window model =
             flex_grow (snd cfg.side_grid_panes_ratio) grid_pane]
 
 show_grid_pane : Model -> Html
-show_grid_pane model = Html.text "this is grid pane" -- TODO: implement this
+show_grid_pane model =
+  flex_div [] [class "pane"] [
+    Html.text "this is grid pane" ]  -- TODO: do this
 
 show_side_pane : Model -> Html
 show_side_pane model =
@@ -55,7 +58,6 @@ show_side_pane model =
             flex_div [("flex", "0 auto")] [] [keymap_pane]]
 
 show_package_pane : Model -> Html
-show_package_pane model = Html.text "this is package pane" -- TODO: do this
-
-show_keymap_pane : Model -> Html
-show_keymap_pane model = Html.text "this is keymap pane" -- TODO: do this
+show_package_pane model =
+  flex_div [] [class "pane"] [
+    Html.text "this is package pane" ]  -- TODO: do this

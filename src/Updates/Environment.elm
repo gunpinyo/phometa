@@ -6,7 +6,10 @@ import Set exposing (Set)
 import Task exposing (Task)
 import Time exposing (timestamp)
 
+import Focus exposing ((=>))
+
 import Tools.KeyboardExtra exposing (Keystroke)
+import Models.Focus exposing (environment_, maybe_task_)
 import Models.Environment exposing (Environment)
 import Models.Model exposing (Model, Command, KeyBinding(..))
 import Models.Action exposing (Action(..))
@@ -27,6 +30,4 @@ cmd_add_task func model =
   let new_task = case model.environment.maybe_task of
                    Nothing       -> func model
                    Just old_task -> Task.andThen old_task (\ () -> func model)
-      old_env  = model.environment
-      new_env  = { old_env | maybe_task = Just new_task }
-   in { model | environment = new_env}
+   in Focus.set (environment_ => maybe_task_) (Just new_task) model

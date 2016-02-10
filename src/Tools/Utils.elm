@@ -2,6 +2,9 @@ module Tools.Utils where
 
 import Set exposing (Set)
 
+list_skeleton : a -> List a
+list_skeleton x = [x]
+
 parity_pair_extract : Int -> (a, a) -> a
 parity_pair_extract parity =
   if parity % 2 == 0 then fst else snd

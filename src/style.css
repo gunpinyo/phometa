@@ -10,12 +10,11 @@ div {
 }
 
 .pane {
-    border-style: solid;
-    border-color: brown;
-    border-width: 1px;
+    border-radius: 10px;
+    background: #73AD21;
+    padding: 5px;
     /*padding: 1px;*/
-    margin: 1px;
-    background-color: #E9C062;
+    margin: 3px;
     overflow: auto;
 }
 

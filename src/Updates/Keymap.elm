@@ -27,7 +27,7 @@ global_keymap =
   ]
 
 major_mode_keymap : MajorMode -> Keymap
-major_mode_keymap major_mode =
-  case major_mode of
-    MajorModeDefault -> build_keymap [] -- TODO: finish this
-    _                -> build_keymap [] -- TODO: finish this
+major_mode_keymap major_mode = build_keymap []
+  -- case major_mode of
+  --   MajorModeDefault -> build_keymap [] -- TODO: finish this
+  --   _                -> build_keymap [] -- TODO: finish this

@@ -7,7 +7,7 @@ import Task exposing (Task)
 
 import Models.Environment exposing (Environment)
 import Models.Model exposing (Model, init_model)
-import Models.Action exposing (Action(..), mailbox)
+import Models.Action exposing (Action(..), mailbox, address)
 import Updates.Environment exposing (inject_env_to_action, extract_task)
 import Updates.Update exposing (update)
 import Views.View exposing (view)
@@ -29,4 +29,11 @@ main : Signal Html
 main = Signal.map view model_signal
 
 port task_signal : Signal (Task () ())
-port task_signal = Signal.filterMap extract_task (Task.succeed ()) model_signal
+port task_signal = Signal.filterMap extract_task activating_task model_signal
+
+-- some sub-component of model e.g. root_keymap,
+-- will behave correctly after model_signal got the first action
+-- it is designed like this because setting a nice init_* would be an overkill
+-- so, we need a task to click of the first action
+activating_task : Task () ()
+activating_task = Signal.send address ActionNothing
