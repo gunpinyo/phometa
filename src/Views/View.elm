@@ -3,6 +3,7 @@ module Views.View where
 import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Html.Lazy exposing (lazy)
+import Graphics.Element exposing (show)
 
 import Tools.Flex exposing (flex_div, flex_grow, fullbleed)
 import Tools.HtmlExtra exposing (import_css, import_javascript)
@@ -19,6 +20,9 @@ show_view model =
       "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css",
     import_css "style.css",
     show_window model]
+
+show_debug : Model -> Html
+show_debug model = flex_div [] [] [Html.fromElement <| show model]
 
 show_window : Model -> Html
 show_window model =
@@ -38,7 +42,7 @@ show_window model =
 show_grid_pane : Model -> Html
 show_grid_pane model =
   flex_div [] [class "pane"] [
-    Html.text "this is grid pane" ]  -- TODO: do this
+    Html.text "this is grid pane", show_debug model]  -- TODO: do this
 
 show_side_pane : Model -> Html
 show_side_pane model =

@@ -9,7 +9,6 @@ import Tools.Flex exposing (flex_div)
 import Tools.Utils exposing (list_skeleton)
 import Models.Model exposing (Model, KeyBinding(..))
 
-
 show_keymap_pane : Model -> Html
 show_keymap_pane model =
   let header = List.map (th [] << list_skeleton <<  text)

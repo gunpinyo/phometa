@@ -3,6 +3,9 @@ module Updates.Update where
 import Maybe
 import Dict
 
+import Focus
+
+import Models.Focus exposing (environment_)
 import Models.Environment exposing (Environment)
 import Models.Message exposing (Message(..))
 import Models.Model exposing (Model, Command, KeyBinding(..), check_model)
@@ -14,7 +17,7 @@ import Updates.Message exposing (cmd_send_message)
 
 update : (Environment, Action) -> Model -> Model
 update (environment, action) old_model =
-  let model  = { model | environment = environment }
+  let model  = Focus.set environment_ environment old_model
    in (cmd_assign_root_keymap >> cmd_sanity_check) model
 
 get_root_cmd : Action -> Command

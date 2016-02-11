@@ -1,8 +1,11 @@
 module Updates.Message where
 
+import Focus
+
+import Models.Focus exposing (message_list_)
 import Models.Message exposing (Message)
 import Models.Model exposing (Command)
 
 cmd_send_message : Message -> Command
 cmd_send_message message model =
-  { model | message_list = message :: model.message_list}
+  Focus.set message_list_ (message :: model.message_list) model
