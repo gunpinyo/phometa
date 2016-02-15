@@ -16,12 +16,15 @@ cmd_assign_root_keymap model =
 
 cmd_press_prefix_key : Keymap -> Command
 cmd_press_prefix_key keymap model =
-  Focus.set root_keymap_ (merge_keymaps model.root_keymap keymap) model
+  let new_keymap = merge_keymaps keymap <| build_keymap [
+                     ("ESC", "quit prefix keystrokes",
+                      KeyBindingCommand cmd_assign_root_keymap)]
+   in Focus.set root_keymap_ new_keymap model
 
 global_keymap : Keymap
 global_keymap =
   build_keymap [
-    ("ctrl space", "menu", KeyBindingPrefix <| build_keymap [
+    ("C-SPC", "menu", KeyBindingPrefix <| build_keymap [
       ("w", "window related", KeyBindingPrefix <| build_keymap [
         -- ("p", "toggle package pane", KeyBindingCommand cmd_toggle_package_pane),
         -- ("k", "toggle keymap pane", KeyBindingCommand cmd_toggle_keymap_pane)
@@ -30,7 +33,7 @@ global_keymap =
   ]
 
 major_mode_keymap : MajorMode -> Keymap
-major_mode_keymap major_mode = build_keymap []
-  -- case major_mode of
-  --   MajorModeDefault -> build_keymap [] -- TODO: finish this
-  --   _                -> build_keymap [] -- TODO: finish this
+major_mode_keymap major_mode =
+  case major_mode of
+    MajorModeDefault -> build_keymap [] -- TODO: finish this
+    _                -> build_keymap [] -- TODO: finish this

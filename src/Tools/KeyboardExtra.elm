@@ -12,19 +12,19 @@ type alias Keystroke = List KeyCode
 to_keystroke : RawKeystroke -> Keystroke
 to_keystroke string =
   string
-    |> String.split " "
+    |> String.split "-"
     |> List.filterMap to_maybe_keycode
     |> List.sort
 
 to_maybe_keycode : String -> Maybe KeyCode
 to_maybe_keycode string =
   case string of
-    "enter"  -> Just 13
-    "shift"  -> Just 16
-    "ctrl"   -> Just 17
-    "alt"    -> Just 18
-    "space"  -> Just 32
-    "escape" -> Just 27
+    "RET"    -> Just 13  -- enter / return
+    "S"      -> Just 16  -- shift
+    "C"      -> Just 17  -- ctrl
+    "A"      -> Just 18  -- alt
+    "SPC"    -> Just 32  -- space
+    "ESC"    -> Just 27  -- escape
     _        -> case String.toList string of
                   char :: [] -> Just <| Char.toCode <| Char.toUpper char
                   _          -> Nothing
