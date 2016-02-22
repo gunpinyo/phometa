@@ -1,20 +1,20 @@
 module Models.Grid where
 
-import Models.PkgMod exposing (ModulePath)
-import Models.Node exposing (NodeName)
+import Models.Pointer exposing (IntPointer)
+import Models.RepoModel exposing (ModulePath, NodePath)
+
+type Grids
+  = Grids1x1 Grid
+  | Grids1x2 Grid Grid
+  | Grids1x3 Grid Grid Grid
+  | Grids2x1 Grid Grid
+  | Grids3x1 Grid Grid Grid
+  | Grids2x2 Grid Grid Grid Grid
 
 type Grid
-  = Grid1x1 GridElem
-  | Grid1x2 GridElem GridElem
-  | Grid1x3 GridElem GridElem GridElem
-  | Grid2x1 GridElem GridElem
-  | Grid3x1 GridElem GridElem GridElem
-  | Grid2x2 GridElem GridElem GridElem GridElem
+  = GridHome
+  | GridModule ModulePath IntPointer
+  | GridNode NodePath
 
-type GridElem
-  = GridElemHome
-  | GridElemModule ModulePath
-  | GridElemNode ModulePath NodeName
-
-init_grid : Grid
-init_grid = Grid1x1 GridElemHome
+init_grids : Grids
+init_grids = Grids1x1 GridHome

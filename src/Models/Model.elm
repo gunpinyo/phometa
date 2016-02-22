@@ -6,8 +6,10 @@ import Task exposing (Task)
 import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
 import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Config exposing (Config, init_config)
-import Models.PkgMod exposing (Package, init_package, check_package)
-import Models.Grid exposing (Grid, init_grid)
+import Models.Pointer exposing (PanePointer, init_pane_pointer)
+import Models.RepoModel exposing (Package)
+import Models.RepoUtils exposing (init_package, check_package)
+import Models.Grid exposing (Grids, init_grids)
 import Models.Mode exposing (MajorMode, init_major_mode)
 import Models.Message exposing (MessageList, init_message_list)
 import Models.Environment exposing (Environment, init_environment)
@@ -18,7 +20,8 @@ type alias Model =
   { config       : Config
   , root_package : Package
   , root_keymap  : Keymap
-  , grid         : Grid
+  , grids        : Grids
+  , pane_pointer : PanePointer
   , major_mode   : MajorMode
   , message_list : MessageList
   , environment  : Environment
@@ -42,7 +45,8 @@ init_model =
   { config        = init_config
   , root_package  = init_package
   , root_keymap   = init_keymap
-  , grid          = init_grid
+  , grids         = init_grids
+  , pane_pointer  = init_pane_pointer
   , major_mode    = init_major_mode
   , message_list  = init_message_list
   , environment   = init_environment

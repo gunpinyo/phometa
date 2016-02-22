@@ -32,16 +32,20 @@ th, td {
 /*     border-width: 5px; */
 /* } */
 
-.key-binding-keystroke-td {
+table.keymap tr:hover:nth-child(n+2) {
+    background-color: #FEFEFE;
+}
+
+.keymap-keystroke-td {
     color: #BB00BB;
 }
 
-.key-binding-prefix-description-td {
+.keymap-prefix-description-td {
     font-weight: bold;
     text-decoration: underline;
     color: #0000BB;
 }
 
-.key-binding-command-description-td {
+.keymap-command-description-td {
     color: #0000BB;
 }

@@ -7,31 +7,32 @@ import Html.Lazy exposing (lazy)
 import Tools.Flex exposing (flex_div, flex_split, fullbleed)
 import Tools.HtmlExtra exposing (import_css, import_javascript)
 import Models.Model exposing (Model)
+import Models.ViewState exposing (View)
 import Views.Keymap exposing (show_keymap_pane)
-import Views.Grid exposing (show_grid_pane)
+import Views.Grid exposing (show_grids_pane)
 
-view : Model -> Html
+view : View
 view = lazy show_view
 
-show_view : Model -> Html
+show_view : View
 show_view model =
   fullbleed
     <| flex_div [] [class "window"]
     <| [import_css "style.css", show_window model]
 
-show_window : Model -> Html
+show_window : View
 show_window model =
-  let side_pane = show_side_pane model
-      grid_pane = show_grid_pane model
-      cfg       = model.config
+  let side_pane  = show_side_pane model
+      grids_pane = show_grids_pane model
+      cfg        = model.config
    in if not cfg.show_package_pane && not cfg.show_keymap_pane then
-         grid_pane
+         grids_pane
       else
          flex_split "row" [] [] [
-            (fst cfg.side_grid_panes_ratio, side_pane),
-            (snd cfg.side_grid_panes_ratio, grid_pane)]
+            (fst cfg.side_grids_panes_ratio, side_pane),
+            (snd cfg.side_grids_panes_ratio, grids_pane)]
 
-show_side_pane : Model -> Html
+show_side_pane : View
 show_side_pane model =
   let package_pane = show_package_pane model
       keymap_pane  = show_keymap_pane model
@@ -48,7 +49,7 @@ show_side_pane model =
             package_pane,
             flex_div [("flex", "0 auto")] [] [keymap_pane]]
 
-show_package_pane : Model -> Html
+show_package_pane : View
 show_package_pane model =
   flex_div [] [class "pane"] [
     Html.text "this is package pane" ]  -- TODO: do this

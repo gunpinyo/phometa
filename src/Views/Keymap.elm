@@ -6,25 +6,28 @@ import Html exposing (Html, text, table, tr, th, td)
 import Html.Attributes exposing (class, style, align)
 
 import Tools.Flex exposing (flex_div)
+import Tools.HtmlExtra exposing (on_click)
 import Tools.Utils exposing (list_skeleton)
 import Models.Model exposing (Model, KeyBinding(..))
+import Models.Action exposing (Action(..), address)
+import Models.ViewState exposing (View)
 
-show_keymap_pane : Model -> Html
+show_keymap_pane : View
 show_keymap_pane model =
-  let header = List.map (th [] << list_skeleton <<  text)
-                 ["Key", "Description"]
-      detail = Dict.values model.root_keymap
-                 |> List.map (\ ((raw_keystroke, description), key_binding) -> [
-                       td [align "center", class "key-binding-keystroke-td"]
-                          [text raw_keystroke],
-                       td [align "center",
-                           case key_binding of
-                             KeyBindingCommand _ ->
-                               class "key-binding-command-description-td"
-                             KeyBindingPrefix _  ->
-                               class "key-binding-prefix-description-td"]
-                          [text description]])
-      table' = table [style [("width", "100%")]]
-                 <| List.map (tr [])
+  let header = tr [] <| List.map (th [] << list_skeleton <<  text)
+                                 ["Key", "Description"]
+      detail = Dict.toList model.root_keymap
+                 |> List.map (\ (keys, ((raw_key, description), key_binding)) ->
+                      tr [on_click address (ActionKeystroke keys)] [
+                        td [align "center", class "keymap-keystroke-td"]
+                           [text raw_key],
+                        td [align "center",
+                            case key_binding of
+                              KeyBindingCommand _ ->
+                                class "keymap-command-description-td"
+                              KeyBindingPrefix _  ->
+                                class "keymap-prefix-description-td"]
+                           [text description]])
+      table' = table [style [("width", "100%")], class "keymap"]
                  <| header :: detail
    in flex_div [] [class "pane"] [table']
