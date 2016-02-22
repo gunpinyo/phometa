@@ -33,9 +33,9 @@ type KeyBinding
   = KeyBindingCommand Command
   | KeyBindingPrefix Keymap    -- similar to prefix key bindings in emacs
 
-type alias KeyBindingName = String
+type alias KeyDescription = String
 
-type alias Keymap = Dict Keystroke ((RawKeystroke, KeyBindingName), KeyBinding)
+type alias Keymap = Dict Keystroke ((RawKeystroke, KeyDescription), KeyBinding)
 
 init_model : Model
 init_model =

@@ -18,5 +18,6 @@ maybe_task_ = create .maybe_task (\u r -> {r|maybe_task=u r.maybe_task})
 time_ = create .time (\u r -> {r|time=u r.time})
 
 side_grid_panes_ratio_ = create .side_grid_panes_ratio (\u r -> {r|side_grid_panes_ratio=u r.side_grid_panes_ratio})
-is_package_pane_hided_ = create .is_package_pane_hided (\u r -> {r|is_package_pane_hided=u r.is_package_pane_hided})
-is_keymap_pane_hided_ = create .is_keymap_pane_hided (\u r -> {r|is_keymap_pane_hided=u r.is_keymap_pane_hided})
+show_package_pane_ = create .show_package_pane (\u r -> {r|show_package_pane=u r.show_package_pane})
+show_keymap_pane_ = create .show_keymap_pane (\u r -> {r|show_keymap_pane=u r.show_keymap_pane})
+globally_show_terms_description_ = create .globally_show_terms_description (\u r -> {r|globally_show_terms_description=u r.globally_show_terms_description})

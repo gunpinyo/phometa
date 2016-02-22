@@ -24,7 +24,7 @@ show_window model =
   let side_pane = show_side_pane model
       grid_pane = show_grid_pane model
       cfg       = model.config
-   in if cfg.is_package_pane_hided && cfg.is_keymap_pane_hided then
+   in if not cfg.show_package_pane && not cfg.show_keymap_pane then
          grid_pane
       else
          flex_split "row" [] [] [
@@ -39,9 +39,9 @@ show_side_pane model =
       css_style = [("flex-direction"  , "column"),
                    ("justify-content" , "center"),
                    ("align-items"     , "stretch")]
-   in if not cfg.is_package_pane_hided && cfg.is_keymap_pane_hided then
+   in if cfg.show_package_pane && not cfg.show_keymap_pane then
         package_pane
-      else if cfg.is_package_pane_hided && not cfg.is_keymap_pane_hided then
+      else if not cfg.show_package_pane && cfg.show_keymap_pane then
         keymap_pane
       else
         flex_div css_style [] [

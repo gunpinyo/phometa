@@ -36,12 +36,12 @@ th, td {
     color: #BB00BB;
 }
 
-.key-binding-prefix-name-td {
+.key-binding-prefix-description-td {
     font-weight: bold;
     text-decoration: underline;
     color: #0000BB;
 }
 
-.key-binding-command-name-td {
+.key-binding-command-description-td {
     color: #0000BB;
 }

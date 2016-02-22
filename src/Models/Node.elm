@@ -50,20 +50,20 @@ type alias IndChoice =
 --     regex : RawRegex }
 
 type Term
-  = TermHole
+  = TermTodo
   | TermVar VarName
   | TermInd IndChoiceName (List Term)
   -- | TermLit String
   -- | TermLetBe VarName Term Term         --  let v = t_1 in t_2
   -- | TermMatch Term (List (Term, Term))  --  match t_1 with [pat_{i} as t_{i}]
 
-type alias RootTerm a =
-  { a |
-    grammar : GrammarRef
+type alias RootTerm =
+  { grammar : GrammarRef
   , term : Term
   }
 
-type alias Alias = RootTerm (NodeBase {})
+type alias Alias =
+  NodeBase { root_term : RootTerm }
 
 type alias RuleRef = String
 
@@ -72,11 +72,16 @@ type Rule
   -- | RuleCompound CompoundRule
 
 type alias InferenceRule =
-  { premises : List (RootTerm {})
-  , conclusion : RootTerm {}
-  }
+  NodeBase
+    { premises : List RootTerm
+    , conclusion : RootTerm
+    }
 
-type alias Theorem = RootTerm { proof : Proof }
+type alias Theorem =
+  NodeBase
+    { goal : RootTerm
+    , proof : Proof
+    }
 
 type Proof
   = ProofHole

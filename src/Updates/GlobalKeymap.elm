@@ -3,7 +3,7 @@ module Updates.GlobalKeymap where
 import Focus exposing ((=>))
 
 import Models.Focus exposing (
-  config_, grid_, is_package_pane_hided_, is_keymap_pane_hided_)
+  config_, grid_, show_package_pane_, show_keymap_pane_)
 import Models.Grid exposing (Grid(..), GridElem(..))
 import Models.Model exposing (Command, KeyBinding(..), Keymap)
 import Updates.KeymapUtils exposing (build_keymap)
@@ -27,11 +27,11 @@ global_keymap =
 
 cmd_toggle_package_pane : Command
 cmd_toggle_package_pane model =
-  Focus.update (config_ => is_package_pane_hided_) not model
+  Focus.update (config_ => show_package_pane_) not model
 
 cmd_toggle_keymap_pane : Command
 cmd_toggle_keymap_pane model =
-  Focus.update (config_ => is_keymap_pane_hided_) not model
+  Focus.update (config_ => show_keymap_pane_) not model
 
 cmd_switch_grid : Int -> Int -> Command
 cmd_switch_grid row col model =
