@@ -3,46 +3,33 @@ module Views.View where
 import Html exposing (Html)
 import Html.Attributes exposing (class)
 import Html.Lazy exposing (lazy)
-import Graphics.Element exposing (show)
 
-import Tools.Flex exposing (flex_div, flex_grow, fullbleed)
+import Tools.Flex exposing (flex_div, flex_split, fullbleed)
 import Tools.HtmlExtra exposing (import_css, import_javascript)
 import Models.Model exposing (Model)
 import Views.Keymap exposing (show_keymap_pane)
+import Views.Grid exposing (show_grid_pane)
 
 view : Model -> Html
 view = lazy show_view
 
 show_view : Model -> Html
 show_view model =
-  fullbleed <| flex_div [] [class "window"] <| [
-    import_css
-      "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css",
-    import_css "style.css",
-    show_window model]
-
-show_debug : Model -> Html
-show_debug model = flex_div [] [] [Html.fromElement <| show model]
+  fullbleed
+    <| flex_div [] [class "window"]
+    <| [import_css "style.css", show_window model]
 
 show_window : Model -> Html
 show_window model =
   let side_pane = show_side_pane model
       grid_pane = show_grid_pane model
       cfg       = model.config
-      css_style = [("flex-direction"  , "row"),
-                   ("justify-content" , "center"),
-                   ("align-items"     , "stretch")]
    in if cfg.is_package_pane_hided && cfg.is_keymap_pane_hided then
          grid_pane
       else
-         flex_div css_style [] [
-            flex_grow (fst cfg.side_grid_panes_ratio) side_pane,
-            flex_grow (snd cfg.side_grid_panes_ratio) grid_pane]
-
-show_grid_pane : Model -> Html
-show_grid_pane model =
-  flex_div [] [class "pane"] [
-    Html.text "this is grid pane", show_debug model]  -- TODO: do this
+         flex_split "row" [] [] [
+            (fst cfg.side_grid_panes_ratio, side_pane),
+            (snd cfg.side_grid_panes_ratio, grid_pane)]
 
 show_side_pane : Model -> Html
 show_side_pane model =

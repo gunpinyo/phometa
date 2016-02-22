@@ -7,6 +7,7 @@ import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
 import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Config exposing (Config, init_config)
 import Models.PkgMod exposing (Package, init_package, check_package)
+import Models.Grid exposing (Grid, init_grid)
 import Models.Mode exposing (MajorMode, init_major_mode)
 import Models.Message exposing (MessageList, init_message_list)
 import Models.Environment exposing (Environment, init_environment)
@@ -17,6 +18,7 @@ type alias Model =
   { config       : Config
   , root_package : Package
   , root_keymap  : Keymap
+  , grid         : Grid
   , major_mode   : MajorMode
   , message_list : MessageList
   , environment  : Environment
@@ -40,6 +42,7 @@ init_model =
   { config        = init_config
   , root_package  = init_package
   , root_keymap   = init_keymap
+  , grid          = init_grid
   , major_mode    = init_major_mode
   , message_list  = init_message_list
   , environment   = init_environment

@@ -3,6 +3,7 @@ module Tools.HtmlExtra where
 import Json.Decode as Json
 import Regex exposing (HowMany(..), replace, regex)
 import Signal exposing (Address)
+import Graphics.Element exposing (show)
 
 import Html exposing (Html, Attribute, node, text)
 import Html.Attributes exposing (attribute, rel, href)
@@ -18,6 +19,9 @@ import_css css_location =
 import_javascript : String -> Html
 import_javascript javascript_location =
   node "script" [attribute "src" javascript_location] []
+
+debug_to_html : a -> Html
+debug_to_html x = Html.div [] [Html.fromElement <| show x]
 
 on_mouse_event : String -> Address a -> a -> Attribute
 on_mouse_event event_str address action =

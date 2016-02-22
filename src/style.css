@@ -2,28 +2,46 @@ div {
     white-space: pre;
 }
 
+th, td {
+    padding: 5px;
+}
+
 .window {
     font-family: monospace;
     font-size: 100%;
-    color: DarkBlue;
-    background-color: #E9C062;
+    color: Black;
+    background-color: #73AD21;
 }
 
 .pane {
     border-radius: 10px;
-    background: #73AD21;
+    background: #E9C062;
     padding: 5px;
     /*padding: 1px;*/
     margin: 3px;
     overflow: auto;
 }
 
-.pane-cursor {
-    border-color: DarkGreen;
-    border-width: 5px;
+/* .pane-cursor { */
+/*     border-color: DarkGreen; */
+/*     border-width: 5px; */
+/* } */
+
+/* .pane-hovered { */
+/*     border-color: Lime; */
+/*     border-width: 5px; */
+/* } */
+
+.key-binding-keystroke-td {
+    color: #BB00BB;
 }
 
-.pane-hovered {
-    border-color: Lime;
-    border-width: 5px;
+.key-binding-prefix-name-td {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #0000BB;
+}
+
+.key-binding-command-name-td {
+    color: #0000BB;
 }
