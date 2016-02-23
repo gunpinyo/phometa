@@ -5,6 +5,13 @@ import Set exposing (Set)
 list_skeleton : a -> List a
 list_skeleton x = [x]
 
+list_insert : Int -> a -> List a -> List a
+list_insert n x xs =
+  if n <= 0 then x :: xs else
+    case xs of
+      []      -> [x]
+      y :: ys -> y :: (list_insert (n - 1) x ys)
+
 parity_pair_extract : Int -> (a, a) -> a
 parity_pair_extract parity =
   if parity % 2 == 0 then fst else snd

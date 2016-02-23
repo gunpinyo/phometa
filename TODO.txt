@@ -1,3 +1,11 @@
+- make PackagePanePointer
+- rename MajorMode to Mode
+- rename Nodes to [Grammar, Term, Rule, Lemma]
+- separate [Import, Comment] from other nodes
+- merge name and formats of [Grammar, Constructor, Term, Rule] together
+
+- complete package pane
+
 - change ComponentPath, ModulePath to more elegent way
  e.g.  type alias ModulePath = [ModuleName]
      this could be ModulePath = (PackagePath, ModuleName)

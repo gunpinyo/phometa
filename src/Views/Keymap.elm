@@ -28,6 +28,6 @@ show_keymap_pane model =
                               KeyBindingPrefix _  ->
                                 class "keymap-prefix-description-td"]
                            [text description]])
-      table' = table [style [("width", "100%")], class "keymap"]
+      table' = table [style [("width", "100%")], class "keymap-table"]
                  <| header :: detail
    in flex_div [] [class "pane"] [table']

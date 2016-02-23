@@ -8,6 +8,7 @@ import Tools.Flex exposing (flex_div, flex_split, fullbleed)
 import Tools.HtmlExtra exposing (import_css, import_javascript)
 import Models.Model exposing (Model)
 import Models.ViewState exposing (View)
+import Views.Package exposing (show_package_pane)
 import Views.Keymap exposing (show_keymap_pane)
 import Views.Grid exposing (show_grids_pane)
 
@@ -48,8 +49,3 @@ show_side_pane model =
         flex_div css_style [] [
             package_pane,
             flex_div [("flex", "0 auto")] [] [keymap_pane]]
-
-show_package_pane : View
-show_package_pane model =
-  flex_div [] [class "pane"] [
-    Html.text "this is package pane" ]  -- TODO: do this

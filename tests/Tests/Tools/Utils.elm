@@ -11,6 +11,19 @@ tests = suite "Tools.Utils" [
   suite "list_skeleton" [
     test "normal" <|
       assertEqual [5] (list_skeleton 5)],
+  suite "list_insert" [
+    test "n < 0" <|
+      assertEqual [7, 6, 4, 9] (list_insert (-1) 7 [6, 4, 9]),
+    test "n = 0" <|
+      assertEqual [7, 6, 4, 9] (list_insert 0 7 [6, 4, 9]),
+    test "n in range" <|
+      assertEqual [6, 4, 7, 9] (list_insert 2 7 [6, 4, 9]),
+    test "n >= length" <|
+      assertEqual [6, 4, 9, 7] (list_insert 10 7 [6, 4, 9]),
+    test "when empty, n < 0" <|
+      assertEqual [7] (list_insert (-1) 7 []),
+    test "when empty, n >= 0" <|
+      assertEqual [7] (list_insert 0 7 [])],
   suite "parity_pair_extract" [
     test "when odd" <|
       assertEqual "odd" ((parity_pair_extract 5) ("even", "odd")),

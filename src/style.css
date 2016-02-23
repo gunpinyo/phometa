@@ -32,7 +32,23 @@ th, td {
 /*     border-width: 5px; */
 /* } */
 
-table.keymap tr:hover:nth-child(n+2) {
+.package-package-td {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #0000BB;
+}
+
+.package-module-td {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #BB00BB;
+}
+
+.package-node-text {
+    color: #0000BB;
+}
+
+.keymap-table tr:hover:nth-child(n+2) {
     background-color: #FEFEFE;
 }
 
