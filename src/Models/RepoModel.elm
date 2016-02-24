@@ -3,24 +3,35 @@ module Models.RepoModel where
 import Dict exposing (Dict)
 
 import Tools.OrderedDict exposing (OrderedDict)
-import Models.Pointer exposing (IntPointer, StrPointer)
 
--- PkgMod ----------------------------------------------------------------------
+-- Common -------------------------------------------------------------------
 
-type alias PkgModName = String
+-- generalise for package, module, or node
+type alias ContainerName = String
+
+type alias ContainerPath = List ContainerName
+
+type alias Comment = Maybe String
+
+-- for any string that allow to use mixfix
+type alias Mixfixable = String
+
+mixfix_hole : String
+mixfix_hole = "⁑"
+
+type alias RawRegex = String
+
+type alias VarName = String
 
 -- Package ---------------------------------------------------------------------
 
-type alias PackageName = PkgModName
+type alias PackageName = ContainerName
 
-type PackagePath
-  = PackagePathCur
-  | PackagePathPkg PackageName PackagePath
+type alias PackagePath = List PackageName
 
 type alias Package =
-  { dict      : Dict PkgModName PackageElem
+  { dict      : Dict ContainerName PackageElem
   , is_folded : Bool
-  , pointer   : StrPointer
   }
 
 type PackageElem
@@ -29,7 +40,7 @@ type PackageElem
 
 -- Module ----------------------------------------------------------------------
 
-type alias ModuleName = PkgModName
+type alias ModuleName = ContainerName
 
 type alias ModulePath =
   { package_path : PackagePath
@@ -37,19 +48,20 @@ type alias ModulePath =
   }
 
 type alias Module =
-  { dict : OrderedDict NodeName Node
+  { -- imports  : List Import
+    comment   : Comment
+  , nodes     : OrderedDict NodeName Node
   , is_folded : Bool
-  , pointer   : IntPointer
   }
 
 -- Node ------------------------------------------------------------------------
 
-type alias NodeName = String
+type alias NodeName = ContainerName
 
 type alias NodePath =
- { module_path : ModulePath
- , node_name   : NodeName
- }
+  { module_path : ModulePath
+  , node_name   : NodeName
+  }
 
 type alias NodeBase a =
   { a |
@@ -58,28 +70,10 @@ type alias NodeBase a =
   }
 
 type Node
-  = NodeOpen -- TODO: implement open module
-  | NodeComment Comment -- TODO: implement open module
-  | NodeGrammar -- TODO: implement open module
-  | NodeDefinition -- TODO: implement open module
-  | NodeAlias Alias -- TODO: implement open module
-  | NodeRule -- TODO: implement open module
-  | NodeTheorem -- TODO: implement open module
-
--- Node common -----------------------------------------------------------------
-
-type alias RawRegex = String
-
-type alias Format = String
-
-type alias VarName = String
-
--- Open ------------------------------------------------------------------------
--- TODO:
-
--- Comment ---------------------------------------------------------------------
-
-type alias Comment = String
+  = NodeGrammar Grammar -- TODO: implement this
+  | NodeDefinition Definition -- TODO: implement this
+  | NodeRule Rule -- TODO: implement this
+  | NodeTheorem Theorem-- TODO: implement this
 
 -- Grammar ---------------------------------------------------------------------
 
@@ -88,16 +82,10 @@ type alias GrammarName = String
 type alias Grammar =
   NodeBase
     { var_regex : Maybe RawRegex
-    , choices : OrderedDict GrammarChoiceName GrammarChoice
+    , choices   : OrderedDict GrammarChoiceName (List GrammarName)
     }
 
-type alias GrammarChoiceName = String
-
--- constrain: formats must have length more than sub_grammars by 1
-type alias GrammarChoice =
-  { sub_grammars : List GrammarName
-  , formats : List Format
-  }
+type alias GrammarChoiceName = Mixfixable
 
 -- Term ------------------------------------------------------------------------
 
@@ -113,22 +101,34 @@ type alias RootTerm =
   , term : Term
   }
 
---------------------------------------------------------------------------------
+type TermPath
+  = TermPathCurrent
+  | TermPathInd GrammarChoiceName TermPath
+  -- TermPathLetBe Bool TermPath -- Bool, then t_2 else t_1
+  -- TermPathMatch Int Bool Term -- Int, pattern order, Bool, then pat else t
 
-type alias Alias =
-  NodeBase { root_term : RootTerm }
+
+-- Definition ------------------------------------------------------------------
+
+type alias DefinitionName = Mixfixable
+
+type alias Definition =
+  NodeBase
+    { arguments : List VarName
+    , root_term : RootTerm
+    }
+
+-- Rule ------------------------------------------------------------------------
 
 type alias RuleName = String
 
-type Rule
-  = RuleInference InferenceRule
-  -- | RuleCompound CompoundRule
-
-type alias InferenceRule =
+type alias Rule =
   NodeBase
     { premises : List RootTerm
     , conclusion : RootTerm
     }
+
+-- Theorem ---------------------------------------------------------------------
 
 type alias Theorem =
   NodeBase

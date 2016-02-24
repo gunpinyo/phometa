@@ -1,6 +1,6 @@
 module Models.Grid where
 
-import Models.Pointer exposing (IntPointer)
+import Models.Cursor exposing (IntCursor)
 import Models.RepoModel exposing (ModulePath, NodePath)
 
 type Grids
@@ -13,8 +13,26 @@ type Grids
 
 type Grid
   = GridHome
-  | GridModule ModulePath IntPointer
+  | GridModule ModulePath IntCursor
   | GridNode NodePath
 
+-- TODO: reset to real initial
 init_grids : Grids
-init_grids = Grids1x1 GridHome
+init_grids =
+  Grids1x1 <| GridNode {
+    module_path = {
+      package_path = ["sub-package"],
+      module_name = "module-B"
+    },
+    node_name = "my-tree"
+  }
+
+get_number_of_grids : Grids -> Int
+get_number_of_grids grids =
+  case grids of
+    Grids1x1 _       -> 1
+    Grids1x2 _ _     -> 2
+    Grids1x3 _ _ _   -> 3
+    Grids2x1 _ _     -> 2
+    Grids3x1 _ _ _   -> 3
+    Grids2x2 _ _ _ _ -> 4

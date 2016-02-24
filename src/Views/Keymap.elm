@@ -23,10 +23,9 @@ show_keymap_pane model =
                            [text raw_key],
                         td [align "center",
                             case key_binding of
-                              KeyBindingCommand _ ->
-                                class "keymap-command-description-td"
-                              KeyBindingPrefix _  ->
-                                class "keymap-prefix-description-td"]
+                              KbCmd _ -> class "keymap-command-description-td"
+                              KbPrefix _ -> class "keymap-prefix-description-td"
+                           ]
                            [text description]])
       table' = table [style [("width", "100%")], class "keymap-table"]
                  <| header :: detail

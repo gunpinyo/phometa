@@ -7,10 +7,10 @@ import Tools.Utils exposing (are_list_elements_unique,
                              list_insert)
 
 -- has constrain, see `check_ordered_dict`
-type alias OrderedDict comparable a
- = { dict : Dict comparable a
-   , order : List comparable
-   }
+type alias OrderedDict comparable a =
+  { dict : Dict comparable a
+  , order : List comparable
+  }
 
 check_ordered_dict : OrderedDict comparable a -> Bool
 check_ordered_dict ordered_dict =
@@ -24,6 +24,12 @@ ordered_dict_insert index key value ordered_dict =
   , order = ordered_dict.order
               |> List.filter (\key' -> key /= key')
               |> list_insert index key
+  }
+
+ordered_dict_from_list : List (comparable, a) -> OrderedDict comparable a
+ordered_dict_from_list list =
+  { dict  = Dict.fromList list
+  , order = List.map fst list
   }
 
 ordered_dict_to_list : OrderedDict comparable a -> List (comparable, a)

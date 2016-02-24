@@ -8,7 +8,8 @@ import Focus
 import Models.Focus exposing (environment_)
 import Models.Environment exposing (Environment)
 import Models.Message exposing (Message(..))
-import Models.Model exposing (Model, Command, KeyBinding(..), check_model)
+import Models.Model exposing (Model, Command, KeyBinding(..))
+import Models.ModelUtils exposing (check_model)
 import Models.Action exposing (Action(..))
 import Updates.CommonCmd exposing (cmd_nothing)
 import Updates.KeymapUtils exposing (get_key_binding)
@@ -23,9 +24,9 @@ update (environment, action) old_model =
         ActionCommand command     -> (add_pre_post_cmd command) model
         ActionKeystroke keystroke ->
           case get_key_binding keystroke model.root_keymap of
-            Just (KeyBindingCommand command) -> (add_pre_post_cmd command) model
-            Just (KeyBindingPrefix keymap)  -> cmd_press_prefix_key keymap model
-            Nothing                         -> model
+            Just (KbCmd command)   -> (add_pre_post_cmd command) model
+            Just (KbPrefix keymap) -> cmd_press_prefix_key keymap model
+            Nothing                -> model
 
 add_pre_post_cmd : Command -> Command
 add_pre_post_cmd command =

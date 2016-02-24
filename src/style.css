@@ -22,6 +22,10 @@ th, td {
     overflow: auto;
 }
 
+.pane-on-cursor {
+    background: #E9D092;
+}
+
 /* .pane-cursor { */
 /*     border-color: DarkGreen; */
 /*     border-width: 5px; */
@@ -45,7 +49,7 @@ th, td {
 }
 
 .package-node-text {
-    color: #0000BB;
+    color: #222222;
 }
 
 .keymap-table tr:hover:nth-child(n+2) {

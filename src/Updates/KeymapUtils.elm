@@ -3,7 +3,7 @@ module Updates.KeymapUtils where
 import Dict
 
 import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke, to_keystroke)
-import Models.Model exposing (KeyBinding, KeyDescription, Keymap)
+import Models.Model exposing (KeyBinding(..), KeyDescription, Keymap)
 
 -- if there a collision, second one wins
 merge_keymaps : Keymap -> Keymap -> Keymap
@@ -19,3 +19,6 @@ build_keymap list =
         (to_keystroke raw_keystroke,
            ((raw_keystroke, key_binding_name), key_binding))
    in Dict.fromList <| List.map tuple_to_dict_elem list
+
+empty_keymap : Keymap
+empty_keymap = build_keymap []
