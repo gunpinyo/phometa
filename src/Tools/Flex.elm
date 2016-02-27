@@ -3,7 +3,7 @@ module Tools.Flex where
 import Html exposing (Html, Attribute, div)
 import Html.Attributes exposing (style)
 
-import Tools.Css exposing (CssStyle)
+import Tools.CssExtra exposing (CssStyle)
 
 flex_div : CssStyle -> List Attribute -> List Html -> Html
 flex_div css_style attributes =

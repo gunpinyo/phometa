@@ -1,3 +1,17 @@
+/* keyword */
+.pkw {
+    display: inline-block;
+    color: #004488;
+}
+
+/* grammar */
+.pgmr {
+    display: inline-block;
+    color: #008800;
+}
+
+/* -------------------------------------------------------------------------- */
+
 div {
     white-space: pre;
 }

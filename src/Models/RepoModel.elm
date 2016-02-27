@@ -3,23 +3,20 @@ module Models.RepoModel where
 import Dict exposing (Dict)
 
 import Tools.OrderedDict exposing (OrderedDict)
+import Tools.StripedList exposing (StripedList)
 
 -- Common -------------------------------------------------------------------
 
--- generalise for package, module, or node
+-- generalisation of package, module, or node
 type alias ContainerName = String
 
 type alias ContainerPath = List ContainerName
 
 type alias Comment = Maybe String
 
--- for any string that allow to use mixfix
-type alias Mixfixable = String
-
-mixfix_hole : String
-mixfix_hole = "⁑"
-
 type alias RawRegex = String
+
+type alias Format = String
 
 type alias VarName = String
 
@@ -82,35 +79,41 @@ type alias GrammarName = String
 type alias Grammar =
   NodeBase
     { var_regex : Maybe RawRegex
-    , choices   : OrderedDict GrammarChoiceName (List GrammarName)
+    , choices   : List GrammarChoice
     }
 
-type alias GrammarChoiceName = Mixfixable
+type alias GrammarChoice = StripedList Format GrammarName
 
 -- Term ------------------------------------------------------------------------
 
 type Term
   = TermTodo
   | TermVar VarName
-  | TermInd GrammarChoiceName (List Term)
-  -- | TermLetBe VarName Term Term         --  let v = t_1 in t_2
-  -- | TermMatch Term (List (Term, Term))  --  match t_1 with [pat_{i} as t_{i}]
+  | TermInd GrammarChoice (List Term)
+  -- | TermLetBe (List VarName Term) Term  --  let [var_i = term_i]* in term
+  -- | TermMatch Term (List (Term, Term))  --  match term with [pat_i as term_i]
+
+type TermPath
+  = TermPathCurrent
+  | TermPathInd GrammarChoice TermPath
+  -- TermPathLetBe (Maybe Int) TermPath -- Nothing, to term, Just i, to term_i
+  -- TermPathMatch (Maybe (Int, Bool)) TermPath -- Nothing, to term
+                                                -- (Just (False, i)), to pat_i
+                                                -- (Just (True, i)), to term_i
 
 type alias RootTerm =
   { grammar : GrammarName
   , term : Term
   }
 
-type TermPath
-  = TermPathCurrent
-  | TermPathInd GrammarChoiceName TermPath
-  -- TermPathLetBe Bool TermPath -- Bool, then t_2 else t_1
-  -- TermPathMatch Int Bool Term -- Int, pattern order, Bool, then pat else t
-
+type alias Judgement =
+  { context : RootTerm
+  , goal : RootTerm
+  }
 
 -- Definition ------------------------------------------------------------------
 
-type alias DefinitionName = Mixfixable
+type alias DefinitionName = StripedList Format GrammarName
 
 type alias Definition =
   NodeBase
@@ -124,20 +127,20 @@ type alias RuleName = String
 
 type alias Rule =
   NodeBase
-    { premises : List RootTerm
-    , conclusion : RootTerm
+    { premises : List Judgement
+    , conclusion : Judgement
     }
 
 -- Theorem ---------------------------------------------------------------------
 
 type alias Theorem =
   NodeBase
-    { goal : RootTerm
+    { goal : Judgement
     , proof : Proof
     }
 
 type Proof
-  = ProofHole
+  = ProofTodo
   | ProofByRule RuleName (List Theorem)
   | ProofByTheorem Theorem
   -- | ProofByPrimitive

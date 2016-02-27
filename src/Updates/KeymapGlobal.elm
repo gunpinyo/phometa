@@ -16,11 +16,11 @@ keymap_global model =
         ("p", "toggle package pane", KbCmd cmd_toggle_package_pane),
         ("k", "toggle keymap pane", KbCmd cmd_toggle_keymap_pane),
         ("1", "reform grids to 1x1", KbCmd <| cmd_reform_grids 1 1),
-        ("2", "reform grids to 1x1", KbCmd <| cmd_reform_grids 1 2),
-        ("3", "reform grids to 1x1", KbCmd <| cmd_reform_grids 1 3),
-        ("4", "reform grids to 1x1", KbCmd <| cmd_reform_grids 2 2),
-        ("8", "reform grids to 1x1", KbCmd <| cmd_reform_grids 2 1),
-        ("9", "reform grids to 1x1", KbCmd <| cmd_reform_grids 3 1)
+        ("2", "reform grids to 1x2", KbCmd <| cmd_reform_grids 1 2),
+        ("3", "reform grids to 1x3", KbCmd <| cmd_reform_grids 1 3),
+        ("4", "reform grids to 2x2", KbCmd <| cmd_reform_grids 2 2),
+        ("8", "reform grids to 2x1", KbCmd <| cmd_reform_grids 2 1),
+        ("9", "reform grids to 3x1", KbCmd <| cmd_reform_grids 3 1)
       ])
     ]) (keymap_pane_cursor model))
   ]

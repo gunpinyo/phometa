@@ -7,6 +7,7 @@ import Html.Attributes exposing (class, style, align)
 
 import Tools.Flex exposing (flex_div)
 import Tools.HtmlExtra exposing (on_click)
+import Tools.CssExtra exposing (css_inline_str_compile)
 import Tools.Utils exposing (list_skeleton)
 import Models.Model exposing (Model, KeyBinding(..))
 import Models.Action exposing (Action(..), address)
@@ -26,7 +27,7 @@ show_keymap_pane model =
                               KbCmd _ -> class "keymap-command-description-td"
                               KbPrefix _ -> class "keymap-prefix-description-td"
                            ]
-                           [text description]])
+                           (css_inline_str_compile description)])
       table' = table [style [("width", "100%")], class "keymap-table"]
                  <| header :: detail
    in flex_div [] [class "pane"] [table']

@@ -4,70 +4,13 @@ import Dict exposing (Dict)
 
 import Tools.OrderedDict exposing (ordered_dict_from_list)
 import Tools.SanityCheck exposing (CheckResult, valid)
+import Tools.StripedList exposing (striped_list_introduce)
 import Models.RepoModel exposing (..)
 import Models.Model exposing (Model)
 
--- TODO: reset to real initial
 init_package : Package
-init_package = {
-  dict = Dict.fromList [
-    ("module-A", PackageElemMod {
-      comment = Nothing,
-      nodes = ordered_dict_from_list [],
-      is_folded = False
-    }),
-    ("sub-package", PackageElemPkg {
-      dict = Dict.fromList [
-        ("module-B", PackageElemMod {
-          comment = Nothing,
-          nodes = ordered_dict_from_list [
-            ("Bool", NodeGrammar {
-              comment = Nothing,
-              is_folded = False,
-              var_regex = Nothing,
-              choices = ordered_dict_from_list [
-                ("⊤", []),
-                ("⊥", [])
-              ]
-            }),
-            ("BinTree", NodeGrammar {
-              comment = Nothing,
-              is_folded = False,
-              var_regex = Nothing,
-              choices = ordered_dict_from_list [
-                ("leaf", []),
-                ((mixfix_hole ++ " ⚻ " ++ mixfix_hole), ["Bintree", "Bintree"])
-              ]
-            }),
-            ("my-tree", NodeDefinition {
-              comment = Nothing,
-              is_folded = False,
-              arguments = [],
-              root_term = init_root_term
-            })
-          ],
-          is_folded = False
-        })],
-      is_folded = False
-    }),
-    ("sub-package'", PackageElemPkg {
-      dict = Dict.fromList [
-        ("module-C", PackageElemMod {
-          comment = Nothing,
-          nodes = ordered_dict_from_list [],
-          is_folded = False
-        }),
-        ("another-sub-package", PackageElemPkg {
-          dict = Dict.fromList [
-            ("module-D", PackageElemMod {
-              comment = Nothing,
-              nodes = ordered_dict_from_list [],
-              is_folded = False
-            })],
-          is_folded = False
-        })],
-      is_folded = False
-    })]
+init_package =
+  { dict = Dict.fromList [("Standard Library", PackageElemPkg standard_library)]
   , is_folded = False
   }
 
@@ -110,3 +53,51 @@ init_root_term =
   { grammar = root_term_undefined_grammar
   , term = TermTodo
   }
+
+standard_library : Package
+standard_library =
+  { dict = Dict.fromList [
+      ("First Order Logic", PackageElemMod {
+        comment = Nothing,
+        nodes = ordered_dict_from_list [
+          ("Prop", NodeGrammar {
+            comment = Nothing,
+            is_folded = False,
+            var_regex = Just "[A-Z]([1-9][0-9]*|'*)",
+            choices = [
+              striped_list_introduce [" ⊤ "] [],
+              striped_list_introduce [" ⊥ "] [],
+              striped_list_introduce ["", ""] ["Atom"],
+              striped_list_introduce ["", " ∧ ", ""] ["Prop", "Prop"],
+              striped_list_introduce ["", " ∨ ", ""] ["Prop", "Prop"],
+              striped_list_introduce [" ¬ ", ""] ["Prop"],
+              striped_list_introduce ["", " → ", ""] ["Prop", "Prop"],
+              striped_list_introduce ["", " ↔ ", ""] ["Prop", "Prop"]
+            ]
+          }),
+          ("Atom", NodeGrammar {
+            comment = Nothing,
+            is_folded = False,
+            var_regex = Just "[a-z]([1-9][0-9]*|'*)",
+            choices = []
+          }),
+          ("Context", NodeGrammar {
+            comment = Nothing,
+            is_folded = False,
+            var_regex = Just "[ΓΔ]([1-9][0-9]*|'*)",
+            choices = [
+              striped_list_introduce ["", ""] ["Prop"],
+              striped_list_introduce ["", " , ", ""] ["Context", "Prop"]
+            ]
+          }),
+          ("def-example", NodeDefinition {
+            comment = Nothing,
+            is_folded = False,
+            arguments = [],
+            root_term = init_root_term
+          })
+        ],
+        is_folded = False
+      })
+    ]
+  , is_folded = False }

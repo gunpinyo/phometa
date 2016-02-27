@@ -7,7 +7,7 @@ import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
 import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Config exposing (Config)
 import Models.Cursor exposing (PaneCursor)
-import Models.RepoModel exposing (Package,
+import Models.RepoModel exposing (Package, ModulePath,
                                   GrammarName, Grammar, RootTerm, TermPath)
 import Models.Grid exposing (Grids)
 import Models.Message exposing (MessageList)
@@ -47,22 +47,30 @@ type Mode
   = ModeNothing
   | ModePackagePane
   | ModeRootTerm RecordModeRootTerm
-  | ModeStrChoices RecordModeStrChoice
+  -- | ModeStrChoices RecordModeStrChoice
   -- TODO: add more  mode
 
 type alias RecordModeRootTerm =
-  { get_root_term : (Model -> RootTerm)
-   , set_root_term : (RootTerm -> Model -> Model)
-   , get_grammar   : (Model -> Dict GrammarName Grammar)
-   , term_path     : TermPath
-   , previous_mode : Mode
-   }
-
-type alias RecordModeStrChoice =
-  { choices       : List String
-  , prefix_info   : String
-  , suffix_info   : String
-  , callback      : (String -> Model -> Model)
-  , counter       : Int
+  { module_path   : ModulePath
+  , get_root_term : (Model -> RootTerm)
+  , set_root_term : (RootTerm -> Model -> Model)
+  , term_path     : TermPath
+  , micro_mode    : MicroModeRootTerm
   , previous_mode : Mode
   }
+
+type MicroModeRootTerm
+  = MicroModeRootTermSetGrammar
+  | MicroModeRootTermSetGrammarWithString
+  | MicroModeRootTermTodo
+  | MicroModeRootTermTodoWithString
+  | MicroModeRootTermInd
+  | MicroModeRootTermVar
+
+-- type alias RecordModeStrChoice =
+--   { choices        : List String
+--   , to_description : (String -> String)
+--   , callback       : (String -> Model -> Model)
+--   , counter        : Int
+--   , previous_mode  : Mode
+--   }
