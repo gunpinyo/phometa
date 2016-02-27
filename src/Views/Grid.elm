@@ -1,6 +1,6 @@
 module Views.Grid where
 
-import Html exposing (Html)
+import Html exposing (Html, div)
 import Html.Attributes exposing (classList)
 import Graphics.Element exposing (show)
 
@@ -13,6 +13,7 @@ import Models.RepoUtils exposing (get_node)
 import Models.Model exposing (Model)
 import Models.ViewState exposing (View)
 import Views.Definition exposing (show_definition)
+import Views.Theorem exposing (show_theorem)
 
 show_grids_pane : View
 show_grids_pane model =
@@ -62,6 +63,11 @@ show_grid_pane has_cursor grid model =
                       Just (NodeDefinition definition) ->
                         show_definition
                             has_cursor node_path.node_name definition model
+                      Just (NodeTheorem theorem) ->
+                        show_theorem
+                            has_cursor node_path.node_name theorem model
                       _  -> debug_to_html node_path -- TODO: finish this
       attrs  = [classList [("pane", True), ("pane-on-cursor", has_cursor)]]
-   in flex_div [] attrs [content]
+   in -- use div instead of flex_div
+      -- since its elements doesn't depend on monitor size anymore
+      div attrs [content]

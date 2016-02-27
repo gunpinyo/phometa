@@ -19,13 +19,21 @@ type Grid
 -- TODO: reset to real initial
 init_grids : Grids
 init_grids =
-  Grids1x1 <| GridNode {
-    module_path = {
-      package_path = ["sub-package"],
-      module_name = "module-B"
-    },
-    node_name = "my-tree"
-  }
+  Grids2x1
+    (GridNode {
+      module_path = {
+        package_path = ["Standard Library"],
+        module_name = "First Order Logic"
+      },
+      node_name = "theorem-1"
+    })
+    (GridNode {
+      module_path = {
+        package_path = ["Standard Library"],
+        module_name = "First Order Logic"
+      },
+      node_name = "theorem-2"
+    })
 
 get_number_of_grids : Grids -> Int
 get_number_of_grids grids =

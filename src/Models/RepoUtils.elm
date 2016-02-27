@@ -90,11 +90,25 @@ standard_library =
               striped_list_introduce ["", " , ", ""] ["Context", "Prop"]
             ]
           }),
-          ("def-example", NodeDefinition {
+          -- TODO: remove this from stdlib
+          ("theorem-1", NodeTheorem {
             comment = Nothing,
             is_folded = False,
-            arguments = [],
-            root_term = init_root_term
+            goal = {
+              context = init_root_term,
+              goal = init_root_term
+            },
+            proof = ProofTodo
+          }),
+          -- TODO: remove this from stdlib
+          ("theorem-2", NodeTheorem {
+            comment = Nothing,
+            is_folded = False,
+            goal = {
+              context = init_root_term,
+              goal = init_root_term
+            },
+            proof = ProofTodo
           })
         ],
         is_folded = False

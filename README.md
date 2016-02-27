@@ -17,6 +17,7 @@ For full report of this project, please compile master.tex in `doc/` directory.
 - nodejs (>= 0.10.25)
 - npm (>= 1.4.21)
 - elm 0.16
+- sass
 
 ## My elm additional coding convention
 

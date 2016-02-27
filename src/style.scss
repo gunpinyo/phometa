@@ -1,13 +1,28 @@
+/* newly defined string */
+.pstr {
+    display: inline-block;
+    padding: 1px;
+    color: #330055;
+}
+
 /* keyword */
 .pkw {
     display: inline-block;
+    padding: 5px;
     color: #004488;
 }
 
 /* grammar */
 .pgmr {
     display: inline-block;
+    padding: 5px;
     color: #008800;
+}
+
+.indented-block {
+    margin: 5px;
+    border-left: thick double #888888;
+    padding-left: 3px;
 }
 
 /* -------------------------------------------------------------------------- */

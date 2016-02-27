@@ -20,6 +20,9 @@ build/
 # nodejs, npm package
 node_modules/
 
+# css, which is complied by sass
+*.css
+
 # (partial) document using auctex
 doc/auto/*.el
 doc/*.pdf

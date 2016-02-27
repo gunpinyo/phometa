@@ -56,7 +56,7 @@ type alias RecordModeRootTerm =
   , set_root_term : (RootTerm -> Model -> Model)
   , term_path     : TermPath
   , micro_mode    : MicroModeRootTerm
-  , previous_mode : Mode
+  , is_editable   : Bool
   }
 
 type MicroModeRootTerm

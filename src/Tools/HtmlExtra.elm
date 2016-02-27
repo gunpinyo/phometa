@@ -5,8 +5,8 @@ import Regex exposing (HowMany(..), replace, regex)
 import Signal exposing (Address)
 import Graphics.Element exposing (show)
 
-import Html exposing (Html, Attribute, node, text)
-import Html.Attributes exposing (attribute, rel, href)
+import Html exposing (Html, Attribute, node, div, text)
+import Html.Attributes exposing (attribute, style, rel, href)
 import Html.Events exposing (onWithOptions)
 
 import_css : String -> Html
@@ -22,6 +22,9 @@ import_javascript javascript_location =
 
 debug_to_html : a -> Html
 debug_to_html x = Html.div [] [Html.fromElement <| show x]
+
+inline_div : List Html -> Html
+inline_div htmls = div [style [("display", "inline")]] htmls
 
 on_mouse_event : String -> Address a -> a -> Attribute
 on_mouse_event event_str address action =

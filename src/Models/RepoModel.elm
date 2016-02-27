@@ -90,13 +90,13 @@ type Term
   = TermTodo
   | TermVar VarName
   | TermInd GrammarChoice (List Term)
-  -- | TermLetBe (List VarName Term) Term  --  let [var_i = term_i]* in term
+  -- | TermLet (List VarName Term) Term    --  let [var_i = term_i]* in term
   -- | TermMatch Term (List (Term, Term))  --  match term with [pat_i as term_i]
 
 type TermPath
   = TermPathCurrent
   | TermPathInd GrammarChoice TermPath
-  -- TermPathLetBe (Maybe Int) TermPath -- Nothing, to term, Just i, to term_i
+  -- TermPathLet (Maybe Int) TermPath     -- Nothing, to term, Just i, to term_i
   -- TermPathMatch (Maybe (Int, Bool)) TermPath -- Nothing, to term
                                                 -- (Just (False, i)), to pat_i
                                                 -- (Just (True, i)), to term_i
