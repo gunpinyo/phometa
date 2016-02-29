@@ -51,7 +51,7 @@ cmd_toggle_keymap_pane model =
 
 cmd_reform_grids : Int -> Int -> Command
 cmd_reform_grids row col model =
-  let gh = GridHome
+  let gh = GridHome []
       (g1, g2, g3, g4) = case model.grids of
                            Grids1x1 g1          -> (g1, gh, gh, gh)
                            Grids1x2 g1 g2       -> (g1, g2, gh, gh)

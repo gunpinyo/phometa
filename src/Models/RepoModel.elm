@@ -95,7 +95,7 @@ type Term
 
 type TermPath
   = TermPathCurrent
-  | TermPathInd GrammarChoice TermPath
+  | TermPathInd TermPath
   -- TermPathLet (Maybe Int) TermPath     -- Nothing, to term, Just i, to term_i
   -- TermPathMatch (Maybe (Int, Bool)) TermPath -- Nothing, to term
                                                 -- (Just (False, i)), to pat_i
@@ -109,12 +109,7 @@ type alias RootTerm =
 type alias Judgement =
   { context : RootTerm
   , root_term : RootTerm
-  , cursor : JudgementCursor
   }
-
-type JudgementCursor
-  = JudgementCursorContext
-  | JudgementCursorRootTerm
 
 -- Definition ------------------------------------------------------------------
 

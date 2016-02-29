@@ -6,21 +6,25 @@ import Html.Attributes exposing (style)
 import Tools.CssExtra exposing (CssStyle)
 
 flex_div : CssStyle -> List Attribute -> List Html -> Html
-flex_div css_style attributes =
+flex_div css_style attributes htmls =
   let css_style' =
         [ ("flex", "1 1 auto")
         , ("display", "flex")
         ] ++ css_style
-   in div (style css_style' :: attributes)
+   in div (style css_style' :: attributes) htmls
 
 flex_grow : Int -> Html -> Html
-flex_grow factor sub_html =
+flex_grow factor htmls =
   let css_style =
         [ ("flex-grow", toString factor)
         , ("display", "flex")
         , ("flex-basis", "0px")
         ]
-   in flex_div css_style [] [sub_html]
+   in flex_div css_style [] [htmls]
+
+flex_inline : CssStyle -> List Attribute -> List Html -> Html
+flex_inline css_style attributes htmls =
+  flex_div (("flex-direction", "row") :: css_style) attributes htmls
 
 flex_split : String -> CssStyle -> List Attribute -> List (Int, Html) -> Html
 flex_split direction css_style attributes grow_html_list =
@@ -31,10 +35,10 @@ flex_split direction css_style attributes grow_html_list =
    in flex_div css_style' attributes grow_html_list'
 
 fullbleed : Html -> Html
-fullbleed sub_html =
+fullbleed html =
   let css_style =
         [ ("width", "100vw")
         , ("height", "100vh")
         , ("display", "flex")
         ]
-   in flex_div css_style [] [sub_html]
+   in flex_div css_style [] [html]

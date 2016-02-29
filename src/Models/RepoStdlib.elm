@@ -29,14 +29,14 @@ stdlib_package =
             is_folded = False,
             var_regex = Just "[A-Z]([1-9][0-9]*|'*)",
             choices = [
-              striped_list_introduce [" ⊤ "] [],
-              striped_list_introduce [" ⊥ "] [],
+              striped_list_introduce ["⊤"] [],
+              striped_list_introduce ["⊥"] [],
               striped_list_introduce ["", ""] ["Atom"],
-              striped_list_introduce ["", " ∧ ", ""] ["Prop", "Prop"],
-              striped_list_introduce ["", " ∨ ", ""] ["Prop", "Prop"],
-              striped_list_introduce [" ¬ ", ""] ["Prop"],
-              striped_list_introduce ["", " → ", ""] ["Prop", "Prop"],
-              striped_list_introduce ["", " ↔ ", ""] ["Prop", "Prop"]
+              striped_list_introduce ["", "∧", ""] ["Prop", "Prop"],
+              striped_list_introduce ["", "∨", ""] ["Prop", "Prop"],
+              striped_list_introduce ["¬", ""] ["Prop"],
+              striped_list_introduce ["", "→", ""] ["Prop", "Prop"],
+              striped_list_introduce ["", "↔", ""] ["Prop", "Prop"]
             ]
           }),
           ("Atom", NodeGrammar {
@@ -51,13 +51,26 @@ stdlib_package =
             var_regex = Just "[ΓΔ]([1-9][0-9]*|'*)",
             choices = [
               striped_list_introduce ["", ""] ["Prop"],
-              striped_list_introduce ["", " , ", ""] ["Context", "Prop"]
+              striped_list_introduce ["", ",", ""] ["Context", "Prop"]
             ]
           }),
           -- TODO: remove this from stdlib
           ("theorem-1", NodeTheorem init_theorem),
           -- TODO: remove this from stdlib
-          ("theorem-2", NodeTheorem init_theorem)
+          ("theorem-2", NodeTheorem
+            { comment = Nothing
+            , is_folded = False
+            , goal =
+                { context = init_root_term
+                , root_term =
+                    { grammar = "Prop"
+                    , term = TermInd
+                       (striped_list_introduce ["", "∧", ""] ["Prop", "Prop"])
+                       [TermTodo, TermVar "B"]
+                    }
+                }
+            , proof = ProofTodo
+            })
         ],
         is_folded = False
       })

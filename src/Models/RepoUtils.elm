@@ -134,7 +134,6 @@ init_judgement : Judgement
 init_judgement =
   { context = init_root_term
   , root_term = init_root_term
-  , cursor = JudgementCursorContext
   }
 
 -- Theorem ---------------------------------------------------------------------

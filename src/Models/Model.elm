@@ -54,7 +54,7 @@ type Mode
 
 type alias RecordModeRootTerm =
   { module_path     : ModulePath
-  , focus_root_term : Focus Model RootTerm
+  , root_term_focus : Focus Model RootTerm
   , term_path       : TermPath
   , micro_mode      : MicroModeRootTerm
   , is_editable     : Bool
@@ -65,8 +65,8 @@ type MicroModeRootTerm
   | MicroModeRootTermSetGrammarWithString
   | MicroModeRootTermTodo
   | MicroModeRootTermTodoWithString
-  | MicroModeRootTermInd
   | MicroModeRootTermVar
+  | MicroModeRootTermInd
 
 -- type alias RecordModeStrChoice =
 --   { choices        : List String

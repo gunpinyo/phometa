@@ -23,9 +23,6 @@ import_javascript javascript_location =
 debug_to_html : a -> Html
 debug_to_html x = Html.div [] [Html.fromElement <| show x]
 
-inline_div : List Attribute -> List Html -> Html
-inline_div attrs htmls = div (style [("display", "inline")] :: attrs) htmls
-
 on_mouse_event : String -> Address a -> a -> Attribute
 on_mouse_event event_str address action =
   onWithOptions
