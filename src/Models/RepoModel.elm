@@ -108,8 +108,13 @@ type alias RootTerm =
 
 type alias Judgement =
   { context : RootTerm
-  , goal : RootTerm
+  , root_term : RootTerm
+  , cursor : JudgementCursor
   }
+
+type JudgementCursor
+  = JudgementCursorContext
+  | JudgementCursorRootTerm
 
 -- Definition ------------------------------------------------------------------
 

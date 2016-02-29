@@ -6,7 +6,8 @@ import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
 import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Config exposing (init_config)
 import Models.Cursor exposing (init_pane_cursor)
-import Models.RepoUtils exposing (init_package, check_package)
+import Models.RepoUtils exposing (check_package)
+import Models.RepoStdlib exposing (init_package_with_stdlib)
 import Models.Grid exposing (init_grids)
 import Models.Message exposing (init_message_list)
 import Models.Environment exposing (init_environment)
@@ -16,7 +17,7 @@ import Models.Model exposing (..)
 init_model : Model
 init_model =
   { config        = init_config
-  , root_package  = init_package
+  , root_package  = init_package_with_stdlib
   , root_keymap   = init_keymap
   , grids         = init_grids
   , pane_cursor   = init_pane_cursor

@@ -19,7 +19,8 @@ show_view : View
 show_view model =
   fullbleed
     <| flex_div [] [class "window"]
-    <| [import_css "style.css", show_window model]
+    <| [ import_css "style.css"
+       , show_window model]
 
 show_window : View
 show_window model =

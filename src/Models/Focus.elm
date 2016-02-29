@@ -24,3 +24,8 @@ show_keymap_pane_ = create .show_keymap_pane (\u r -> {r|show_keymap_pane=u r.sh
 globally_show_terms_description_ = create .globally_show_terms_description (\u r -> {r|globally_show_terms_description=u r.globally_show_terms_description})
 
 grammar_ = create .grammar (\u r -> {r|grammar=u r.grammar})
+dict_ = create .dict (\u r -> {r|dict=u r.dict})
+nodes_ = create .nodes (\u r -> {r|nodes=u r.nodes})
+goal_ = create .goal (\u r -> {r|goal=u r.goal})
+context_ = create .context (\u r -> {r|context=u r.context})
+root_term_ = create .root_term (\u r -> {r|root_term=u r.root_term})

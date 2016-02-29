@@ -3,6 +3,8 @@ module Models.Model where
 import Dict exposing (Dict)
 import Task exposing (Task)
 
+import Focus exposing (Focus)
+
 import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
 import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Config exposing (Config)
@@ -51,12 +53,11 @@ type Mode
   -- TODO: add more  mode
 
 type alias RecordModeRootTerm =
-  { module_path   : ModulePath
-  , get_root_term : (Model -> RootTerm)
-  , set_root_term : (RootTerm -> Model -> Model)
-  , term_path     : TermPath
-  , micro_mode    : MicroModeRootTerm
-  , is_editable   : Bool
+  { module_path     : ModulePath
+  , focus_root_term : Focus Model RootTerm
+  , term_path       : TermPath
+  , micro_mode      : MicroModeRootTerm
+  , is_editable     : Bool
   }
 
 type MicroModeRootTerm

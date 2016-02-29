@@ -1,8 +1,4 @@
-- make PackagePanePointer
-- rename MajorMode to Mode
-- rename Nodes to [Grammar, Term, Rule, Lemma]
-- separate [Import, Comment] from other nodes
-- merge name and formats of [Grammar, Constructor, Term, Rule] together
+- finish root_term editor
 
 - complete package pane
 

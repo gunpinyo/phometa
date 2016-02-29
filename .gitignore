@@ -21,7 +21,11 @@ build/
 node_modules/
 
 # css, which is complied by sass
-*.css
+src/style.css
+src/style.css.map
+.sass-cache/
+src/**/.sass-cache/
+tests/**/.sass-cache/
 
 # (partial) document using auctex
 doc/auto/*.el
