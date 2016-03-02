@@ -19,12 +19,18 @@ to_keystroke string =
 to_maybe_keycode : String -> Maybe KeyCode
 to_maybe_keycode string =
   case string of
-    "RET"    -> Just 13  -- enter / return
-    "S"      -> Just 16  -- shift
-    "C"      -> Just 17  -- ctrl
-    "A"      -> Just 18  -- alt
-    "SPC"    -> Just 32  -- space
-    "ESC"    -> Just 27  -- escape
+    "Return" -> Just 13  -- enter / return
+    "Shift"  -> Just 16  -- shift
+    "Ctrl"   -> Just 17  -- ctrl
+    "Alt"    -> Just 18  -- alt
+    "Space"  -> Just 32  -- space
+    "Escape" -> Just 27  -- escape
+    "["      -> Just 219
+    "]"      -> Just 221
+    "⭠"     -> Just 37
+    "⭡"      -> Just 38
+    "⭢"     -> Just 39
+    "⭣"      -> Just 40
     _        -> case String.toList string of
                   char :: [] -> Just <| Char.toCode <| Char.toUpper char
                   _          -> Nothing

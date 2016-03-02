@@ -2,8 +2,11 @@ module Models.ModelUtils where
 
 import Dict exposing (Dict)
 
+import Focus exposing (Focus, (=>))
+
 import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
 import Tools.SanityCheck exposing (CheckResult, sequentially_check)
+import Models.Focus exposing (mode_)
 import Models.Config exposing (init_config)
 import Models.Cursor exposing (init_pane_cursor)
 import Models.RepoUtils exposing (check_package)
@@ -39,3 +42,14 @@ check_model model =
 
 init_mode : Mode
 init_mode = ModeNothing
+
+focus_record_mode_root_term : Focus Model RecordModeRootTerm
+focus_record_mode_root_term =
+  (mode_ => (Focus.create
+     (\mode -> case mode of
+        ModeRootTerm record -> record
+        _                   ->
+          Debug.crash "from Models.ModelUtils.focus_record_mode_root_term")
+     (\update_func mode -> case mode of
+        ModeRootTerm record -> ModeRootTerm <| update_func record
+        other               -> other)))

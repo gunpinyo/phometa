@@ -18,7 +18,7 @@ cmd_assign_root_keymap model =
 cmd_press_prefix_key : Keymap -> Command
 cmd_press_prefix_key keymap model =
   let new_keymap = merge_keymaps keymap <| build_keymap [
-                     ("ESC", "quit prefix key", KbCmd cmd_assign_root_keymap)]
+        ("Escape", "quit prefix key", KbCmd cmd_assign_root_keymap)]
    in Focus.set root_keymap_ new_keymap model
 
 keymap_mode : Model -> Keymap

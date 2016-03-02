@@ -5,8 +5,11 @@ import Dict exposing (Dict)
 
 import Focus exposing (Focus, (=>))
 
+import Tools.Utils exposing (list_get_elem, list_focus_elem)
 import Tools.SanityCheck exposing (CheckResult, valid)
-import Models.Focus exposing (root_package_, dict_, nodes_)
+import Tools.OrderedDict exposing (ordered_dict_to_list)
+import Models.Focus exposing (root_package_, dict_, nodes_, term_)
+import Models.Cursor exposing (IntCursorPath)
 import Models.RepoModel exposing (..)
 import Models.Model exposing (Model)
 
@@ -118,6 +121,24 @@ focus_node node_path =
                  Just node -> node)
     (update_node node_path)
 
+-- Grammar ---------------------------------------------------------------------
+
+get_grammar_names : ModulePath -> Model -> List GrammarName
+get_grammar_names module_path model =
+  case get_module module_path model of
+    Nothing -> []
+    Just module' -> ordered_dict_to_list module'.nodes
+                      |> List.filterMap (\ (node_name, node) ->
+                           case node of
+                             NodeGrammar _ -> Just node_name
+                             _             -> Nothing)
+
+get_grammar : NodePath -> Model -> Maybe Grammar
+get_grammar node_path model =
+  case get_node node_path model of
+    Just (NodeGrammar grammar) -> Just grammar
+    _                          -> Nothing
+
 -- Term ------------------------------------------------------------------------
 
 -- when root_term is newly created, its grammar hasn't been defined
@@ -129,6 +150,46 @@ init_root_term =
   { grammar = root_term_undefined_grammar
   , term = TermTodo
   }
+
+focus_sub_term : IntCursorPath -> Focus RootTerm Term
+focus_sub_term from_root_cursor_path =
+  let err_msg = "from Models.RepoUtils.focus_sub_term"
+      get_func cursor_path term =
+        case cursor_path of
+          [] -> term
+          cursor_index :: cursor_path' ->
+            case term of
+              TermTodo -> Debug.crash err_msg
+              TermVar _ -> Debug.crash err_msg
+              TermInd grammar_choice sub_terms ->
+                get_func cursor_path' (list_get_elem cursor_index sub_terms)
+      update_func func cursor_path term =
+        case cursor_path of
+          [] -> func term
+          cursor_index :: cursor_path' ->
+            case term of
+              TermTodo -> term
+              TermVar _ -> term
+              TermInd grammar_choice sub_terms ->
+                TermInd grammar_choice <|
+                  Focus.update (list_focus_elem cursor_index)
+                    (\sub_term -> update_func func cursor_path' sub_term)
+                    sub_terms
+   in term_ => (Focus.create
+        (\ term -> get_func from_root_cursor_path term)
+        (\ func term -> update_func func from_root_cursor_path term))
+
+get_all_todo_cursor_paths : Term -> List IntCursorPath
+get_all_todo_cursor_paths term =
+  case term of
+    TermTodo            -> [[]] -- has one one todo which is empty path
+    TermVar _           -> []   -- has no todos
+    TermInd _ sub_terms ->
+      sub_terms
+         |> List.indexedMap
+              (\index sub_term -> get_all_todo_cursor_paths sub_term
+                |> List.map (\cursor_path -> index :: cursor_path))
+         |> List.concat
 
 init_judgement : Judgement
 init_judgement =

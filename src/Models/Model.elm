@@ -8,7 +8,7 @@ import Focus exposing (Focus)
 import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
 import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Config exposing (Config)
-import Models.Cursor exposing (PaneCursor)
+import Models.Cursor exposing (IntCursorPath, PaneCursor, CursorInfo)
 import Models.RepoModel exposing (Package, ModulePath,
                                   GrammarName, Grammar, RootTerm, TermPath)
 import Models.Grid exposing (Grids)
@@ -43,6 +43,8 @@ type alias KeyDescription = String
 
 type alias Keymap = Dict Keystroke ((RawKeystroke, KeyDescription), KeyBinding)
 
+type alias RingChoiceCounter = Int
+
 -- Mode ------------------------------------------------------------------------
 
 type Mode
@@ -53,20 +55,20 @@ type Mode
   -- TODO: add more  mode
 
 type alias RecordModeRootTerm =
-  { module_path     : ModulePath
-  , root_term_focus : Focus Model RootTerm
-  , term_path       : TermPath
-  , micro_mode      : MicroModeRootTerm
-  , is_editable     : Bool
+  { module_path           : ModulePath
+  , root_term_focus       : Focus Model RootTerm
+  , root_term_cursor_info : CursorInfo    -- path from model to root_term
+  , sub_term_cursor_path  : IntCursorPath -- path from root_term to current term
+  , micro_mode            : MicroModeRootTerm
+  , is_editable           : Bool
   }
 
 type MicroModeRootTerm
-  = MicroModeRootTermSetGrammar
+  = MicroModeRootTermSetGrammar RingChoiceCounter
   | MicroModeRootTermSetGrammarWithString
-  | MicroModeRootTermTodo
+  | MicroModeRootTermTodo RingChoiceCounter
   | MicroModeRootTermTodoWithString
-  | MicroModeRootTermVar
-  | MicroModeRootTermInd
+  | MicroModeRootTermNavigate
 
 -- type alias RecordModeStrChoice =
 --   { choices        : List String

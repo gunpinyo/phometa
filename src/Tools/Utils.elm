@@ -1,9 +1,43 @@
 module Tools.Utils where
 
+import Debug
 import Set exposing (Set)
+
+import Focus exposing (Focus)
 
 list_skeleton : a -> List a
 list_skeleton x = [x]
+
+list_get_elem : Int -> List a -> a
+list_get_elem index list =
+  case list |> List.drop index |> List.head of
+    Nothing   -> Debug.crash "from Tools.Utils.list_get_elem"
+    Just elem -> elem
+
+list_update_elem : Int -> (a -> a) -> List a -> List a
+list_update_elem index update_func list =
+  case list of
+    [] -> []
+    elem :: list' ->
+      if index <= 0 then
+        (update_func elem) :: list'
+      else
+        elem :: (list_update_elem (index - 1) update_func list')
+
+list_focus_elem : Int -> Focus (List a) a
+list_focus_elem index =
+  Focus.create (list_get_elem index) (list_update_elem index)
+
+-- search for the first index of the first occurrence
+-- if not found, return the index of next element
+-- e.g. ['a', 'c'], 'a' => 0, 'b' => 1, 'c' => 1
+-- pre: the given list must be sorted
+sorted_list_get_index : comparable -> List comparable -> Int
+sorted_list_get_index target_elem list =
+  case list of
+    [] -> 0
+    elem :: list' -> if target_elem <= elem then 0
+                       else (1 + sorted_list_get_index target_elem list')
 
 list_insert : Int -> a -> List a -> List a
 list_insert n x xs =

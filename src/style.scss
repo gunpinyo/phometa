@@ -1,6 +1,6 @@
 .block {
     margin: 0px;
-    padding: 4px;
+    padding: 2px;
 }
 
 .inline-block {
@@ -20,7 +20,7 @@
     display: inline-block;
     margin: 0px;
     padding: 0px;
-    border-bottom: 3px solid #888888;
+    border-bottom: 1px solid #888888;
 }
 
 .underlined-child-block {
@@ -34,12 +34,12 @@
 
 .block-clickable:hover {
     @extend .block-spacial;
-    border: 3px solid #AAAAAA;
+    border: 1px solid #AAAAAA;
 }
 
 .block-on-cursor {
     @extend .block-spacial;
-    border: 3px solid #888888 !important;
+    border: 1px solid black !important;
 }
 
 @mixin color-with-bg($color) {
@@ -69,21 +69,20 @@
 
 /* place to choose grammar */
 .grammar-todo-block {
-    @extend .inline-block;
-    @include color-with-bg(#FF0000)
+    @extend .grammar-block;
 }
 
 /* format for inductive grammar */
 .ind-format-block {
     @extend .inline-block;
-    color: #008800;
+    color: magenta;
     font-weight: bold;
 }
 
 /* place to choose term */
 .term-todo-block {
     @extend .inline-block;
-    @include color-with-bg(#FFAAAA)
+    @include color-with-bg(#FF0000)
 }
 
 /* variable */

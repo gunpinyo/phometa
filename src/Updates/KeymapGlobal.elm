@@ -11,7 +11,7 @@ import Updates.KeymapUtils exposing (build_keymap, merge_keymaps)
 keymap_global : Model -> Keymap
 keymap_global model =
   build_keymap [
-    ("C-SPC", "menu", KbPrefix <| merge_keymaps (build_keymap [
+    ("Ctrl-Space", "menu", KbPrefix <| merge_keymaps (build_keymap [
       ("w", "window related", KbPrefix <| build_keymap [
         ("p", "toggle package pane", KbCmd cmd_toggle_package_pane),
         ("k", "toggle keymap pane", KbCmd cmd_toggle_keymap_pane),

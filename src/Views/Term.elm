@@ -10,7 +10,8 @@ import Tools.HtmlExtra exposing (debug_to_html, on_click)
 import Tools.StripedList exposing (striped_list_get_even_element,
                                    striped_list_get_odd_element,
                                    stripe_two_list_together)
-import Models.Focus exposing (context_, root_term_)
+import Models.Focus exposing (context_, root_term_,
+                              micro_mode_, sub_term_cursor_path_)
 import Models.Cursor exposing (IntCursorPath, CursorInfo,
                                cursor_info_is_here,
                                cursor_info_go_to_sub_elem,
@@ -18,19 +19,13 @@ import Models.Cursor exposing (IntCursorPath, CursorInfo,
 import Models.RepoModel exposing (ModulePath, GrammarName,
                                   Term(..), RootTerm, Judgement)
 import Models.RepoUtils exposing (root_term_undefined_grammar)
-import Models.Model exposing (Model)
+import Models.Model exposing (Model, RecordModeRootTerm, MicroModeRootTerm(..))
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.Cursor exposing (cmd_click_block)
+import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term)
 import Views.Utils exposing (show_underlined_clickable_block,
                              show_clickable_block)
-
-type alias ViewsTermCarrier =
-  { module_path : ModulePath
-  , root_term_focus : Focus Model RootTerm
-  , root_term_cursor_ref : IntCursorPath
-  , is_editable : Bool
-  }
 
 show_judgement : CursorInfo -> ModulePath -> Bool ->
                    Focus Model Judgement -> Judgement -> View
@@ -48,36 +43,46 @@ show_root_term : CursorInfo -> ModulePath -> Bool ->
                    Focus Model RootTerm -> RootTerm -> View
 show_root_term
     cursor_info module_path is_editable root_term_focus root_term model =
-  if root_term.grammar == root_term_undefined_grammar then
-    show_clickable_block "grammar-todo-block" cursor_info
-      (cmd_click_block cursor_info) [Html.text "Choose Grammar"]
-  else
-    let carrier = { module_path = module_path
-                  , root_term_focus = root_term_focus
-                  , root_term_cursor_ref = cursor_info_get_ref_path cursor_info
-                  , is_editable = is_editable
-                  }
-     in show_term cursor_info carrier root_term.grammar root_term.term model
+  let record = { module_path = module_path
+               , root_term_focus = root_term_focus
+               , root_term_cursor_info = cursor_info
+               , sub_term_cursor_path = []
+               , micro_mode = MicroModeRootTermSetGrammar 0
+               , is_editable = is_editable
+               }
+   in if root_term.grammar == root_term_undefined_grammar then
+        show_clickable_block "grammar-todo-block" cursor_info
+          (cmd_enter_mode_root_term record)
+          [Html.text "Choose Grammar"]
+      else
+        show_term cursor_info record root_term.grammar root_term.term model
 
-show_term : CursorInfo -> ViewsTermCarrier -> GrammarName -> Term -> View
-show_term cursor_info carrier grammar_name term model =
+show_term : CursorInfo -> RecordModeRootTerm -> GrammarName -> Term -> View
+show_term cursor_info record grammar_name term model =
   case term of
     TermTodo ->
-      show_clickable_block "term-todo-block" cursor_info
-        (cmd_click_block cursor_info) [Html.text grammar_name]
+      let record' = Focus.set micro_mode_ (MicroModeRootTermTodo 0) record
+       in show_clickable_block "term-todo-block" cursor_info
+            (cmd_enter_mode_root_term record')
+            [Html.text grammar_name]
     TermVar var_name ->
-      show_clickable_block "variable-block" cursor_info
-        (cmd_click_block cursor_info) [Html.text var_name]
+      let record' = Focus.set micro_mode_ MicroModeRootTermNavigate record
+       in show_clickable_block "variable-block" cursor_info
+            (cmd_enter_mode_root_term record')
+            [Html.text var_name]
     TermInd grammar_choice sub_terms ->
-      let sub_grammars = striped_list_get_odd_element grammar_choice
+      let record' = Focus.set micro_mode_ MicroModeRootTermNavigate record
+          sub_grammars = striped_list_get_odd_element grammar_choice
           sub_blocks = List.map2 (,) sub_grammars sub_terms
             |> List.indexedMap (\index (sub_grammar, sub_term) ->
                  show_term (cursor_info_go_to_sub_elem cursor_info index)
-                   carrier sub_grammar sub_term model)
+                   (Focus.update sub_term_cursor_path_
+                      (\cursor_path -> cursor_path ++ [index]) record)
+                   sub_grammar sub_term model)
           format_htmls = striped_list_get_even_element grammar_choice
             |> List.map (\format ->
                  if format == "" then (Html.text "")
                    else div [class "ind-format-block"] [Html.text format])
           htmls = stripe_two_list_together format_htmls sub_blocks
        in show_underlined_clickable_block cursor_info
-            (cmd_click_block cursor_info) htmls
+            (cmd_enter_mode_root_term record') htmls
