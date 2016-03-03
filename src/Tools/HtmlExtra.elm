@@ -7,7 +7,7 @@ import Graphics.Element exposing (show)
 
 import Html exposing (Html, Attribute, node, div, text)
 import Html.Attributes exposing (attribute, style, rel, href)
-import Html.Events exposing (onWithOptions)
+import Html.Events exposing (onWithOptions, targetValue)
 
 import_css : String -> Html
 import_css css_location =
@@ -32,6 +32,16 @@ on_mouse_event event_str address action =
     }
     Json.value
     (\_ -> Signal.message address action)
+
+on_typing_to_input_field : Address a -> (String -> a) -> Attribute
+on_typing_to_input_field address string_to_action =
+  onWithOptions
+    "input"
+    { stopPropagation = True
+    , preventDefault = True
+    }
+    targetValue
+    (\string -> Signal.message address (string_to_action string))
 
 on_click : Address a -> a -> Attribute
 on_click = on_mouse_event "click"

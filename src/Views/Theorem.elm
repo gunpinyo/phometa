@@ -24,13 +24,13 @@ show_theorem cursor_info node_path theorem model =
       theorem_focus = focus_theorem node_path
    in show_indented_clickable_block
         "block" cursor_info (cmd_click_block cursor_info)
-        [ div [] [ div [class "keyword-block"] [text "Theorem"]
+        [ div [] [ div [class "keyword-block"] [text " Theorem "]
                  , div [class "newly-defined-block"] [text node_path.node_name]]
         , hr [] []
-        , div [] [ div [class "keyword-block"] [text "goal"]
+        , div [] [ div [class "keyword-block"] [text " goal "]
                  , show_judgement
                      (cursor_info_go_to_sub_elem cursor_info 0)
                      node_path.module_path True
                      (theorem_focus => goal_) theorem.goal model]
-        , div [] [ div [class "keyword-block"] [text "to_prove"]
-                 , text "TODO: implement proving system"]]
+        , div [] [ div [class "keyword-block"] [text " to_prove "]
+                 , text "TODO: implement proving system "]]

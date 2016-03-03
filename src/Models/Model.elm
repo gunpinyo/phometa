@@ -65,9 +65,8 @@ type alias RecordModeRootTerm =
 
 type MicroModeRootTerm
   = MicroModeRootTermSetGrammar RingChoiceCounter
-  | MicroModeRootTermSetGrammarWithString
   | MicroModeRootTermTodo RingChoiceCounter
-  | MicroModeRootTermTodoWithString
+  | MicroModeRootTermTodoForVar String
   | MicroModeRootTermNavigate
 
 -- type alias RecordModeStrChoice =

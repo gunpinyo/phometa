@@ -20,7 +20,8 @@ show_view model =
   fullbleed
     <| flex_div [] [class "window"]
     <| [ import_css "style.css"
-       , show_window model]
+       , show_window model
+       , import_javascript "naive.js"]
 
 show_window : View
 show_window model =

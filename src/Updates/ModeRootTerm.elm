@@ -1,5 +1,6 @@
 module Updates.ModeRootTerm where
 
+import Char
 import Debug
 import Dict
 import String
@@ -36,6 +37,16 @@ cmd_enter_mode_root_term record =
              (\path -> (List.reverse record.sub_term_cursor_path) ++ path)
    in (Focus.set mode_ (ModeRootTerm record)) >> (cmd_click_block cursor_info)
 
+cmd_get_var_from_term_todo : String -> Command
+cmd_get_var_from_term_todo input_string model =
+  -- TODO: also use other way to verify input_string
+  -- e.g. check against var_regex,
+  --      check that there is no this name with different grammar
+  if input_string == "" || String.all Char.isDigit input_string then
+    cmd_set_micro_mode (MicroModeRootTermTodo 0) model
+  else
+    cmd_set_micro_mode (MicroModeRootTermTodoForVar input_string) model
+
 keymap_mode_root_term : RecordModeRootTerm -> Model -> Keymap
 keymap_mode_root_term record model =
   case record.micro_mode of
@@ -70,12 +81,17 @@ keymap_mode_root_term record model =
        in merge_keymaps (keymap_after_set_grammar record model)
             (keymap_ring_choices
               choices ring_choices_counter choice_handler counter_handler)
+    MicroModeRootTermTodoForVar input_string ->
+      merge_keymaps
+        (keymap_after_set_grammar record model)
+        (build_keymap [
+          ("Return", "make current term as variable",
+             KbCmd <| cmd_set_sub_term <| TermVar input_string)])
     MicroModeRootTermNavigate ->
       merge_keymaps
         (keymap_after_set_grammar record model)
         (build_keymap [
           ("Alt-t", "reset current term", KbCmd <| cmd_set_sub_term TermTodo)])
-    _ -> empty_keymap -- TODO:
 
 
 keymap_after_set_grammar : RecordModeRootTerm -> Model -> Keymap

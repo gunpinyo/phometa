@@ -1,11 +1,13 @@
+$inline-padding: 5px;
+
 .block {
     margin: 0px;
-    padding: 2px;
+    padding: 2px $inline-padding 1px $inline-padding;
 }
 
 .inline-block {
     @extend .block;
-    border-radius: 3px;
+    border-radius: 0px;
     display: inline-block;
     vertical-align: baseline;
 }
@@ -25,21 +27,25 @@
 
 .underlined-child-block {
     @extend .inline-block;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .block-spacial {
     margin: 0px;
-    padding: 1px;
+    padding-top: 1px;
 }
 
 .block-clickable:hover {
     @extend .block-spacial;
-    border: 1px solid #AAAAAA;
+    border: 0px solid #AAAAAA;
+    border-top-width: 1px;
 }
 
 .block-on-cursor {
     @extend .block-spacial;
-    border: 1px solid black !important;
+    border: 0px solid black !important;
+    border-top-width: 1px !important;
 }
 
 @mixin color-with-bg($color) {
@@ -82,7 +88,7 @@
 /* place to choose term */
 .term-todo-block {
     @extend .inline-block;
-    @include color-with-bg(#FF0000)
+    @include color-with-bg(#008800)
 }
 
 /* variable */

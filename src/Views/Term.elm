@@ -4,9 +4,11 @@ import Debug
 
 import Focus exposing (Focus, (=>))
 import Html exposing (Html, div, text, hr)
-import Html.Attributes exposing (class, classList)
+import Html.Attributes exposing (class, classList,
+                                 type', placeholder, attribute)
 
-import Tools.HtmlExtra exposing (debug_to_html, on_click)
+import Tools.HtmlExtra exposing (debug_to_html, on_click,
+                                 on_typing_to_input_field)
 import Tools.StripedList exposing (striped_list_get_even_element,
                                    striped_list_get_odd_element,
                                    stripe_two_list_together)
@@ -23,7 +25,8 @@ import Models.Model exposing (Model, RecordModeRootTerm, MicroModeRootTerm(..))
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.Cursor exposing (cmd_click_block)
-import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term)
+import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term,
+                                      cmd_get_var_from_term_todo)
 import Views.Utils exposing (show_underlined_clickable_block,
                              show_clickable_block)
 
@@ -62,9 +65,23 @@ show_term cursor_info record grammar_name term model =
   case term of
     TermTodo ->
       let record' = Focus.set micro_mode_ (MicroModeRootTermTodo 0) record
-       in show_clickable_block "term-todo-block" cursor_info
-            (cmd_enter_mode_root_term record')
-            [Html.text grammar_name]
+       in if cursor_info_is_here cursor_info then
+            Html.input [
+              classList [
+                ("term-todo-block", True),
+                ("block-clickable", True),
+                ("block-on-cursor", cursor_info_is_here cursor_info)],
+              on_click address
+                (ActionCommand <| cmd_enter_mode_root_term record'),
+              on_typing_to_input_field address
+                (\string -> ActionCommand <| cmd_get_var_from_term_todo string),
+              type' "text",
+              placeholder grammar_name,
+              attribute "data-autofocus" ""] []
+          else
+            show_clickable_block "term-todo-block" cursor_info
+              (cmd_enter_mode_root_term record')
+              [Html.text grammar_name]
     TermVar var_name ->
       let record' = Focus.set micro_mode_ MicroModeRootTermNavigate record
        in show_clickable_block "variable-block" cursor_info
