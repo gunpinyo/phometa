@@ -32,9 +32,9 @@ init_grids =
     (GridNode {
       module_path = {
         package_path = ["Standard Library"],
-        module_name = "First Order Logic"
+        module_name = "Simply type lambda calculus"
       },
-      node_name = "theorem-2"
+      node_name = "theorem-a"
     } [])
 
 get_grid : PaneCursor -> Grids -> Maybe Grid
