@@ -23,8 +23,8 @@ import_javascript javascript_location =
 debug_to_html : a -> Html
 debug_to_html x = Html.div [] [Html.fromElement <| show x]
 
-on_mouse_event : String -> Address a -> a -> Attribute
-on_mouse_event event_str address action =
+on_custom_event : String -> Address a -> a -> Attribute
+on_custom_event event_str address action =
   onWithOptions
     event_str
     { stopPropagation = True
@@ -43,11 +43,15 @@ on_typing_to_input_field address string_to_action =
     targetValue
     (\string -> Signal.message address (string_to_action string))
 
-on_click : Address a -> a -> Attribute
-on_click = on_mouse_event "click"
+on_blur : Address a -> a -> Attribute
+on_blur = on_custom_event "blur"
 
-on_mouse_enter : Address a -> a -> Attribute
-on_mouse_enter = on_mouse_event "mouseover"
+
+on_click : Address a -> a -> Attribute
+on_click = on_custom_event "click"
+
+on_mouse_over : Address a -> a -> Attribute
+on_mouse_over = on_custom_event "mouseover"
 
 on_mouse_leave : Address a -> a -> Attribute
-on_mouse_leave = on_mouse_event "mouseleave"
+on_mouse_leave = on_custom_event "mouseleave"

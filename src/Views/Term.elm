@@ -7,7 +7,7 @@ import Html exposing (Html, div, text, hr)
 import Html.Attributes exposing (class, classList,
                                  type', placeholder, attribute)
 
-import Tools.HtmlExtra exposing (debug_to_html, on_click,
+import Tools.HtmlExtra exposing (debug_to_html, on_blur, on_click,
                                  on_typing_to_input_field)
 import Tools.StripedList exposing (striped_list_get_even_element,
                                    striped_list_get_odd_element,
@@ -26,7 +26,8 @@ import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.Cursor exposing (cmd_click_block)
 import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term,
-                                      cmd_get_var_from_term_todo)
+                                      cmd_get_var_from_term_todo,
+                                      cmd_from_todo_for_var_to_var)
 import Views.Utils exposing (show_underlined_clickable_block,
                              show_clickable_block)
 
@@ -75,6 +76,7 @@ show_term cursor_info record grammar_name term model =
                 (ActionCommand <| cmd_enter_mode_root_term record'),
               on_typing_to_input_field address
                 (\string -> ActionCommand <| cmd_get_var_from_term_todo string),
+              on_blur address (ActionCommand <| cmd_from_todo_for_var_to_var),
               type' "text",
               placeholder grammar_name,
               attribute "data-autofocus" ""] []

@@ -76,6 +76,7 @@ keymap_mode_root_term record model =
                   <| striped_list_get_odd_element grammar_choice
                 sub_terms = List.repeat number_of_sub_terms TermTodo
              in cmd_set_sub_term (TermInd grammar_choice sub_terms)
+                  >> cmd_jump_to_next_todo 0
           counter_handler counter =
             cmd_set_micro_mode (MicroModeRootTermTodo counter)
        in merge_keymaps (keymap_after_set_grammar record model)
@@ -86,7 +87,7 @@ keymap_mode_root_term record model =
         (keymap_after_set_grammar record model)
         (build_keymap [
           ("Return", "make current term as variable",
-             KbCmd <| cmd_set_sub_term <| TermVar input_string)])
+             KbCmd cmd_from_todo_for_var_to_var)])
     MicroModeRootTermNavigate ->
       merge_keymaps
         (keymap_after_set_grammar record model)
@@ -103,11 +104,12 @@ keymap_after_set_grammar record model =
            <| get_all_todo_cursor_paths
            <| Focus.get (record.root_term_focus => term_) model)
       [("⭠", "jump to prev todo",
-          KbCmd <| cmd_jump_to_next_todo -1),
+          KbCmd <| (cmd_jump_to_next_todo -1) << cmd_from_todo_for_var_to_var),
        ("⭢", "jump to next todo",
-          KbCmd <| cmd_jump_to_next_todo 1)],
+          KbCmd <| (cmd_jump_to_next_todo 1) << cmd_from_todo_for_var_to_var)],
     build_keymap_cond (not <| List.isEmpty record.sub_term_cursor_path)
-      [("⭡", "jump to parent term", KbCmd cmd_jump_to_parent_term)]]
+      [("⭡", "jump to parent term",
+          KbCmd <| cmd_jump_to_parent_term << cmd_from_todo_for_var_to_var)]]
 
 cmd_set_grammar : GrammarName -> Command
 cmd_set_grammar grammar_name model =
@@ -123,7 +125,6 @@ cmd_set_sub_term term model =
    in model
         |> Focus.set (record.root_term_focus =>
              (focus_sub_term record.sub_term_cursor_path)) term
-        |> cmd_jump_to_next_todo 0
 
 cmd_jump_to_parent_term : Command
 cmd_jump_to_parent_term model =
@@ -150,11 +151,24 @@ cmd_jump_to_next_todo displacement model =
             |> Focus.update sub_term_cursor_path_ (\old_cursor_path ->
                  let old_index = sorted_list_get_index
                                    old_cursor_path todo_cursor_paths
-                     index = (old_index + displacement) %
+                     pre_index = if displacement > 0 && not (List.member
+                                  record.sub_term_cursor_path todo_cursor_paths)
+                                   then old_index - 1 else old_index
+                     index = (pre_index + displacement) %
                                List.length todo_cursor_paths
                   in list_get_elem index todo_cursor_paths)
             |> Focus.set micro_mode_ (MicroModeRootTermTodo 0)
    in cmd_enter_mode_root_term record' model
+
+--  if micro_mode is not MicroModeRootTermTodoForVar, then do nothing
+cmd_from_todo_for_var_to_var : Command
+cmd_from_todo_for_var_to_var model =
+  let record = Focus.get focus_record_mode_root_term model
+   in case record.micro_mode of
+        MicroModeRootTermTodoForVar input_string ->
+          cmd_set_sub_term (TermVar input_string) model
+          -- TODO: verify that this input_string are legitimate var_name
+        _                                        -> model
 
 cmd_set_micro_mode : MicroModeRootTerm -> Command
 cmd_set_micro_mode micro_mode model =
