@@ -7,6 +7,7 @@ import Focus exposing (Focus, (=>))
 
 import Tools.Utils exposing (list_get_elem, list_focus_elem)
 import Tools.SanityCheck exposing (CheckResult, valid)
+import Tools.StripedList exposing (striped_list_get_odd_element)
 import Tools.OrderedDict exposing (ordered_dict_to_list)
 import Models.Focus exposing (root_package_, dict_, nodes_, term_)
 import Models.Cursor exposing (IntCursorPath)
@@ -191,11 +192,16 @@ get_all_todo_cursor_paths term =
                 |> List.map (\cursor_path -> index :: cursor_path))
          |> List.concat
 
-init_judgement : Judgement
-init_judgement =
-  { context = init_root_term
-  , root_term = init_root_term
-  }
+has_root_term_completed : RootTerm -> Bool
+has_root_term_completed root_term =
+  List.isEmpty <| get_all_todo_cursor_paths root_term.term
+
+init_term_ind : GrammarChoice -> Term
+init_term_ind grammar_choice =
+  let number_of_sub_terms = List.length
+        <| striped_list_get_odd_element grammar_choice
+      sub_terms = List.repeat number_of_sub_terms TermTodo
+   in TermInd grammar_choice sub_terms
 
 -- Theorem ---------------------------------------------------------------------
 
@@ -203,7 +209,7 @@ init_theorem : Theorem
 init_theorem =
   { comment = Nothing
   , is_folded = False
-  , goal = init_judgement
+  , goal = init_root_term
   , proof = ProofTodo
   }
 

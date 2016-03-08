@@ -60,7 +60,7 @@ type alias RecordModeRootTerm =
   , root_term_cursor_info : CursorInfo    -- path from model to root_term
   , sub_term_cursor_path  : IntCursorPath -- path from root_term to current term
   , micro_mode            : MicroModeRootTerm
-  , is_editable           : Bool
+  , editability           : EditabilityRootTerm
   }
 
 type MicroModeRootTerm
@@ -68,6 +68,11 @@ type MicroModeRootTerm
   | MicroModeRootTermTodo RingChoiceCounter
   | MicroModeRootTermTodoForVar String
   | MicroModeRootTermNavigate
+
+type EditabilityRootTerm
+  = EditabilityRootTermReadOnly
+  | EditabilityRootTermUpToTerm
+  | EditabilityRootTermUpToGrammar
 
 -- type alias RecordModeStrChoice =
 --   { choices        : List String

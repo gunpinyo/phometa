@@ -19,9 +19,10 @@ import Models.Cursor exposing (IntCursorPath, CursorInfo,
                                cursor_info_go_to_sub_elem,
                                cursor_info_get_ref_path)
 import Models.RepoModel exposing (ModulePath, GrammarName,
-                                  Term(..), RootTerm, Judgement)
-import Models.RepoUtils exposing (root_term_undefined_grammar)
-import Models.Model exposing (Model, RecordModeRootTerm, MicroModeRootTerm(..))
+                                  Term(..), RootTerm)
+import Models.RepoUtils exposing (root_term_undefined_grammar, get_grammar)
+import Models.Model exposing (Model, RecordModeRootTerm, MicroModeRootTerm(..),
+                              EditabilityRootTerm)
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.Cursor exposing (cmd_click_block)
@@ -31,28 +32,16 @@ import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term,
 import Views.Utils exposing (show_underlined_clickable_block,
                              show_clickable_block)
 
-show_judgement : CursorInfo -> ModulePath -> Bool ->
-                   Focus Model Judgement -> Judgement -> View
-show_judgement
-    cursor_info module_path is_editable judgement_focus judgemet model =
-  show_clickable_block
-    "inline-block" cursor_info (cmd_click_block cursor_info)
-    [ show_root_term (cursor_info_go_to_sub_elem cursor_info 0) module_path
-        is_editable (judgement_focus => context_) judgemet.context model,
-      div [class "keyword-block"] [Html.text " ⊢ "],
-      show_root_term (cursor_info_go_to_sub_elem cursor_info 1) module_path
-        is_editable (judgement_focus => root_term_) judgemet.root_term model]
-
-show_root_term : CursorInfo -> ModulePath -> Bool ->
+show_root_term : CursorInfo -> ModulePath -> EditabilityRootTerm ->
                    Focus Model RootTerm -> RootTerm -> View
 show_root_term
-    cursor_info module_path is_editable root_term_focus root_term model =
+    cursor_info module_path editability root_term_focus root_term model =
   let record = { module_path = module_path
                , root_term_focus = root_term_focus
                , root_term_cursor_info = cursor_info
-               , sub_term_cursor_path = []
-               , micro_mode = MicroModeRootTermSetGrammar 0
-               , is_editable = is_editable
+               , sub_term_cursor_path = [] -- might be modified by `show_term`
+               , micro_mode = MicroModeRootTermSetGrammar 0 -- the same as above
+               , editability = editability
                }
    in if root_term.grammar == root_term_undefined_grammar then
         show_clickable_block "grammar-todo-block" cursor_info
@@ -66,7 +55,14 @@ show_term cursor_info record grammar_name term model =
   case term of
     TermTodo ->
       let record' = Focus.set micro_mode_ (MicroModeRootTermTodo 0) record
-       in if cursor_info_is_here cursor_info then
+          has_var_regex = case get_grammar { module_path = record.module_path
+                                           , node_name = grammar_name
+                                           } model of
+                            Nothing -> False
+                            Just grammar ->
+                              grammar.var_regex /= Nothing
+
+       in if cursor_info_is_here cursor_info && has_var_regex then
             Html.input [
               classList [
                 ("term-todo-block", True),

@@ -12,11 +12,12 @@ import Models.Cursor exposing (CursorInfo, cursor_info_go_to_sub_elem,
                                cursor_info_is_here)
 import Models.RepoModel exposing (NodePath, Node(..), Theorem)
 import Models.RepoUtils exposing (focus_theorem)
+import Models.Model exposing (EditabilityRootTerm(..))
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.Cursor exposing (cmd_click_block)
 import Views.Utils exposing (show_indented_clickable_block)
-import Views.Term exposing (show_judgement)
+import Views.Term exposing (show_root_term)
 
 show_theorem : CursorInfo -> NodePath -> Theorem -> View
 show_theorem cursor_info node_path theorem model =
@@ -28,9 +29,9 @@ show_theorem cursor_info node_path theorem model =
                  , div [class "newly-defined-block"] [text node_path.node_name]]
         , hr [] []
         , div [] [ div [class "keyword-block"] [text " goal "]
-                 , show_judgement
+                 , show_root_term
                      (cursor_info_go_to_sub_elem cursor_info 0)
-                     node_path.module_path True
+                     node_path.module_path EditabilityRootTermUpToTerm
                      (theorem_focus => goal_) theorem.goal model]
         , div [] [ div [class "keyword-block"] [text " to_prove "]
                  , text "TODO: implement proving system "]]

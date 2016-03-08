@@ -106,11 +106,6 @@ type alias RootTerm =
   , term : Term
   }
 
-type alias Judgement =
-  { context : RootTerm
-  , root_term : RootTerm
-  }
-
 -- Definition ------------------------------------------------------------------
 
 type alias DefinitionName = StripedList Format GrammarName
@@ -127,15 +122,15 @@ type alias RuleName = String
 
 type alias Rule =
   NodeBase
-    { premises : List Judgement
-    , conclusion : Judgement
+    { premises : List RootTerm
+    , conclusion : RootTerm
     }
 
 -- Theorem ---------------------------------------------------------------------
 
 type alias Theorem =
   NodeBase
-    { goal : Judgement
+    { goal : RootTerm
     , proof : Proof
     }
 

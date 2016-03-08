@@ -73,8 +73,16 @@ stdlib_package =
             is_folded = False,
             var_regex = Just "[ΓΔ]([1-9][0-9]*|'*)",
             choices = [
-              striped_list_introduce ["", ""] ["Prop"],
+              striped_list_introduce ["ε"] [],
               striped_list_introduce ["", ",", ""] ["Context", "Prop"]
+            ]
+          }),
+          ("Judgement", NodeGrammar {
+            comment = Nothing,
+            is_folded = False,
+            var_regex = Nothing,
+            choices = [
+              striped_list_introduce ["", "⊢", ""] ["Context", "Prop"]
             ]
           }),
           -- TODO: remove this from stdlib
@@ -122,8 +130,16 @@ stdlib_package =
             is_folded = False,
             var_regex = Just "[ΓΔ]([1-9][0-9]*|'*)",
             choices = [
-              striped_list_introduce ["", ""] ["Judgement"],
+              striped_list_introduce ["ε"] [],
               striped_list_introduce ["", ",", ""] ["Context", "Judgement"]
+            ]
+          }),
+          ("Hypothetical Judgement", NodeGrammar {
+            comment = Nothing,
+            is_folded = False,
+            var_regex = Nothing,
+            choices = [
+              striped_list_introduce ["", "⊢", ""] ["Context", "Term"]
             ]
           }),
           -- TODO: remove this from stdlib

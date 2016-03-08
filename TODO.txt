@@ -1,3 +1,7 @@
+- automatically enter the field that var_regex = Nothing and has just one constractor
+
+- not show input field if current term has grammar with var_regex = Nothing
+
 - finish root_term editor
 
 - complete package pane
