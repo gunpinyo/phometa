@@ -21,30 +21,34 @@ import Models.Cursor exposing (IntCursorPath, CursorInfo,
 import Models.RepoModel exposing (ModulePath, GrammarName,
                                   Term(..), RootTerm)
 import Models.RepoUtils exposing (root_term_undefined_grammar, get_grammar)
-import Models.Model exposing (Model, RecordModeRootTerm, MicroModeRootTerm(..),
+import Models.Model exposing (Model, Command,
+                              RecordModeRootTerm, MicroModeRootTerm(..),
                               EditabilityRootTerm)
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.Cursor exposing (cmd_click_block)
 import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term,
+                                      cmd_safe_mode_root_term,
                                       cmd_get_var_from_term_todo,
                                       cmd_from_todo_for_var_to_var)
 import Views.Utils exposing (show_underlined_clickable_block,
                              show_clickable_block)
 
-show_root_term : CursorInfo -> ModulePath -> EditabilityRootTerm ->
+show_root_term : CursorInfo -> ModulePath -> EditabilityRootTerm -> Command ->
                    Focus Model RootTerm -> RootTerm -> View
 show_root_term
-    cursor_info module_path editability root_term_focus root_term model =
+    cursor_info module_path editability on_quit_callback
+      root_term_focus root_term model =
   let record = { module_path = module_path
                , root_term_focus = root_term_focus
                , root_term_cursor_info = cursor_info
                , sub_term_cursor_path = [] -- might be modified by `show_term`
                , micro_mode = MicroModeRootTermSetGrammar 0 -- the same as above
                , editability = editability
+               , on_quit_callback = on_quit_callback
                }
    in if root_term.grammar == root_term_undefined_grammar then
-        show_clickable_block "grammar-todo-block" cursor_info
+        show_clickable_block "button-block" cursor_info
           (cmd_enter_mode_root_term record)
           [Html.text "Choose Grammar"]
       else
@@ -71,8 +75,10 @@ show_term cursor_info record grammar_name term model =
               on_click address
                 (ActionCommand <| cmd_enter_mode_root_term record'),
               on_typing_to_input_field address
-                (\string -> ActionCommand <| cmd_get_var_from_term_todo string),
-              on_blur address (ActionCommand <| cmd_from_todo_for_var_to_var),
+                (\string -> ActionCommand <|
+                   cmd_safe_mode_root_term (cmd_get_var_from_term_todo string)),
+              on_blur address (ActionCommand <|
+                   cmd_safe_mode_root_term cmd_from_todo_for_var_to_var),
               type' "text",
               placeholder grammar_name,
               attribute "data-autofocus" ""] []

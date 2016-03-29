@@ -203,6 +203,39 @@ init_term_ind grammar_choice =
       sub_terms = List.repeat number_of_sub_terms TermTodo
    in TermInd grammar_choice sub_terms
 
+get_sub_root_terms : GrammarChoice -> List Term -> List RootTerm
+get_sub_root_terms grammar_choice sub_terms =
+  List.map2
+    (\sub_grammar_name sub_term ->
+       { grammar = sub_grammar_name
+       , term = sub_term
+       })
+    (striped_list_get_odd_element grammar_choice)
+    sub_terms
+
+-- Rule ------------------------------------------------------------------------
+
+get_rule_names : ModulePath -> Model -> List RuleName
+get_rule_names module_path model =
+  case get_module module_path model of
+    Nothing -> []
+    Just module' -> ordered_dict_to_list module'.nodes
+                      |> List.filterMap (\ (node_name, node) ->
+                           case node of
+                             NodeRule _  -> Just node_name
+                             _           -> Nothing)
+
+focus_rule : NodePath -> Focus Model Rule
+focus_rule node_path =
+  let err_msg = "from Models.RepoUtils.focus_rule"
+   in (focus_node node_path => (Focus.create
+        (\node -> case node of
+            NodeRule rule -> rule
+            _ -> Debug.crash err_msg)
+        (\update_func node -> case node of
+            NodeRule rule -> NodeRule (update_func rule)
+            other -> other)))
+
 -- Theorem ---------------------------------------------------------------------
 
 init_theorem : Theorem
@@ -223,3 +256,32 @@ focus_theorem node_path =
         (\update_func node -> case node of
             NodeTheorem theorem -> NodeTheorem (update_func theorem)
             other -> other)))
+
+-- Unification -----------------------------------------------------------------
+
+-- return list of pattern variable and its corresponded root term
+-- if can't unify, return `Nothing`
+unify : RootTerm -> RootTerm -> Maybe (Dict VarName RootTerm)
+unify pattern goal =
+  case pattern.term of
+    TermTodo          -> Nothing
+    TermVar var_name  -> Just (Dict.singleton var_name goal)
+    TermInd pattern_grammar_choice pattern_sub_terms  ->
+      case goal.term of
+        TermTodo         -> Nothing
+        TermVar _        -> Nothing
+        TermInd goal_grammar_choice goal_sub_terms ->
+          if List.length pattern_sub_terms /= List.length goal_sub_terms
+             then Nothing
+          else
+             let results = List.map2 unify
+                   (get_sub_root_terms pattern_grammar_choice pattern_sub_terms)
+                   (get_sub_root_terms goal_grammar_choice goal_sub_terms)
+              in List.foldl
+                   (\result acc ->
+                     case (result, acc) of
+                       (Just result_dict, Just acc_dict) ->
+                         Just (Dict.union result_dict acc_dict)
+                       _ -> Nothing)
+                   (Just Dict.empty)
+                   results

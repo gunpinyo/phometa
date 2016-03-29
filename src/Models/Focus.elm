@@ -34,3 +34,6 @@ sub_term_cursor_path_ = create .sub_term_cursor_path (\u r -> {r|sub_term_cursor
 reversed_ref_path_ = create .reversed_ref_path (\u r -> {r|reversed_ref_path=u r.reversed_ref_path})
 root_term_focus_ = create .root_term_focus (\u r -> {r|root_term_focus=u r.root_term_focus})
 term_ = create .term (\u r -> {r|term=u r.term})
+top_cursor_info_ = create .top_cursorr_info (\u r -> {r|top_cursorr_info=u r.top_cursorr_info})
+sub_cursor_path_ = create .sub_cursor_path (\u r -> {r|sub_cursor_path=u r.sub_cursor_path})
+node_name_ = create .node_name (\u r -> {r|node_name=u r.node_name})

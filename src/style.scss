@@ -13,9 +13,31 @@ $inline-padding: 5px;
 }
 
 .indented-block {
+    margin: 1px;
+    padding: 0px;
+    border: 0px solid #888888;
+    border-left-width: 3px;
+}
+
+.indented-block:hover {
     margin: 0px;
     padding: 0px;
-    border-left: 3px solid #888888;
+    border: 1px solid #888888;
+    border-left-width: 4px;
+}
+
+.indented-block-on-cursor {
+    margin: 1px !important;
+    padding: 0px !important;
+    border: 0px solid black !important;
+    border-left-width: 3px !important;
+}
+
+.indented-block-on-cursor:hover {
+    margin: 0px !important;
+    padding: 0px !important;
+    border: 1px solid #888888 !important;
+    border-left: 4px solid black !important;
 }
 
 .underlined-block {
@@ -63,19 +85,22 @@ $inline-padding: 5px;
 /* keyword */
 .keyword-block {
     @extend .inline-block;
+    margin-top: 3px;
+    margin-bottom: 2px;
     color: #880000;
     font-weight: bold;
+}
+
+/* button */
+.button-block {
+    @extend .inline-block;
+    @include color-with-bg(#8888FF)
 }
 
 /* grammar */
 .grammar-block {
     @extend .inline-block;
     @include color-with-bg(#004400)
-}
-
-/* place to choose grammar */
-.grammar-todo-block {
-    @extend .grammar-block;
 }
 
 /* format for inductive grammar */
@@ -95,6 +120,18 @@ $inline-padding: 5px;
 .variable-block {
     @extend .inline-block;
     @include color-with-bg(#0000FF)
+}
+
+/* rule */
+.rule-block {
+    @extend .inline-block;
+    @include color-with-bg(#006622)
+}
+
+/* place to choose rule */
+.rule-todo-block {
+    @extend .rule-block;
+    @include color-with-bg(#005533)
 }
 
 /* -------------------------------------------------------------------------- */

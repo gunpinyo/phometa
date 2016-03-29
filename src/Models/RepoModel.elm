@@ -128,6 +128,8 @@ type alias Rule =
 
 -- Theorem ---------------------------------------------------------------------
 
+type alias TheoremName = String
+
 type alias Theorem =
   NodeBase
     { goal : RootTerm
@@ -137,5 +139,5 @@ type alias Theorem =
 type Proof
   = ProofTodo
   | ProofByRule RuleName (List Theorem)
-  | ProofByTheorem Theorem
+  | ProofByLemma TheoremName
   -- | ProofByPrimitive

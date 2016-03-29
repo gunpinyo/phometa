@@ -8,8 +8,9 @@ import Focus exposing (Focus)
 import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
 import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Config exposing (Config)
-import Models.Cursor exposing (IntCursorPath, PaneCursor, CursorInfo)
-import Models.RepoModel exposing (Package, ModulePath,
+import Models.Cursor exposing (IntCursorPath, PaneCursor,
+                               CursorInfo, CursorTree)
+import Models.RepoModel exposing (Package, ModulePath, NodePath,
                                   GrammarName, Grammar, RootTerm, TermPath)
 import Models.Grid exposing (Grids)
 import Models.Message exposing (MessageList)
@@ -51,8 +52,11 @@ type Mode
   = ModeNothing
   | ModePackagePane
   | ModeRootTerm RecordModeRootTerm
+  | ModeTheorem RecordModeTheorem
   -- | ModeStrChoices RecordModeStrChoice
   -- TODO: add more  mode
+
+-- ModeRootTerm ----------------------------------------------------------------
 
 type alias RecordModeRootTerm =
   { module_path           : ModulePath
@@ -61,6 +65,7 @@ type alias RecordModeRootTerm =
   , sub_term_cursor_path  : IntCursorPath -- path from root_term to current term
   , micro_mode            : MicroModeRootTerm
   , editability           : EditabilityRootTerm
+  , on_quit_callback      : Command -- what to do after exit root_term mode
   }
 
 type MicroModeRootTerm
@@ -73,6 +78,21 @@ type EditabilityRootTerm
   = EditabilityRootTermReadOnly
   | EditabilityRootTermUpToTerm
   | EditabilityRootTermUpToGrammar
+
+-- ModeTheorem -----------------------------------------------------------------
+
+type alias RecordModeTheorem =
+  CursorTree
+    { node_path        : NodePath
+    , micro_mode       : MicroModeTheorem
+    , has_locked       : Bool
+    , on_quit_callback : Command
+    }
+
+type MicroModeTheorem
+  = MicroModeTheoremNavigate
+  | MicroModeTheoremSelectRule RingChoiceCounter
+  | MicroModeTheoremSelectTheorem RingChoiceCounter
 
 -- type alias RecordModeStrChoice =
 --   { choices        : List String

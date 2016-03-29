@@ -53,3 +53,14 @@ focus_record_mode_root_term =
      (\update_func mode -> case mode of
         ModeRootTerm record -> ModeRootTerm <| update_func record
         other               -> other)))
+
+focus_record_mode_theorem : Focus Model RecordModeTheorem
+focus_record_mode_theorem =
+  (mode_ => (Focus.create
+     (\mode -> case mode of
+        ModeTheorem record -> record
+        _                  ->
+          Debug.crash "from Models.ModelUtils.focus_record_mode_theorem")
+     (\update_func mode -> case mode of
+        ModeTheorem record -> ModeTheorem <| update_func record
+        other               -> other)))

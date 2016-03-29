@@ -1,6 +1,5 @@
-- automatically enter the field that var_regex = Nothing and has just one constractor
+- switch ModeRootTerm to be instance of CursorTree
 
-- not show input field if current term has grammar with var_regex = Nothing
 
 - finish root_term editor
 
