@@ -12,15 +12,16 @@ import Tools.CssExtra exposing (css_inline_str_embed)
 import Tools.StripedList exposing (striped_list_get_odd_element,
                                    striped_list_eliminate)
 import Models.Focus exposing (mode_, micro_mode_, grammar_, reversed_ref_path_,
-                              sub_term_cursor_path_, root_term_focus_, term_)
+                              sub_cursor_path_, root_term_focus_, term_)
 import Models.RepoModel exposing (ModulePath,
                                   GrammarName, Grammar, GrammarChoice,
                                   RootTerm, Term(..))
 import Models.RepoUtils exposing (init_root_term, root_term_undefined_grammar,
-                                  get_grammar_names, get_grammar,
+                                  get_grammar_names, get_grammar, focus_grammar,
                                   focus_sub_term, get_all_todo_cursor_paths,
                                   init_term_ind)
-import Models.Cursor exposing (IntCursorPath, CursorInfo)
+import Models.Cursor exposing (IntCursorPath, get_cursor_info_from_cursor_tree,
+                               cursor_tree_go_to_sub_elem)
 import Models.Model exposing (Model, Command, KeyBinding(..), Keymap, Mode(..),
                               RecordModeRootTerm, MicroModeRootTerm(..),
                               EditabilityRootTerm(..))
@@ -35,9 +36,7 @@ import Updates.Cursor exposing (cmd_click_block)
 
 cmd_enter_mode_root_term : RecordModeRootTerm -> Command
 cmd_enter_mode_root_term record =
-  let cursor_info = record.root_term_cursor_info
-        |> Focus.update reversed_ref_path_
-             (\path -> (List.reverse record.sub_term_cursor_path) ++ path)
+  let cursor_info = get_cursor_info_from_cursor_tree record
    in (Focus.set mode_ (ModeRootTerm record)) >> (cmd_click_block cursor_info)
 
 cmd_safe_mode_root_term : Command -> Command
@@ -130,7 +129,7 @@ keymap_after_set_grammar record model =
           KbCmd <| (cmd_jump_to_next_todo -1) << cmd_from_todo_for_var_to_var),
        ("⭢", "jump to next todo",
           KbCmd <| (cmd_jump_to_next_todo 1) << cmd_from_todo_for_var_to_var)],
-    if not <| List.isEmpty record.sub_term_cursor_path then
+    if not <| List.isEmpty record.sub_cursor_path then
       build_keymap
         [("⭡", "jump to parent term",
             KbCmd <| cmd_jump_to_parent_term << cmd_from_todo_for_var_to_var)]
@@ -152,7 +151,7 @@ cmd_set_sub_term term model =
   let record = Focus.get focus_record_mode_root_term model
    in model
         |> Focus.set (record.root_term_focus =>
-             (focus_sub_term record.sub_term_cursor_path))
+             (focus_sub_term record.sub_cursor_path))
              (auto_manipulate_term
                 (get_grammar_at_sub_term model) term record.module_path model)
         |> cmd_jump_to_next_todo 0
@@ -160,7 +159,7 @@ cmd_set_sub_term term model =
 cmd_jump_to_parent_term : Command
 cmd_jump_to_parent_term model =
   let record = Focus.get focus_record_mode_root_term model
-                 |> Focus.update sub_term_cursor_path_
+                 |> Focus.update sub_cursor_path_
                       (\cursor_path ->
                          List.take ((List.length cursor_path) - 1) cursor_path)
                  |> Focus.set micro_mode_
@@ -175,15 +174,15 @@ cmd_jump_to_next_todo displacement model =
       record' =
         if List.isEmpty todo_cursor_paths then
           record -- if no todos, go to root_term
-            |> Focus.set sub_term_cursor_path_ []
+            |> Focus.set sub_cursor_path_ []
             |> Focus.set micro_mode_ MicroModeRootTermNavigate
         else
           record
-            |> Focus.update sub_term_cursor_path_ (\old_cursor_path ->
+            |> Focus.update sub_cursor_path_ (\old_cursor_path ->
                  let old_index = sorted_list_get_index
                                    old_cursor_path todo_cursor_paths
                      pre_index = if displacement > 0 && not (List.member
-                                  record.sub_term_cursor_path todo_cursor_paths)
+                                  record.sub_cursor_path todo_cursor_paths)
                                    then old_index - 1 else old_index
                      index = (pre_index + displacement) %
                                List.length todo_cursor_paths
@@ -202,7 +201,7 @@ cmd_reset_root_term model =
         EditabilityRootTermReadOnly -> model
         EditabilityRootTermUpToTerm ->
           let record' = record
-                |> Focus.set sub_term_cursor_path_ []
+                |> Focus.set sub_cursor_path_ []
                 |> Focus.set micro_mode_ (MicroModeRootTermTodo 0)
            in model
                 |> cmd_enter_mode_root_term record'
@@ -210,7 +209,7 @@ cmd_reset_root_term model =
         EditabilityRootTermUpToGrammar ->
           let model' = Focus.set record.root_term_focus init_root_term model
               record' = record
-                |> Focus.set sub_term_cursor_path_ []
+                |> Focus.set sub_cursor_path_ []
                 |> Focus.set micro_mode_ (MicroModeRootTermSetGrammar 0)
            in cmd_enter_mode_root_term record' model'
 
@@ -227,18 +226,17 @@ get_grammar_at_sub_term model =
   let record = Focus.get focus_record_mode_root_term model
       root_term = Focus.get record.root_term_focus model
    in get_grammar_at_sub_term' record.module_path model
-        root_term.grammar root_term.term record.sub_term_cursor_path
+        root_term.grammar root_term.term record.sub_cursor_path
 
 get_grammar_at_sub_term' : ModulePath -> Model -> GrammarName ->
                                  Term -> IntCursorPath -> Grammar
 get_grammar_at_sub_term' module_path model grammar_name term cursor_path =
   let err_msg = "from Updates.ModeRootTerm.cmd_get_grammar_at_sub_term'"
    in case cursor_path of
-        [] -> case get_grammar { module_path = module_path
-                               , node_name = grammar_name
-                               } model of
-                Nothing      -> Debug.crash err_msg
-                Just grammar -> grammar
+        [] -> let node_path = { module_path = module_path
+                              , node_name = grammar_name
+                              }
+               in Focus.get (focus_grammar node_path) model
         cursor_index :: cursor_path' ->
           case term of
             TermInd grammar_choice sub_terms ->

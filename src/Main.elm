@@ -33,8 +33,8 @@ port task_signal : Signal (Task () ())
 port task_signal = Signal.filterMap extract_task activating_task model_signal
 
 -- some sub-component of model e.g. root_keymap,
--- will behave correctly after model_signal got the first action
--- it is designed like this because setting a nice init_* would be an overkill
--- so, we need a task to click of the first action
+-- will behave correctly only after model_signal got the first action
+-- we can't rely purely on init_* to make the the model on valid state
+-- hence, need to kick out the first action as soon as possible
 activating_task : Task () ()
 activating_task = Signal.send address ActionNothing

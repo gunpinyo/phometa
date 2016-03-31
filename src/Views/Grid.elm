@@ -12,7 +12,6 @@ import Models.RepoModel exposing (Node(..))
 import Models.RepoUtils exposing (get_node)
 import Models.Model exposing (Model)
 import Models.ViewState exposing (View)
-import Views.Definition exposing (show_definition)
 import Views.Theorem exposing (show_theorem)
 
 show_grids_pane : View
@@ -59,8 +58,6 @@ show_grid_pane pane_cursor grid model =
           let cursor_info = init_cursor_info has_cursor
                               int_cursor_path pane_cursor
            in case get_node node_path model of
-                Just (NodeDefinition definition) ->
-                  show_definition cursor_info node_path definition model
                 Just (NodeTheorem theorem) ->
                   show_theorem cursor_info node_path theorem model
                 _  -> debug_to_html node_path -- TODO: finish this

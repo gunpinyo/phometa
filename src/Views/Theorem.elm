@@ -51,7 +51,7 @@ show_sub_theorem : CursorInfo -> RecordModeTheorem -> Theorem ->
 show_sub_theorem cursor_info record theorem theorem_focus model =
   let goal_html = div [] [ show_keyword_block "goal "
                          , show_root_term
-                             (cursor_info_go_to_sub_elem cursor_info 0)
+                             (cursor_info_go_to_sub_elem 0 cursor_info)
                              record.node_path.module_path
                              (if theorem.proof == ProofTodo
                                 && List.isEmpty record.sub_cursor_path
@@ -69,13 +69,14 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
             [ goal_html
             , show_keyword_block "to_prove"
             , show_clickable_block
-                "button-block" (cursor_info_go_to_sub_elem cursor_info 1)
+                "button-block" (cursor_info_go_to_sub_elem 1 cursor_info)
                 (cmd_from_todo_to_proof_by_rule 1 record)
                 [text "Proof By Rule"]
             , show_keyword_block "or"
             , show_clickable_block
-                "button-block" (cursor_info_go_to_sub_elem cursor_info 2)
+                "button-block" (cursor_info_go_to_sub_elem 2 cursor_info)
                 (cmd_from_todo_to_proof_by_lemma 2 record)
                 [text "Proof By Lemma"]]
         ProofByRule rule_name sub_theorems -> [text "TODO:"]
+        ProofByReduction sub_theorem -> [text "TODO:"]
         ProofByLemma theorem_name -> [text "TODO:"]

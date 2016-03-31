@@ -47,8 +47,8 @@ init_cursor_info has_cursor cursor_path pane_cursor =
   , pane_cursor = pane_cursor
   }
 
-cursor_info_go_to_sub_elem : CursorInfo -> IntCursor -> CursorInfo
-cursor_info_go_to_sub_elem cursor_info index =
+cursor_info_go_to_sub_elem : IntCursor -> CursorInfo -> CursorInfo
+cursor_info_go_to_sub_elem index cursor_info =
   { cursor_info |
     maybe_cursor_path = Maybe.andThen cursor_info.maybe_cursor_path
                           (\ int_cursor_path ->
@@ -57,7 +57,7 @@ cursor_info_go_to_sub_elem cursor_info index =
   , reversed_ref_path = index :: cursor_info.reversed_ref_path
   }
 
-cursor_tree_go_to_sub_elem : Int -> CursorTree a -> CursorTree a
+cursor_tree_go_to_sub_elem : IntCursor -> CursorTree a -> CursorTree a
 cursor_tree_go_to_sub_elem index cursor_tree =
   Focus.update sub_cursor_path_ (\path -> path ++ [index]) cursor_tree
 

@@ -20,6 +20,11 @@ type alias Format = String
 
 type alias VarName = String
 
+type alias Parameter =
+  { grammar  : GrammarName
+  , var_name : VarName
+  }
+
 -- Package ---------------------------------------------------------------------
 
 type alias PackageName = ContainerName
@@ -68,7 +73,7 @@ type alias NodeBase a =
 
 type Node
   = NodeGrammar Grammar -- TODO: implement this
-  | NodeDefinition Definition -- TODO: implement this
+  | NodeReduction Reduction -- TODO: implement this
   | NodeRule Rule -- TODO: implement this
   | NodeTheorem Theorem-- TODO: implement this
 
@@ -93,14 +98,6 @@ type Term
   -- | TermLet (List VarName Term) Term    --  let [var_i = term_i]* in term
   -- | TermMatch Term (List (Term, Term))  --  match term with [pat_i as term_i]
 
-type TermPath
-  = TermPathCurrent
-  | TermPathInd TermPath
-  -- TermPathLet (Maybe Int) TermPath     -- Nothing, to term, Just i, to term_i
-  -- TermPathMatch (Maybe (Int, Bool)) TermPath -- Nothing, to term
-                                                -- (Just (False, i)), to pat_i
-                                                -- (Just (True, i)), to term_i
-
 type alias RootTerm =
   { grammar : GrammarName
   , term : Term
@@ -108,12 +105,13 @@ type alias RootTerm =
 
 -- Definition ------------------------------------------------------------------
 
-type alias DefinitionName = StripedList Format GrammarName
+type alias ReductionName = String
 
-type alias Definition =
+type alias Reduction =
   NodeBase
-    { arguments : List VarName
-    , root_term : RootTerm
+    { parameters : List Parameter
+    , pattern : RootTerm
+    -- TODO: make this similar to Rule but need exactly one premise
     }
 
 -- Rule ------------------------------------------------------------------------
@@ -139,5 +137,5 @@ type alias Theorem =
 type Proof
   = ProofTodo
   | ProofByRule RuleName (List Theorem)
+  | ProofByReduction Theorem -- reduction on sub_term, this is beta-equivalence
   | ProofByLemma TheoremName
-  -- | ProofByPrimitive

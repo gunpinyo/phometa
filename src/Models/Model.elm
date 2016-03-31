@@ -11,7 +11,7 @@ import Models.Config exposing (Config)
 import Models.Cursor exposing (IntCursorPath, PaneCursor,
                                CursorInfo, CursorTree)
 import Models.RepoModel exposing (Package, ModulePath, NodePath,
-                                  GrammarName, Grammar, RootTerm, TermPath)
+                                  GrammarName, Grammar, RootTerm)
 import Models.Grid exposing (Grids)
 import Models.Message exposing (MessageList)
 import Models.Environment exposing (Environment)
@@ -59,14 +59,13 @@ type Mode
 -- ModeRootTerm ----------------------------------------------------------------
 
 type alias RecordModeRootTerm =
-  { module_path           : ModulePath
-  , root_term_focus       : Focus Model RootTerm
-  , root_term_cursor_info : CursorInfo    -- path from model to root_term
-  , sub_term_cursor_path  : IntCursorPath -- path from root_term to current term
-  , micro_mode            : MicroModeRootTerm
-  , editability           : EditabilityRootTerm
-  , on_quit_callback      : Command -- what to do after exit root_term mode
-  }
+  CursorTree
+    { module_path           : ModulePath
+    , root_term_focus       : Focus Model RootTerm
+    , micro_mode            : MicroModeRootTerm
+    , editability           : EditabilityRootTerm
+    , on_quit_callback      : Command -- what to do after exit root_term mode
+    }
 
 type MicroModeRootTerm
   = MicroModeRootTermSetGrammar RingChoiceCounter

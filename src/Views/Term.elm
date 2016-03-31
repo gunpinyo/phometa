@@ -13,11 +13,11 @@ import Tools.StripedList exposing (striped_list_get_even_element,
                                    striped_list_get_odd_element,
                                    stripe_two_list_together)
 import Models.Focus exposing (context_, root_term_,
-                              micro_mode_, sub_term_cursor_path_)
+                              micro_mode_, sub_cursor_path_)
 import Models.Cursor exposing (IntCursorPath, CursorInfo,
                                cursor_info_is_here,
                                cursor_info_go_to_sub_elem,
-                               cursor_info_get_ref_path)
+                               cursor_tree_go_to_sub_elem)
 import Models.RepoModel exposing (ModulePath, GrammarName,
                                   Term(..), RootTerm)
 import Models.RepoUtils exposing (root_term_undefined_grammar, get_grammar)
@@ -41,8 +41,8 @@ show_root_term
       root_term_focus root_term model =
   let record = { module_path = module_path
                , root_term_focus = root_term_focus
-               , root_term_cursor_info = cursor_info
-               , sub_term_cursor_path = [] -- might be modified by `show_term`
+               , top_cursor_info  = cursor_info
+               , sub_cursor_path  = [] -- might be modified by `show_term`
                , micro_mode = MicroModeRootTermSetGrammar 0 -- the same as above
                , editability = editability
                , on_quit_callback = on_quit_callback
@@ -96,9 +96,9 @@ show_term cursor_info record grammar_name term model =
           sub_grammars = striped_list_get_odd_element grammar_choice
           sub_blocks = List.map2 (,) sub_grammars sub_terms
             |> List.indexedMap (\index (sub_grammar, sub_term) ->
-                 show_term (cursor_info_go_to_sub_elem cursor_info index)
-                   (Focus.update sub_term_cursor_path_
-                      (\cursor_path -> cursor_path ++ [index]) record)
+                 show_term
+                   (cursor_info_go_to_sub_elem index cursor_info)
+                   (cursor_tree_go_to_sub_elem index record)
                    sub_grammar sub_term model)
           format_htmls = striped_list_get_even_element grammar_choice
             |> List.map (\format ->

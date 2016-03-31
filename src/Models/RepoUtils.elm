@@ -65,7 +65,7 @@ focus_package package_path =
                  Just package -> package)
     (update_package package_path)
 
--- Models ----------------------------------------------------------------------
+-- Module ----------------------------------------------------------------------
 
 get_module : ModulePath -> Model -> Maybe Module
 get_module module_path model =
@@ -139,6 +139,17 @@ get_grammar node_path model =
   case get_node node_path model of
     Just (NodeGrammar grammar) -> Just grammar
     _                          -> Nothing
+
+focus_grammar : NodePath -> Focus Model Grammar
+focus_grammar node_path =
+  let err_msg = "from Models.RepoUtils.focus_grammar"
+   in (focus_node node_path => (Focus.create
+        (\node -> case node of
+            NodeGrammar grammar -> grammar
+            _ -> Debug.crash err_msg)
+        (\update_func node -> case node of
+            NodeGrammar grammar -> NodeGrammar (update_func grammar)
+            other -> other)))
 
 -- Term ------------------------------------------------------------------------
 
