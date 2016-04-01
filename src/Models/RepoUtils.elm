@@ -2,10 +2,12 @@ module Models.RepoUtils where
 
 import Debug
 import Dict exposing (Dict)
+import Set exposing (Set)
 
 import Focus exposing (Focus, (=>))
 
-import Tools.Utils exposing (list_get_elem, list_focus_elem)
+import Tools.Utils exposing (list_get_elem, list_focus_elem,
+                             list_remove_duplication)
 import Tools.SanityCheck exposing (CheckResult, valid)
 import Tools.StripedList exposing (striped_list_get_odd_element)
 import Tools.OrderedDict exposing (ordered_dict_to_list)
@@ -257,6 +259,16 @@ init_theorem =
   , proof = ProofTodo
   }
 
+get_theorem_names : ModulePath -> Model -> List TheoremName
+get_theorem_names module_path model =
+  case get_module module_path model of
+    Nothing -> []
+    Just module' -> ordered_dict_to_list module'.nodes
+                      |> List.filterMap (\ (node_name, node) ->
+                           case node of
+                             NodeTheorem _  -> Just node_name
+                             _              -> Nothing)
+
 focus_theorem : NodePath -> Focus Model Theorem
 focus_theorem node_path =
   let err_msg = "from Models.RepoUtils.focus_theorem"
@@ -268,12 +280,131 @@ focus_theorem node_path =
             NodeTheorem theorem -> NodeTheorem (update_func theorem)
             other -> other)))
 
--- Unification -----------------------------------------------------------------
+has_theorem_completed : Theorem -> Bool
+has_theorem_completed theorem =
+  if not <| has_root_term_completed theorem.goal then False else
+    case theorem.proof of
+      ProofTodo -> False
+      ProofByRule _ _ sub_theorems ->
+        List.all has_theorem_completed sub_theorems
+      ProofByReduction theorem' ->
+        has_theorem_completed theorem'
+      ProofByLemma _ _ -> True
+
+-- Pattern Matching / Unification ----------------------------------------------
+
+substitute : VarName -> Term -> Term -> Term
+substitute old_var new_term top_term =
+  case top_term of
+    TermTodo -> TermTodo   -- this is not possible since the term is completed
+    TermVar var_name -> if var_name == old_var
+                          then new_term else TermVar var_name
+    TermInd grammar_choice sub_terms ->
+      TermInd grammar_choice <| List.map (substitute old_var new_term) sub_terms
+
+multiple_root_substitute : SubstitutionList -> RootTerm -> RootTerm
+multiple_root_substitute list top_root_term =
+  let fold_func record acc =
+        substitute record.old_var record.new_root_term.term acc
+      update_func top_term = List.foldl fold_func top_term list
+   in Focus.update term_ update_func top_root_term
+
+pattern_matchable : RootTerm -> RootTerm -> Bool
+pattern_matchable pattern target =
+  pattern_match_aux pattern target /= Nothing
+
+-- -- if matched, return
+-- --   1. dict that map pattern variables to corresponded goal root terms
+-- --   2. sequence of goal variables that needed to be substituted by
+-- --        the corresponded root term in order to make matching successful
+-- -- otherwise, return nothing
+pattern_match : RootTerm -> RootTerm -> Maybe PatternMatchingInfo
+pattern_match pattern target =
+  let maybe_aux_dict = pattern_match_aux pattern target
+      subst_list_func var_name root_term_list maybe_acc_subst_list =
+        case root_term_list of
+          [] -> Nothing -- impossible, pattern variable will match to something
+          root_term :: [] -> maybe_acc_subst_list -- no need for unification
+          fst_root_term :: other_root_terms ->
+            let fold_func root_term maybe_acc =
+                  let maybe_partial_subst_list =
+                        Maybe.andThen maybe_acc (\acc ->
+                          unify (multiple_root_substitute acc fst_root_term)
+                                (multiple_root_substitute acc root_term))
+                   in Maybe.map2 List.append maybe_acc maybe_partial_subst_list
+             in List.foldl fold_func maybe_acc_subst_list other_root_terms
+      maybe_subst_list = Maybe.andThen maybe_aux_dict (\aux_dict ->
+        Dict.foldl subst_list_func (Just []) aux_dict)
+   in Maybe.map2
+        (\subst_list aux_dict ->
+          { pattern_variables =
+              Dict.map (\var_name root_term_list ->
+                multiple_root_substitute subst_list <|
+                  list_get_elem 0 root_term_list) aux_dict
+          , substitution_list = subst_list
+          })
+        maybe_subst_list maybe_aux_dict
+
+-- do a pattern matching between `pattern` and `target`
+-- if success, return a dict from pattern variables to corresponded root terms
+--      this may be more than one of the pattern variable occur multiple time
+-- otherwise, return nothing
+pattern_match_aux : RootTerm -> RootTerm -> Maybe (Dict VarName (List RootTerm))
+pattern_match_aux pattern target =
+  if pattern.grammar /= target.grammar then Nothing else
+  case (pattern.term, target.term) of
+    (TermTodo, _) -> Nothing -- impossible to have `TermTodo` on this stage
+    (_, TermTodo) -> Nothing -- impossible to have `TermTodo` on this stage
+    (TermVar var_name, _) -> Just (Dict.singleton var_name [target])
+    (_, TermVar _) -> Nothing -- this is one way matching, so need to reject
+    (TermInd pat_mixfix pat_sub_terms, TermInd tar_mixfix tar_sub_terms) ->
+      if pat_mixfix /= tar_mixfix then Nothing else
+        let results = List.map2 pattern_match_aux
+              (get_sub_root_terms pat_mixfix pat_sub_terms)
+              (get_sub_root_terms tar_mixfix tar_sub_terms)
+            fold_func result acc =
+              case (result, acc) of
+                (Nothing, _) -> acc
+                (_, Nothing) -> result
+                (Just result_dict, Just acc_dict) -> Just <|
+                  Dict.foldl
+                    (\key val dict ->
+                      let old_val = Maybe.withDefault [] (Dict.get key dict)
+                          new_val = List.append val old_val
+                       in Dict.insert key new_val dict)
+                    acc_dict
+                    result_dict
+         in List.foldl fold_func (Just Dict.empty) results
+              |> Maybe.map (\dict ->
+                   Dict.map (\_ list -> list_remove_duplication list) dict)
+
+-- if success, return substitution list needed to make both of term identical
+-- otherwise, return nothing
+unify : RootTerm -> RootTerm -> Maybe (SubstitutionList)
+unify a b =
+  if a.grammar /= b.grammar then Nothing else
+  case (a.term, b.term) of
+    (TermTodo, _) -> Nothing -- impossible to have `TermTodo` on this stage
+    (_, TermTodo) -> Nothing -- impossible to have `TermTodo` on this stage
+    (TermVar var_name, _) -> Just ([{old_var = var_name, new_root_term = b}])
+    (_, TermVar var_name) -> Just ([{old_var = var_name, new_root_term = a}])
+    (TermInd a_mixfix a_sub_terms, TermInd b_mixfix b_sub_terms) ->
+      if a_mixfix /= b_mixfix then Nothing else
+        let fold_func (a_root_sub_term, b_root_sub_term) maybe_acc_subst_list =
+              let maybe_partial_subst_list =
+                    Maybe.andThen maybe_acc_subst_list
+                      (\subst_list ->
+                         unify (multiple_root_substitute subst_list a)
+                               (multiple_root_substitute subst_list b))
+               in Maybe.map2 List.append maybe_acc_subst_list
+                                         maybe_partial_subst_list
+         in List.map2 (,) a_sub_terms b_sub_terms
+              |> List.foldl fold_func (Just [])
 
 -- return list of pattern variable and its corresponded root term
 -- if can't unify, return `Nothing`
-unify : RootTerm -> RootTerm -> Maybe (Dict VarName RootTerm)
-unify pattern goal =
+unify' : RootTerm -> RootTerm -> Maybe (Dict VarName RootTerm)
+unify' pattern goal =
   case pattern.term of
     TermTodo          -> Nothing
     TermVar var_name  -> Just (Dict.singleton var_name goal)
@@ -285,7 +416,7 @@ unify pattern goal =
           if List.length pattern_sub_terms /= List.length goal_sub_terms
              then Nothing
           else
-             let results = List.map2 unify
+             let results = List.map2 unify'
                    (get_sub_root_terms pattern_grammar_choice pattern_sub_terms)
                    (get_sub_root_terms goal_grammar_choice goal_sub_terms)
               in List.foldl

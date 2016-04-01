@@ -77,6 +77,10 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                 "button-block" (cursor_info_go_to_sub_elem 2 cursor_info)
                 (cmd_from_todo_to_proof_by_lemma 2 record)
                 [text "Proof By Lemma"]]
-        ProofByRule rule_name sub_theorems -> [text "TODO:"]
+        ProofByRule rule_name pattern_matching_info sub_theorems -> [text "TODO:"]
         ProofByReduction sub_theorem -> [text "TODO:"]
-        ProofByLemma theorem_name -> [text "TODO:"]
+        ProofByLemma theorem_name pattern_matching_info ->
+          [ goal_html
+          , show_keyword_block "proof_by_lemma"
+          , show_text_block "theorem-block" theorem_name
+          , debug_to_html pattern_matching_info] -- TODO: delete debug

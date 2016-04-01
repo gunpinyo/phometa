@@ -136,6 +136,18 @@ type alias Theorem =
 
 type Proof
   = ProofTodo
-  | ProofByRule RuleName (List Theorem)
+  | ProofByRule RuleName PatternMatchingInfo (List Theorem)
   | ProofByReduction Theorem -- reduction on sub_term, this is beta-equivalence
-  | ProofByLemma TheoremName
+  | ProofByLemma TheoremName PatternMatchingInfo
+
+-- Pattern Matching / Unification ----------------------------------------------
+
+type alias SubstitutionList =
+  List { old_var : VarName
+       , new_root_term : RootTerm
+       }
+
+type alias PatternMatchingInfo =
+  { pattern_variables : Dict VarName RootTerm
+  , substitution_list : SubstitutionList
+  }
