@@ -10,7 +10,7 @@ import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Config exposing (Config)
 import Models.Cursor exposing (IntCursorPath, PaneCursor,
                                CursorInfo, CursorTree)
-import Models.RepoModel exposing (Package, ModulePath, NodePath,
+import Models.RepoModel exposing (VarName, Package, ModulePath, NodePath,
                                   GrammarName, Grammar, RootTerm)
 import Models.Grid exposing (Grids)
 import Models.Message exposing (MessageList)
@@ -60,11 +60,13 @@ type Mode
 
 type alias RecordModeRootTerm =
   CursorTree
-    { module_path           : ModulePath
-    , root_term_focus       : Focus Model RootTerm
-    , micro_mode            : MicroModeRootTerm
-    , editability           : EditabilityRootTerm
-    , on_quit_callback      : Command -- what to do after exit root_term mode
+    { module_path            : ModulePath
+    , root_term_focus        : Focus Model RootTerm
+    , micro_mode             : MicroModeRootTerm
+    , editability            : EditabilityRootTerm
+    , can_create_fresh_vars  : Bool
+    , get_existing_variables : Model -> Dict VarName GrammarName
+    , on_quit_callback       : Command -- what to do after exit root_term mode
     }
 
 type MicroModeRootTerm

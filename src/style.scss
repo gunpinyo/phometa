@@ -14,6 +14,7 @@ $inline-padding: 5px;
 
 .indented-block {
     margin: 1px;
+    margin-left: 5px;
     padding: 0px;
     border: 0px solid #888888;
     border-left-width: 3px;
@@ -21,6 +22,7 @@ $inline-padding: 5px;
 
 .indented-block:hover {
     margin: 0px;
+    margin-left: 4px;
     padding: 0px;
     border: 1px solid #888888;
     border-left-width: 4px;
@@ -28,6 +30,7 @@ $inline-padding: 5px;
 
 .indented-block-on-cursor {
     margin: 1px !important;
+    margin-left: 5px !important;
     padding: 0px !important;
     border: 0px solid black !important;
     border-left-width: 3px !important;
@@ -35,6 +38,7 @@ $inline-padding: 5px;
 
 .indented-block-on-cursor:hover {
     margin: 0px !important;
+    margin-left: 4px !important;
     padding: 0px !important;
     border: 1px solid #888888 !important;
     border-left: 4px solid black !important;

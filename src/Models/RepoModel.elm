@@ -20,10 +20,12 @@ type alias Format = String
 
 type alias VarName = String
 
-type alias Parameter =
-  { grammar  : GrammarName
-  , var_name : VarName
-  }
+type alias Parameters =
+  List { grammar  : GrammarName
+       , var_name : VarName
+       }
+
+type alias Arguments = List RootTerm
 
 -- Package ---------------------------------------------------------------------
 
@@ -109,7 +111,7 @@ type alias ReductionName = String
 
 type alias Reduction =
   NodeBase
-    { parameters : List Parameter
+    { parameters : Parameters
     , pattern : RootTerm
     -- TODO: make this similar to Rule but need exactly one premise
     }
@@ -120,9 +122,28 @@ type alias RuleName = String
 
 type alias Rule =
   NodeBase
-    { premises : List RootTerm
+    { parameters : Parameters -- TODO: when implement rule input method user
+                              --       cannot put parameters directly in fact,
+                              --       parameters will be generated when lock
+                              --       the rule (locking is the way to state
+                              --       that the rule is completed, it can now be
+                              --       used inside a theorem and cannot be
+                              --       modified afterword) parameters are all
+                              --       variables appeared in premises but not
+                              --       appear in conclusion
     , conclusion : RootTerm
+    , allow_target_substitution : Bool
+    , premises : List Premise
     }
+
+type Premise
+  = PremiseDirect RootTerm
+  | PremiseSubRule RuleName RootTerm Arguments
+  | PremiseMatch RootTerm (List { pattern : RootTerm
+                                , allow_target_substitution : Bool
+                                , premises : List Premise
+                                })
+
 
 -- Theorem ---------------------------------------------------------------------
 
@@ -136,8 +157,9 @@ type alias Theorem =
 
 type Proof
   = ProofTodo
-  | ProofByRule RuleName PatternMatchingInfo (List Theorem)
-  | ProofByReduction Theorem -- reduction on sub_term, this is beta-equivalence
+  | ProofTodoWithRule RuleName Arguments -- waiting user to enter arguments
+  | ProofByRule RuleName Arguments PatternMatchingInfo (List Theorem)
+  | ProofByReduction Theorem  -- reduction on sub_term, this is beta-equivalence
   | ProofByLemma TheoremName PatternMatchingInfo
 
 -- Pattern Matching / Unification ----------------------------------------------

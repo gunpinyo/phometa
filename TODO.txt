@@ -1,23 +1,13 @@
-- switch ModeRootTerm to be instance of CursorTree
+- change the way ModeRootTerm work, i.e. allow constructor and variables in auto complete popup
 
+- implement undo feature i.e. command that can roll back `Model` to previous state
 
-- finish root_term editor
+- make is_folded ui works
+
+- implement reduction
 
 - complete package pane
 
-- change ComponentPath, ModulePath to more elegent way
- e.g.  type alias ModulePath = [ModuleName]
-     this could be ModulePath = (PackagePath, ModuleName)
-     PackagePath
-      = PackagePathNil
-      | PackagePathCons PackageName PackagePath
-
 - try to find a third party package that can save file
 
-- introduce MajorMode in phomata, e.g. package navigation, modulerenameing
-
-- getCommand in Updates.Update
-
 - change popup to message, as we will introduce log-message
-- refactor keymap, and provide interface for its declaration
-- introduce reactive that carry external signal e.g. timestamp, to do task

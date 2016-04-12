@@ -18,7 +18,7 @@ import Models.RepoModel exposing (ModulePath,
                                   RootTerm, Term(..))
 import Models.RepoUtils exposing (init_root_term, root_term_undefined_grammar,
                                   get_grammar_names, get_grammar, focus_grammar,
-                                  focus_sub_term, get_all_todo_cursor_paths,
+                                  focus_sub_term, get_term_todo_cursor_paths,
                                   init_term_ind)
 import Models.Cursor exposing (IntCursorPath, get_cursor_info_from_cursor_tree,
                                cursor_tree_go_to_sub_elem)
@@ -50,6 +50,7 @@ cmd_get_var_from_term_todo input_string model =
   -- TODO: also use other way to verify input_string
   -- e.g. check against var_regex,
   --      check that there is no this name with different grammar
+  --      (inside rule only) check that this name is defined
   if input_string == "" || String.all Char.isDigit input_string then
     cmd_set_micro_mode (MicroModeRootTermTodo 0) model
   else
@@ -123,7 +124,7 @@ keymap_after_set_grammar record model =
       [("Alt-r", "reset root term", KbCmd cmd_reset_root_term)],
     build_keymap_cond
       (not <| List.isEmpty
-           <| get_all_todo_cursor_paths
+           <| get_term_todo_cursor_paths
            <| Focus.get (record.root_term_focus => term_) model)
       [("⭠", "jump to prev todo",
           KbCmd <| (cmd_jump_to_next_todo -1) << cmd_from_todo_for_var_to_var),
@@ -169,7 +170,7 @@ cmd_jump_to_parent_term model =
 cmd_jump_to_next_todo : Int -> Command
 cmd_jump_to_next_todo displacement model =
   let record = Focus.get focus_record_mode_root_term model
-      todo_cursor_paths = get_all_todo_cursor_paths <|
+      todo_cursor_paths = get_term_todo_cursor_paths <|
         Focus.get (record.root_term_focus => term_) model
       record' =
         if List.isEmpty todo_cursor_paths then
@@ -216,7 +217,7 @@ cmd_reset_root_term model =
 cmd_quit_if_has_no_todo : Command
 cmd_quit_if_has_no_todo model =
   let record = Focus.get focus_record_mode_root_term model
-      todo_cursor_paths = get_all_todo_cursor_paths <|
+      todo_cursor_paths = get_term_todo_cursor_paths <|
         Focus.get (record.root_term_focus => term_) model
    in if List.isEmpty todo_cursor_paths
         then record.on_quit_callback model else model

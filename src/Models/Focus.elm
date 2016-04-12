@@ -37,3 +37,4 @@ top_cursor_info_ = create .top_cursorr_info (\u r -> {r|top_cursorr_info=u r.top
 sub_cursor_path_ = create .sub_cursor_path (\u r -> {r|sub_cursor_path=u r.sub_cursor_path})
 node_name_ = create .node_name (\u r -> {r|node_name=u r.node_name})
 proof_ = create .proof (\u r -> {r|proof=u r.proof})
+has_locked_ = create .has_locked (\u r -> {r|has_locked=u r.has_locked})

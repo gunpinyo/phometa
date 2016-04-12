@@ -34,25 +34,41 @@ import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term,
 import Views.Utils exposing (show_underlined_clickable_block,
                              show_clickable_block)
 
-show_root_term : CursorInfo -> ModulePath -> EditabilityRootTerm -> Command ->
-                   Focus Model RootTerm -> RootTerm -> View
-show_root_term
-    cursor_info module_path editability on_quit_callback
-      root_term_focus root_term model =
-  let record = { module_path = module_path
-               , root_term_focus = root_term_focus
-               , top_cursor_info  = cursor_info
-               , sub_cursor_path  = [] -- might be modified by `show_term`
-               , micro_mode = MicroModeRootTermSetGrammar 0 -- the same as above
-               , editability = editability
-               , on_quit_callback = on_quit_callback
-               }
+-- show_root_term : CursorInfo -> ModulePath -> EditabilityRootTerm ->
+--                    Bool -> Dict VarName GrammarName -> Command ->
+--                    Focus Model RootTerm -> RootTerm -> View
+-- show_root_term cursor_info module_path editability can_create_fresh_vars
+--     get_existing_variables on_quit_callback root_term_focus root_term model =
+--   let record = { module_path = module_path
+--                , root_term_focus = root_term_focus
+--                , top_cursor_info  = cursor_info
+--                , sub_cursor_path  = [] -- might be modified by `show_term`
+--                , micro_mode = MicroModeRootTermSetGrammar 0 -- the same as above
+--                , editability = editability
+--                , can_create_fresh_vars = can_create_fresh_vars
+--                , get_existing_variables = get_existing_variables
+--                , on_quit_callback = on_quit_callback
+--                }
+--    in if root_term.grammar == root_term_undefined_grammar then
+--         show_clickable_block "button-block" cursor_info
+--           (cmd_enter_mode_root_term record)
+--           [Html.text "Choose Grammar"]
+--       else
+--         show_term cursor_info record root_term.grammar root_term.term model
+
+show_root_term : RecordModeRootTerm -> RootTerm -> View
+show_root_term raw_record root_term model =
+  let cursor_info = raw_record.top_cursor_info
+      record = raw_record
+        |> Focus.set sub_cursor_path_ [] -- might be modified by `show_term`
+        |> Focus.set micro_mode_ (MicroModeRootTermSetGrammar 0)
    in if root_term.grammar == root_term_undefined_grammar then
         show_clickable_block "button-block" cursor_info
           (cmd_enter_mode_root_term record)
           [Html.text "Choose Grammar"]
       else
         show_term cursor_info record root_term.grammar root_term.term model
+
 
 show_term : CursorInfo -> RecordModeRootTerm -> GrammarName -> Term -> View
 show_term cursor_info record grammar_name term model =

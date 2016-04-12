@@ -3,15 +3,18 @@ module Models.RepoUtils where
 import Debug
 import Dict exposing (Dict)
 import Set exposing (Set)
+import String
 
 import Focus exposing (Focus, (=>))
 
 import Tools.Utils exposing (list_get_elem, list_focus_elem,
                              list_remove_duplication)
 import Tools.SanityCheck exposing (CheckResult, valid)
-import Tools.StripedList exposing (striped_list_get_odd_element)
+import Tools.StripedList exposing (striped_list_get_even_element,
+                                   striped_list_get_odd_element,
+                                   stripe_two_list_together)
 import Tools.OrderedDict exposing (ordered_dict_to_list)
-import Models.Focus exposing (root_package_, dict_, nodes_, term_)
+import Models.Focus exposing (root_package_, dict_, nodes_, term_, proof_)
 import Models.Cursor exposing (IntCursorPath)
 import Models.RepoModel exposing (..)
 import Models.Model exposing (Model)
@@ -193,21 +196,32 @@ focus_sub_term from_root_cursor_path =
         (\ term -> get_func from_root_cursor_path term)
         (\ func term -> update_func func from_root_cursor_path term))
 
-get_all_todo_cursor_paths : Term -> List IntCursorPath
-get_all_todo_cursor_paths term =
+get_term_todo_cursor_paths : Term -> List IntCursorPath
+get_term_todo_cursor_paths term =
   case term of
     TermTodo            -> [[]] -- has one one todo which is empty path
     TermVar _           -> []   -- has no todos
     TermInd _ sub_terms ->
       sub_terms
          |> List.indexedMap
-              (\index sub_term -> get_all_todo_cursor_paths sub_term
+              (\index sub_term -> get_term_todo_cursor_paths sub_term
                 |> List.map (\cursor_path -> index :: cursor_path))
          |> List.concat
 
+get_root_term_variables : RootTerm -> Dict VarName GrammarName
+get_root_term_variables root_term =
+  case root_term.term of
+    TermTodo -> Dict.empty
+    TermVar var_name -> Dict.singleton var_name root_term.grammar
+    TermInd grammar_choice sub_terms ->
+      List.foldl
+        (\root_sub_term -> Dict.union (get_root_term_variables root_sub_term))
+        Dict.empty
+        (get_sub_root_terms grammar_choice sub_terms)
+
 has_root_term_completed : RootTerm -> Bool
 has_root_term_completed root_term =
-  List.isEmpty <| get_all_todo_cursor_paths root_term.term
+  List.isEmpty <| get_term_todo_cursor_paths root_term.term
 
 init_term_ind : GrammarChoice -> Term
 init_term_ind grammar_choice =
@@ -225,6 +239,19 @@ get_sub_root_terms grammar_choice sub_terms =
        })
     (striped_list_get_odd_element grammar_choice)
     sub_terms
+
+debug_show_root_term : Bool -> RootTerm -> String
+debug_show_root_term show_grammar root_term =
+  let grammar_str = if show_grammar then ":" ++ root_term.grammar else ""
+   in case root_term.term of
+        TermTodo -> "?"
+        TermVar var_name -> var_name ++ grammar_str
+        TermInd grammar_choice sub_terms ->
+          let sub_terms_strs = get_sub_root_terms grammar_choice sub_terms
+                                 |> List.map (debug_show_root_term show_grammar)
+              format_strs = striped_list_get_even_element grammar_choice
+              strs = stripe_two_list_together format_strs sub_terms_strs
+           in "(" ++ (String.concat strs) ++ grammar_str ++ ")"
 
 -- Rule ------------------------------------------------------------------------
 
@@ -248,6 +275,40 @@ focus_rule node_path =
         (\update_func node -> case node of
             NodeRule rule -> NodeRule (update_func rule)
             other -> other)))
+
+apply_rule : RuleName -> RootTerm -> Arguments -> ModulePath -> Model ->
+               Maybe (List RootTerm, PatternMatchingInfo)
+apply_rule rule_name target arguments module_path model =
+  if not <| List.member rule_name <| get_rule_names module_path model then
+    Nothing
+  else
+    let rule = Focus.get (focus_rule { module_path = module_path
+                                     , node_name = rule_name
+                                     }) model
+        parameters = List.map (\parameter -> { grammar = parameter.grammar
+                                             , term = TermVar parameter.var_name
+                                             }) rule.parameters
+        param_arg_list = List.map2 (,) parameters arguments
+        pattern_target_list = (rule.conclusion, target) :: param_arg_list
+        maybe_pattern_matching_info = pattern_match_multiple
+                                        pattern_target_list
+                                        rule.allow_target_substitution
+        maybe_premises = Maybe.andThen maybe_pattern_matching_info
+          (\pattern_matching_info -> Just <|
+            List.concatMap (\premise -> case premise of
+              PremiseDirect premise_pattern ->
+                [ pattern_root_substitute
+                    pattern_matching_info.pattern_variables
+                    premise_pattern ]
+              PremiseSubRule sub_rule_name sub_rule_target sub_rule_arguments ->
+                [] -- TODO: finish this, also check about substitution and the
+                   -- case when sub_rule return nothing
+              PremiseMatch matching_pattern matching_elems ->
+                [] -- TODO: finish this, also check about substitution and the
+                   -- case when sub_rule return nothing
+            ) rule.premises)
+     in Maybe.map2 (,) maybe_premises maybe_pattern_matching_info
+
 
 -- Theorem ---------------------------------------------------------------------
 
@@ -280,18 +341,62 @@ focus_theorem node_path =
             NodeTheorem theorem -> NodeTheorem (update_func theorem)
             other -> other)))
 
+focus_theorem_rule_argument : Int -> Focus Theorem RootTerm
+focus_theorem_rule_argument index =
+  let err_msg = "from Models.RepoUtils.focus_theorem_rule_argument"
+      arguments_focus = (Focus.create
+        (\theorem -> case theorem of
+           ProofTodoWithRule _ arguments -> arguments
+           ProofByRule _ arguments _ _ -> arguments
+           _ -> Debug.crash err_msg)
+        (\update_func theorem -> case theorem of
+           ProofTodoWithRule rule_name arguments ->
+             ProofTodoWithRule rule_name (update_func arguments)
+           ProofByRule rule_name arguments pattern_matching_info sub_theorems ->
+             ProofByRule rule_name (update_func arguments)
+               pattern_matching_info sub_theorems
+           other -> other))
+   in proof_ => arguments_focus => list_focus_elem index
+
+get_theorem_variables_from_model : NodePath -> Model -> Dict VarName GrammarName
+get_theorem_variables_from_model node_path model =
+  let theorem = Focus.get (focus_theorem node_path) model
+   in get_theorem_variables theorem
+
+get_theorem_variables : Theorem -> Dict VarName GrammarName
+get_theorem_variables theorem =
+  let goal_dict = get_root_term_variables theorem.goal
+      proof_dict = case theorem.proof of
+        ProofTodo -> Dict.empty
+        ProofTodoWithRule _ arguments ->
+          List.foldl
+            (\argument -> Dict.union (get_root_term_variables argument))
+            Dict.empty arguments
+        ProofByRule _ arguments _ sub_theorems ->
+          let arguments_dict = List.foldl
+                (\argument -> Dict.union (get_root_term_variables argument))
+                Dict.empty arguments
+              sub_theorems_dict = List.foldl
+                (\sub_theorem -> Dict.union (get_theorem_variables sub_theorem))
+                Dict.empty sub_theorems
+           in Dict.union arguments_dict sub_theorems_dict
+        ProofByReduction theorem' -> get_theorem_variables theorem'
+        ProofByLemma _ _ -> Dict.empty
+   in Dict.union goal_dict proof_dict
+
 has_theorem_completed : Theorem -> Bool
 has_theorem_completed theorem =
   if not <| has_root_term_completed theorem.goal then False else
     case theorem.proof of
       ProofTodo -> False
-      ProofByRule _ _ sub_theorems ->
+      ProofTodoWithRule _ _ -> False
+      ProofByRule _ _ _ sub_theorems ->
         List.all has_theorem_completed sub_theorems
       ProofByReduction theorem' ->
         has_theorem_completed theorem'
       ProofByLemma _ _ -> True
 
--- Pattern Matching / Unification ----------------------------------------------
+-- Pattern Matching ------------------------------------------------------------
 
 substitute : VarName -> Term -> Term -> Term
 substitute old_var new_term top_term =
@@ -309,74 +414,60 @@ multiple_root_substitute list top_root_term =
       update_func top_term = List.foldl fold_func top_term list
    in Focus.update term_ update_func top_root_term
 
-pattern_matchable : RootTerm -> RootTerm -> Bool
-pattern_matchable pattern target =
-  pattern_match_aux pattern target /= Nothing
+pattern_substitute : Dict VarName RootTerm -> Term -> Term
+pattern_substitute dict top_term =
+  case top_term of
+    TermTodo -> TermTodo   -- this is not possible since the term is completed
+    TermVar var_name -> case Dict.get var_name dict of
+                          Nothing            -> TermVar var_name
+                          Just new_root_term -> new_root_term.term
+    TermInd grammar_choice sub_terms ->
+      TermInd grammar_choice <| List.map (pattern_substitute dict) sub_terms
 
--- -- if matched, return
--- --   1. dict that map pattern variables to corresponded goal root terms
--- --   2. sequence of goal variables that needed to be substituted by
--- --        the corresponded root term in order to make matching successful
--- -- otherwise, return nothing
-pattern_match : RootTerm -> RootTerm -> Maybe PatternMatchingInfo
-pattern_match pattern target =
-  let maybe_aux_dict = pattern_match_aux pattern target
-      subst_list_func var_name root_term_list maybe_acc_subst_list =
-        case root_term_list of
-          [] -> Nothing -- impossible, pattern variable will match to something
-          root_term :: [] -> maybe_acc_subst_list -- no need for unification
-          fst_root_term :: other_root_terms ->
-            let fold_func root_term maybe_acc =
-                  let maybe_partial_subst_list =
-                        Maybe.andThen maybe_acc (\acc ->
-                          unify (multiple_root_substitute acc fst_root_term)
-                                (multiple_root_substitute acc root_term))
-                   in Maybe.map2 List.append maybe_acc maybe_partial_subst_list
-             in List.foldl fold_func maybe_acc_subst_list other_root_terms
-      maybe_subst_list = Maybe.andThen maybe_aux_dict (\aux_dict ->
-        Dict.foldl subst_list_func (Just []) aux_dict)
-   in Maybe.map2
-        (\subst_list aux_dict ->
-          { pattern_variables =
-              Dict.map (\var_name root_term_list ->
-                multiple_root_substitute subst_list <|
-                  list_get_elem 0 root_term_list) aux_dict
-          , substitution_list = subst_list
-          })
-        maybe_subst_list maybe_aux_dict
+pattern_root_substitute : Dict VarName RootTerm -> RootTerm -> RootTerm
+pattern_root_substitute dict top_root_term =
+  Focus.update term_ (pattern_substitute dict) top_root_term
+
+pattern_matchable : RootTerm -> RootTerm -> Bool -> Bool
+pattern_matchable pattern target allow_target_substitution =
+  pattern_match pattern target allow_target_substitution /= Nothing
+
+merge_pattern_variables_list : List (Dict VarName (List RootTerm)) ->
+                                 Dict VarName (List RootTerm)
+merge_pattern_variables_list main_list =
+  let dict_fold_func key target_val acc =
+        let old_val = Maybe.withDefault [] (Dict.get key acc)
+            new_val = List.append target_val old_val
+         in Dict.insert key new_val acc
+      list_fold_func dict acc = Dict.foldl dict_fold_func dict acc
+   in List.foldl list_fold_func Dict.empty main_list
+       |> Dict.map (\_ list -> list_remove_duplication list)
 
 -- do a pattern matching between `pattern` and `target`
 -- if success, return a dict from pattern variables to corresponded root terms
 --      this may be more than one of the pattern variable occur multiple time
 -- otherwise, return nothing
-pattern_match_aux : RootTerm -> RootTerm -> Maybe (Dict VarName (List RootTerm))
-pattern_match_aux pattern target =
+pattern_match_get_vars_dict : RootTerm -> RootTerm ->
+                                Maybe (Dict VarName (List RootTerm))
+pattern_match_get_vars_dict pattern target =
   if pattern.grammar /= target.grammar then Nothing else
   case (pattern.term, target.term) of
     (TermTodo, _) -> Nothing -- impossible to have `TermTodo` on this stage
     (_, TermTodo) -> Nothing -- impossible to have `TermTodo` on this stage
     (TermVar var_name, _) -> Just (Dict.singleton var_name [target])
-    (_, TermVar _) -> Nothing -- this is one way matching, so need to reject
+    (_, TermVar _) -> Nothing -- this is one way matching, need to reject this
     (TermInd pat_mixfix pat_sub_terms, TermInd tar_mixfix tar_sub_terms) ->
       if pat_mixfix /= tar_mixfix then Nothing else
-        let results = List.map2 pattern_match_aux
+        let maybe_result_list = List.map2 pattern_match_get_vars_dict
               (get_sub_root_terms pat_mixfix pat_sub_terms)
               (get_sub_root_terms tar_mixfix tar_sub_terms)
-            fold_func result acc =
-              case (result, acc) of
-                (Nothing, _) -> acc
-                (_, Nothing) -> result
-                (Just result_dict, Just acc_dict) -> Just <|
-                  Dict.foldl
-                    (\key val dict ->
-                      let old_val = Maybe.withDefault [] (Dict.get key dict)
-                          new_val = List.append val old_val
-                       in Dict.insert key new_val dict)
-                    acc_dict
-                    result_dict
-         in List.foldl fold_func (Just Dict.empty) results
-              |> Maybe.map (\dict ->
-                   Dict.map (\_ list -> list_remove_duplication list) dict)
+         in if List.any ((==) Nothing) maybe_result_list then
+              Nothing
+            else
+              maybe_result_list
+                |> List.filterMap identity
+                |> merge_pattern_variables_list
+                |> Just
 
 -- if success, return substitution list needed to make both of term identical
 -- otherwise, return nothing
@@ -401,29 +492,60 @@ unify a b =
          in List.map2 (,) a_sub_terms b_sub_terms
               |> List.foldl fold_func (Just [])
 
--- return list of pattern variable and its corresponded root term
--- if can't unify, return `Nothing`
-unify' : RootTerm -> RootTerm -> Maybe (Dict VarName RootTerm)
-unify' pattern goal =
-  case pattern.term of
-    TermTodo          -> Nothing
-    TermVar var_name  -> Just (Dict.singleton var_name goal)
-    TermInd pattern_grammar_choice pattern_sub_terms  ->
-      case goal.term of
-        TermTodo         -> Nothing
-        TermVar _        -> Nothing
-        TermInd goal_grammar_choice goal_sub_terms ->
-          if List.length pattern_sub_terms /= List.length goal_sub_terms
-             then Nothing
-          else
-             let results = List.map2 unify'
-                   (get_sub_root_terms pattern_grammar_choice pattern_sub_terms)
-                   (get_sub_root_terms goal_grammar_choice goal_sub_terms)
-              in List.foldl
-                   (\result acc ->
-                     case (result, acc) of
-                       (Just result_dict, Just acc_dict) ->
-                         Just (Dict.union result_dict acc_dict)
-                       _ -> Nothing)
-                   (Just Dict.empty)
-                   results
+vars_dict_to_pattern_matching_info : Dict VarName (List RootTerm)
+                                       -> Maybe PatternMatchingInfo
+vars_dict_to_pattern_matching_info vars_dict =
+  let subst_list_func var_name root_term_list maybe_acc_subst_list =
+        case root_term_list of
+          [] -> Nothing -- impossible, pattern variable will match to something
+          root_term :: [] -> maybe_acc_subst_list -- no need for unification
+          fst_root_term :: other_root_terms ->
+            let fold_func root_term maybe_acc =
+                  let maybe_partial_subst_list =
+                        Maybe.andThen maybe_acc (\acc ->
+                          unify (multiple_root_substitute acc fst_root_term)
+                                (multiple_root_substitute acc root_term))
+                   in Maybe.map2 List.append maybe_acc maybe_partial_subst_list
+             in List.foldl fold_func maybe_acc_subst_list other_root_terms
+      maybe_subst_list = Dict.foldl subst_list_func (Just []) vars_dict
+   in Maybe.map (\subst_list ->
+        { pattern_variables =
+            Dict.map (\var_name root_term_list ->
+              multiple_root_substitute subst_list <|
+                list_get_elem 0 root_term_list) vars_dict
+        , substitution_list = subst_list
+        }) maybe_subst_list
+
+-- if `allow_target_substitution` is true, then accept pattern matching that
+--   require target substitution i.e. substitution_list != []
+-- if matched, return 1. dict that map pattern variables to
+--   corresponded goal root terms 2. sequence of goal variables that needed
+--   to be substituted by the corresponded root term in order to make matching
+--   successful otherwise, return nothing
+pattern_match : RootTerm -> RootTerm -> Bool -> Maybe PatternMatchingInfo
+pattern_match pattern target allow_target_substitution =
+  pattern_match_get_vars_dict pattern target
+    |> (flip Maybe.andThen) vars_dict_to_pattern_matching_info
+    |> (flip Maybe.andThen) (\pattern_info ->
+          if not allow_target_substitution &&
+               not (List.isEmpty pattern_info.substitution_list)
+          then Nothing else Just pattern_info)
+
+-- the same as pattern match but have multiple (pattern, target)
+-- all of this need to agree on pattern match to produce a pattern_matching_info
+-- this is useful for applying rule with parameters
+pattern_match_multiple : List (RootTerm, RootTerm) -> Bool ->
+                       Maybe PatternMatchingInfo
+pattern_match_multiple list allow_target_substitution =
+  let vars_dict_maybe_list = List.map (uncurry pattern_match_get_vars_dict) list
+   in if List.any ((==) Nothing) vars_dict_maybe_list then
+        Nothing
+      else
+        vars_dict_maybe_list
+          |> List.filterMap identity
+          |> merge_pattern_variables_list
+          |> vars_dict_to_pattern_matching_info
+          |> (flip Maybe.andThen) (\pattern_info ->
+                if not allow_target_substitution &&
+                     not (List.isEmpty pattern_info.substitution_list)
+                then Nothing else Just pattern_info)
