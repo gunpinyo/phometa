@@ -21,7 +21,7 @@ init_package_with_stdlib =
 stdlib_package : Package
 stdlib_package =
   { dict = Dict.fromList [
-      ("First Order Logic", PackageElemMod {
+      ("Propositional Logic", PackageElemMod {
         comment = Nothing,
         nodes = ordered_dict_from_list [
           ("Prop", NodeGrammar {
@@ -36,11 +36,7 @@ stdlib_package =
               striped_list_introduce ["", "∨", ""] ["Prop", "Prop"],
               striped_list_introduce ["¬", ""] ["Prop"],
               striped_list_introduce ["", "→", ""] ["Prop", "Prop"],
-              striped_list_introduce ["", "↔", ""] ["Prop", "Prop"],
-              striped_list_introduce ["", "=", ""] ["Term", "Term"],
-              striped_list_introduce ["if", "then", "else", ""] ["Prop", "Term", "Term"],
-              striped_list_introduce ["P", ""] ["Term"],
-              striped_list_introduce ["R", "", ""] ["Term", "Term"]
+              striped_list_introduce ["", "↔", ""] ["Prop", "Prop"]
             ]
           }),
           ("Atom", NodeGrammar {
@@ -48,25 +44,6 @@ stdlib_package =
             is_folded = False,
             var_regex = Just "[a-g]([1-9][0-9]*|'*)",
             choices = []
-          }),
-          ("Term", NodeGrammar {
-            comment = Nothing,
-            is_folded = False,
-            var_regex = Just "[x-z]([1-9][0-9]*|'*)",
-            choices = [
-              striped_list_introduce ["", ""] ["Nat"],
-              striped_list_introduce ["", "+", ""] ["Term", "Term"],
-              striped_list_introduce ["", "*", ""] ["Term", "Term"]
-            ]
-          }),
-          ("Nat", NodeGrammar {
-            comment = Nothing,
-            is_folded = False,
-            var_regex = Just "[mn]([1-9][0-9]*|'*)",
-            choices = [
-              striped_list_introduce ["zero"] [],
-              striped_list_introduce ["succ", ""] ["Nat"]
-            ]
           }),
           ("Context", NodeGrammar {
             comment = Nothing,
@@ -120,7 +97,36 @@ stdlib_package =
                     [TermVar "Γ", TermVar "A"]
                 }]
           }),
-          ("and-intro", NodeRule {
+          ("⊤-intro", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [],
+            conclusion = {
+              grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermVar "Γ", TermInd (striped_list_introduce ["⊤"] []) []]
+              },
+            allow_target_substitution = True,
+            premises = []
+          }),
+          ("⊥-elim", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [],
+            conclusion = {
+              grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermVar "Γ", TermVar "A"]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermVar "Γ", TermInd (striped_list_introduce ["⊥"] []) []]
+                }]
+          }),
+          ("∧-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
             parameters = [],
@@ -145,7 +151,89 @@ stdlib_package =
                     [TermVar "Γ", TermVar "B"]
                 }]
           }),
-          ("or-elim", NodeRule {
+          ("∧-elim-left", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [{ grammar = "Prop", var_name = "B" }],
+            conclusion = {
+              grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [TermVar "Γ", TermVar "A"]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [ TermVar "Γ"
+                    , TermInd (striped_list_introduce ["", "∧", ""] ["Prop", "Prop"])
+                        [TermVar "A", TermVar "B"]
+                    ]
+                }]
+          }),
+          ("∧-elim-right", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [{ grammar = "Prop", var_name = "A" }],
+            conclusion = {
+              grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [TermVar "Γ", TermVar "B"]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [ TermVar "Γ"
+                    , TermInd (striped_list_introduce ["", "∧", ""] ["Prop", "Prop"])
+                        [TermVar "A", TermVar "B"]
+                    ]
+                }]
+          }),
+          ("∨-intro-left", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [],
+            conclusion = {
+              grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ"
+                  , TermInd (striped_list_introduce ["", "∨", ""] ["Prop", "Prop"])
+                      [TermVar "A", TermVar "B"]
+                  ]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [ TermVar "Γ", TermVar "A"
+                    ]
+                }]
+          }),
+          ("∨-intro-right", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [],
+            conclusion = {
+              grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ"
+                  , TermInd (striped_list_introduce ["", "∨", ""] ["Prop", "Prop"])
+                      [TermVar "A", TermVar "B"]
+                  ]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [ TermVar "Γ", TermVar "B"
+                    ]
+                }]
+          }),
+          ("∨-elim", NodeRule {
             comment = Nothing,
             is_folded = False,
             parameters = [ { grammar = "Prop", var_name = "A" }
@@ -166,12 +254,203 @@ stdlib_package =
               PremiseDirect
                 { grammar = "Judgement"
                 , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
-                    [TermVar "Γ", TermInd (striped_list_introduce ["", "→", ""] ["Prop", "Prop"]) [TermVar "A", TermVar "C"]]
+                    [TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [TermVar "Γ", TermVar "A"], TermVar "C"]
                 },
               PremiseDirect
                 { grammar = "Judgement"
                 , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
-                    [TermVar "Γ", TermInd (striped_list_introduce ["", "→", ""] ["Prop", "Prop"]) [TermVar "B", TermVar "C"]]
+                    [TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [TermVar "Γ", TermVar "B"], TermVar "C"]
+                }
+            ]
+          }),
+          ("¬-intro", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [],
+            conclusion =
+              { grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ", TermInd (striped_list_introduce ["¬", ""] ["Prop"]) [TermVar "A"]]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [TermVar "Γ", TermVar "A"],
+                       TermInd (striped_list_introduce ["⊥"] []) []]
+                }
+            ]
+          }),
+          ("¬-elim", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [{ grammar = "Prop", var_name = "A" }],
+            conclusion =
+              { grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ", TermInd (striped_list_introduce ["⊥"] []) []]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [ TermVar "Γ", TermInd (striped_list_introduce ["¬", ""] ["Prop"]) [TermVar "A"]]
+                },
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [ TermVar "Γ", TermVar "A" ]
+                }
+            ]
+          }),
+          ("double negation", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [],
+            conclusion =
+              { grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ", TermInd (striped_list_introduce ["¬", ""] ["Prop"])
+                      [TermInd (striped_list_introduce ["¬", ""] ["Prop"]) [TermVar "A"]]]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermVar "Γ", TermVar "A"]
+                }
+            ]
+          }),
+          ("proof-by-contradiction", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [],
+            conclusion =
+              { grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ", TermVar "A"]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"])
+                       [TermVar "Γ", TermInd (striped_list_introduce ["¬", ""] ["Prop"]) [TermVar "A"]],
+                       TermInd (striped_list_introduce ["⊥"] []) []]
+                }
+            ]
+          }),
+          ("→-intro", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [],
+            conclusion =
+              { grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ", TermInd (striped_list_introduce ["", "→", ""] ["Prop", "Prop"]) [TermVar "A", TermVar "B"]]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [TermVar "Γ", TermVar "A"], TermVar "B"]
+                }
+            ]
+          }),
+          ("→-elim", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [{ grammar = "Prop", var_name = "A" }],
+            conclusion =
+              { grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ", TermVar "B"]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermVar "Γ", TermInd (striped_list_introduce ["", "→", ""] ["Prop", "Prop"]) [TermVar "A", TermVar "B"]]
+                },
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermVar "Γ", TermVar "A"]
+                }
+            ]
+          }),
+          ("↔-intro", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [],
+            conclusion =
+              { grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ", TermInd (striped_list_introduce ["", "↔", ""] ["Prop", "Prop"]) [TermVar "A", TermVar "B"]]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [TermVar "Γ", TermVar "A"], TermVar "B"]
+                },
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [TermVar "Γ", TermVar "B"], TermVar "A"]
+                }
+            ]
+          }),
+          ("↔-elim-forward", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [{ grammar = "Prop", var_name = "A" }],
+            conclusion =
+              { grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ", TermVar "B"]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermVar "Γ", TermInd (striped_list_introduce ["", "↔", ""] ["Prop", "Prop"]) [TermVar "A", TermVar "B"]]
+                },
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermVar "Γ", TermVar "A"]
+                }
+            ]
+          }),
+          ("↔-elim-backward", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            parameters = [{ grammar = "Prop", var_name = "B" }],
+            conclusion =
+              { grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermVar "Γ", TermVar "A"]
+              },
+            allow_target_substitution = True,
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermVar "Γ", TermInd (striped_list_introduce ["", "↔", ""] ["Prop", "Prop"]) [TermVar "A", TermVar "B"]]
+                },
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermVar "Γ", TermVar "B"]
                 }
             ]
           }),

@@ -29,6 +29,9 @@ show_text_block class_name string =
 show_keyword_block : String -> Html
 show_keyword_block = show_text_block "keyword-block"
 
+show_todo_keyword_block : String -> Html
+show_todo_keyword_block = show_text_block "todo-keyword-block"
+
 show_clickable_block : CssClass -> CursorInfo -> Command -> List Html -> Html
 show_clickable_block class_name cursor_info command htmls =
   div [ classList [

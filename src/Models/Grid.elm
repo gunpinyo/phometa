@@ -25,14 +25,14 @@ init_grids =
     (GridNode {
       module_path = {
         package_path = ["Standard Library"],
-        module_name = "First Order Logic"
+        module_name = "Propositional Logic"
       },
       node_name = "theorem-1"
     } [])
     (GridNode {
       module_path = {
         package_path = ["Standard Library"],
-        module_name = "First Order Logic"
+        module_name = "Propositional Logic"
       },
       node_name = "theorem-2"
     } [])

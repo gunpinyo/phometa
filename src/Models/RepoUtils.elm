@@ -484,13 +484,14 @@ unify a b =
         let fold_func (a_root_sub_term, b_root_sub_term) maybe_acc_subst_list =
               let maybe_partial_subst_list =
                     Maybe.andThen maybe_acc_subst_list
-                      (\subst_list ->
-                         unify (multiple_root_substitute subst_list a)
-                               (multiple_root_substitute subst_list b))
+                      (\subst_list -> unify
+                         (multiple_root_substitute subst_list a_root_sub_term)
+                         (multiple_root_substitute subst_list b_root_sub_term))
                in Maybe.map2 List.append maybe_acc_subst_list
                                          maybe_partial_subst_list
-         in List.map2 (,) a_sub_terms b_sub_terms
-              |> List.foldl fold_func (Just [])
+         in List.foldl fold_func (Just []) <|
+              List.map2 (,) (get_sub_root_terms a_mixfix a_sub_terms)
+                            (get_sub_root_terms b_mixfix b_sub_terms)
 
 vars_dict_to_pattern_matching_info : Dict VarName (List RootTerm)
                                        -> Maybe PatternMatchingInfo

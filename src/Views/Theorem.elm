@@ -28,8 +28,8 @@ import Updates.ModeTheorem exposing (cmd_enter_mode_theorem,
                                      cmd_execute_current_rule,
                                      focus_sub_theorem)
 import Views.Utils exposing (show_indented_clickable_block,
-                             show_clickable_block,
-                             show_text_block, show_keyword_block)
+                             show_clickable_block, show_text_block,
+                             show_keyword_block, show_todo_keyword_block)
 import Views.Term exposing (show_root_term)
 
 show_theorem : CursorInfo -> NodePath -> Theorem -> View
@@ -73,7 +73,7 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                                      record.node_path
         , on_quit_callback = cmd_enter_mode_theorem record
         }
-      goal_html = div [] [ show_root_term goal_record theorem.goal model]
+      goal_html = show_root_term goal_record theorem.goal model
       show_rule_name_and_arguments is_editable rule_name arguments =
         let rule = Focus.get (focus_rule { module_path = module_path
                                          , node_name = rule_name
@@ -105,31 +105,38 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
               |> List.concat
               |> List.append [ show_keyword_block "proof_by_rule"
                              , show_text_block "rule-block" rule_name ]
-              |> div []
-
+      goal_proof_div_html proof_htmls =
+        div [] (goal_html :: text " " :: proof_htmls)
    in case theorem.proof of
         ProofTodo ->
           if not <| has_root_term_completed theorem.goal then
-            [ goal_html
-            , show_keyword_block
-                "to_prove, please fill all holes in the goal before continue."]
+            [ goal_proof_div_html
+                [ show_todo_keyword_block "to_prove"
+                , text " "
+                , show_todo_keyword_block
+                    "Please fill all holes in the goal before continue."]]
           else
-            [ goal_html
-            , show_keyword_block "to_prove,"
-            , show_clickable_block
-                "button-block" (cursor_info_go_to_sub_elem 1 cursor_info)
-                (cmd_from_todo_to_proof_by_rule 1 record)
-                [text "Proof By Rule"]
-            , show_keyword_block "or"
-            , show_clickable_block
-                "button-block" (cursor_info_go_to_sub_elem 2 cursor_info)
-                (cmd_from_todo_to_proof_by_lemma 2 record)
-                [text "Proof By Lemma"]]
+            [ goal_proof_div_html
+                [ show_todo_keyword_block "to_prove"
+                , text " "
+                , show_clickable_block
+                    "button-block" (cursor_info_go_to_sub_elem 1 cursor_info)
+                    (cmd_from_todo_to_proof_by_rule 1 record)
+                    [text "Proof By Rule"]
+                , text " "
+                , show_todo_keyword_block "or"
+                , text " "
+                , show_clickable_block
+                    "button-block" (cursor_info_go_to_sub_elem 2 cursor_info)
+                    (cmd_from_todo_to_proof_by_lemma 2 record)
+                    [text "Proof By Lemma"]
+                ]
+            ]
         ProofTodoWithRule rule_name arguments ->
-          [ goal_html
-          , show_rule_name_and_arguments True rule_name arguments
-          , show_keyword_block <| "to_prove, please fill all holes "
-                               ++ "in the arguments before continue."]
+          [ show_todo_keyword_block <| "to_prove, please fill all holes "
+                                    ++ "in the arguments before continue."
+          , goal_proof_div_html
+              (show_rule_name_and_arguments True rule_name arguments) ]
         ProofByRule rule_name arguments pattern_matching_info sub_theorems ->
           let indexed_map_func index sub_theorem =
                 let cursor_index = 1 + List.length arguments + index
@@ -142,13 +149,14 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                                           sub_theorem sub_theorem_focus model
                  in show_indented_clickable_block "block" cursor_info'
                       (cmd_enter_mode_theorem record')
-                      (hr [] [] :: sub_theorem_htmls)
-           in [ goal_html
-              , show_rule_name_and_arguments False rule_name arguments
-              ] ++ (List.indexedMap indexed_map_func sub_theorems)
+                      (sub_theorem_htmls)
+           in (List.indexedMap indexed_map_func sub_theorems) ++
+                [ goal_proof_div_html
+                   (show_rule_name_and_arguments False rule_name arguments) ]
         ProofByReduction sub_theorem -> [text "TODO:"]
         ProofByLemma theorem_name pattern_matching_info ->
-          [ goal_html
-          , show_keyword_block "proof_by_lemma"
-          , show_text_block "theorem-block" theorem_name
-          , debug_to_html pattern_matching_info] -- TODO: delete debug
+          [ goal_proof_div_html
+              [ show_keyword_block "proof_by_lemma"
+              , show_text_block "theorem-block" theorem_name
+              ]
+          ]

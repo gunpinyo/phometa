@@ -69,8 +69,8 @@ keymap_mode_theorem record model =
               |> List.filter (\rule_name ->
                    let rule = Focus.get (focus_rule (Focus.set node_name_
                                 rule_name record.node_path)) model
-                    in pattern_matchable
-                         rule.conclusion cur_sub_theorem.goal True)
+                    in pattern_matchable rule.conclusion cur_sub_theorem.goal
+                         rule.allow_target_substitution)
               |> List.map (\rule_name ->
                    (css_inline_str_embed "rule-block" rule_name, rule_name))
             choice_handler (_, rule_name) =
