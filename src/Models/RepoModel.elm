@@ -1,6 +1,7 @@
 module Models.RepoModel where
 
 import Dict exposing (Dict)
+import Regex exposing (Regex)
 
 import Tools.OrderedDict exposing (OrderedDict)
 import Tools.StripedList exposing (StripedList)
@@ -13,8 +14,6 @@ type alias ContainerName = String
 type alias ContainerPath = List ContainerName
 
 type alias Comment = Maybe String
-
-type alias RawRegex = String
 
 type alias Format = String
 
@@ -85,8 +84,11 @@ type alias GrammarName = String
 
 type alias Grammar =
   NodeBase
-    { var_regex : Maybe RawRegex
-    , choices   : List GrammarChoice
+    { has_locked  : Bool
+    , const_regex : Maybe Regex
+    , subst_regex : Maybe Regex
+    , unify_regex : Maybe Regex
+    , choices     : List GrammarChoice
     }
 
 type alias GrammarChoice = StripedList Format GrammarName
@@ -105,6 +107,11 @@ type alias RootTerm =
   , term : Term
   }
 
+type VarType
+  = VarTypeConst
+  | VarTypeSubst
+  | VarTypeUnify
+
 -- Definition ------------------------------------------------------------------
 
 type alias ReductionName = String
@@ -122,7 +129,8 @@ type alias RuleName = String
 
 type alias Rule =
   NodeBase
-    { parameters : Parameters -- TODO: when implement rule input method user
+    { has_locked  : Bool
+    , parameters : Parameters -- TODO: when implement rule input method user
                               --       cannot put parameters directly in fact,
                               --       parameters will be generated when lock
                               --       the rule (locking is the way to state
@@ -132,7 +140,6 @@ type alias Rule =
                               --       variables appeared in premises but not
                               --       appear in conclusion
     , conclusion : RootTerm
-    , allow_target_substitution : Bool
     , premises : List Premise
     }
 

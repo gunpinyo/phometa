@@ -13,7 +13,7 @@ import Models.Cursor exposing (IntCursorPath,
 import Models.RepoModel exposing (Term(..), RuleName, TheoremName, Theorem,
                                   Proof(..), SubstitutionList)
 import Models.RepoUtils exposing (has_root_term_completed,
-                                  get_rule_names, focus_rule, apply_rule,
+                                  get_usable_rule_names, focus_rule, apply_rule,
                                   init_theorem, get_theorem_names,
                                   focus_theorem, has_theorem_completed,
                                   multiple_root_substitute,
@@ -65,12 +65,12 @@ keymap_mode_theorem record model =
       MicroModeTheoremNavigate -> empty_keymap
       MicroModeTheoremSelectRule ring_choices_counter ->
         let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
-            choices = get_rule_names record.node_path.module_path model
+            choices = get_usable_rule_names record.node_path.module_path model
               |> List.filter (\rule_name ->
                    let rule = Focus.get (focus_rule (Focus.set node_name_
                                 rule_name record.node_path)) model
-                    in pattern_matchable rule.conclusion cur_sub_theorem.goal
-                         rule.allow_target_substitution)
+                    in pattern_matchable record.node_path.module_path model
+                         rule.conclusion cur_sub_theorem.goal)
               |> List.map (\rule_name ->
                    (css_inline_str_embed "rule-block" rule_name, rule_name))
             choice_handler (_, rule_name) =
@@ -85,8 +85,8 @@ keymap_mode_theorem record model =
               |> List.filter (\theorem_name ->
                    let theorem = Focus.get (focus_theorem (Focus.set node_name_
                                    theorem_name record.node_path)) model
-                    in pattern_matchable theorem.goal cur_sub_theorem.goal True
-                         {- TODO: uncomment this, && has_theorem_completed theorem-})
+                    in pattern_matchable record.node_path.module_path model
+                         theorem.goal cur_sub_theorem.goal)
               |> List.map (\theorem_name ->
                    (css_inline_str_embed "theorem-block" theorem_name,
                     theorem_name))
@@ -164,7 +164,8 @@ cmd_set_theorem theorem_name model =
       top_theorem_focus = focus_theorem record.node_path
       target_theorem = Focus.get top_theorem_focus model
       sub_theorem_update_func current_sub_theorem =
-        case pattern_match pattern_theorem.goal current_sub_theorem.goal True of
+        case pattern_match record.node_path.module_path model
+               pattern_theorem.goal current_sub_theorem.goal of
           Nothing -> current_sub_theorem
           Just pattern_match_info ->
             Focus.set proof_

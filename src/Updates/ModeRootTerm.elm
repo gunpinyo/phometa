@@ -17,7 +17,8 @@ import Models.RepoModel exposing (ModulePath,
                                   GrammarName, Grammar, GrammarChoice,
                                   RootTerm, Term(..))
 import Models.RepoUtils exposing (init_root_term, root_term_undefined_grammar,
-                                  get_grammar_names, get_grammar, focus_grammar,
+                                  get_usable_grammar_names, get_grammar,
+                                  focus_grammar, grammar_allow_variable,
                                   focus_sub_term, get_term_todo_cursor_paths,
                                   init_term_ind)
 import Models.Cursor exposing (IntCursorPath, get_cursor_info_from_cursor_tree,
@@ -72,7 +73,7 @@ keymap_mode_root_term : RecordModeRootTerm -> Model -> Keymap
 keymap_mode_root_term record model =
   case record.micro_mode of
     MicroModeRootTermSetGrammar ring_choices_counter ->
-      let choices = get_grammar_names record.module_path model |>
+      let choices = get_usable_grammar_names record.module_path model |>
             List.map (\grammar_name ->
               (css_inline_str_embed "grammar-block" grammar_name,
                  grammar_name))
@@ -253,7 +254,8 @@ auto_manipulate_term : Grammar -> Term -> ModulePath -> Model -> Term
 auto_manipulate_term grammar term module_path model =
   case term of
     TermTodo ->
-      if grammar.var_regex == Nothing && List.length grammar.choices == 1
+      if not (grammar_allow_variable grammar) &&
+         List.length grammar.choices == 1
         then (init_term_ind <| list_get_elem 0 grammar.choices) else term
     TermVar _ -> term
     TermInd grammar_choice sub_terms ->

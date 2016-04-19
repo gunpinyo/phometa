@@ -2,6 +2,7 @@ module Models.RepoUtils where
 
 import Debug
 import Dict exposing (Dict)
+import Regex exposing (Regex, contains)
 import Set exposing (Set)
 import String
 
@@ -129,22 +130,29 @@ focus_node node_path =
 
 -- Grammar ---------------------------------------------------------------------
 
-get_grammar_names : ModulePath -> Model -> List GrammarName
-get_grammar_names module_path model =
+-- get all of name of grammar in this module (including imported grammars)
+-- exclude any grammar that hasn't been locked
+-- TODO: support imported grammar
+get_usable_grammar_names : ModulePath -> Model -> List GrammarName
+get_usable_grammar_names module_path model =
   case get_module module_path model of
     Nothing -> []
     Just module' -> ordered_dict_to_list module'.nodes
                       |> List.filterMap (\ (node_name, node) ->
                            case node of
-                             NodeGrammar _ -> Just node_name
+                             NodeGrammar grammar ->
+                               if grammar.has_locked then Just node_name
+                                                     else Nothing
                              _             -> Nothing)
 
+-- TODO: support imported grammars
 get_grammar : NodePath -> Model -> Maybe Grammar
 get_grammar node_path model =
   case get_node node_path model of
     Just (NodeGrammar grammar) -> Just grammar
     _                          -> Nothing
 
+-- TODO: support imported grammars
 focus_grammar : NodePath -> Focus Model Grammar
 focus_grammar node_path =
   let err_msg = "from Models.RepoUtils.focus_grammar"
@@ -155,6 +163,27 @@ focus_grammar node_path =
         (\update_func node -> case node of
             NodeGrammar grammar -> NodeGrammar (update_func grammar)
             other -> other)))
+
+grammar_allow_variable : Grammar -> Bool
+grammar_allow_variable grammar =
+  grammar.const_regex /= Nothing ||
+  grammar.subst_regex /= Nothing ||
+  grammar.unify_regex /= Nothing
+
+get_variable_type : Grammar -> VarName -> Maybe VarType
+get_variable_type grammar var_name =
+  let match_func getter = case getter grammar of
+        Nothing -> False
+        Just regex ->                -- can use `contains` function directly
+          contains regex var_name    -- since all of regex in phometa is /^...$/
+   in if match_func .unify_regex then
+        Just VarTypeUnify
+      else if match_func .subst_regex then
+        Just VarTypeSubst
+      else if match_func .const_regex then
+        Just VarTypeConst
+      else
+        Nothing
 
 -- Term ------------------------------------------------------------------------
 
@@ -255,16 +284,22 @@ debug_show_root_term show_grammar root_term =
 
 -- Rule ------------------------------------------------------------------------
 
-get_rule_names : ModulePath -> Model -> List RuleName
-get_rule_names module_path model =
+-- get all of name of rules in this module (including imported rules)
+-- exclude any rule that hasn't been locked
+-- TODO: support imported rules
+get_usable_rule_names : ModulePath -> Model -> List RuleName
+get_usable_rule_names module_path model =
   case get_module module_path model of
     Nothing -> []
     Just module' -> ordered_dict_to_list module'.nodes
                       |> List.filterMap (\ (node_name, node) ->
                            case node of
-                             NodeRule _  -> Just node_name
+                             NodeRule rule ->
+                               if rule.has_locked then Just node_name
+                                                  else Nothing
                              _           -> Nothing)
 
+-- TODO: support imported rules
 focus_rule : NodePath -> Focus Model Rule
 focus_rule node_path =
   let err_msg = "from Models.RepoUtils.focus_rule"
@@ -279,7 +314,8 @@ focus_rule node_path =
 apply_rule : RuleName -> RootTerm -> Arguments -> ModulePath -> Model ->
                Maybe (List RootTerm, PatternMatchingInfo)
 apply_rule rule_name target arguments module_path model =
-  if not <| List.member rule_name <| get_rule_names module_path model then
+  if not <| List.member rule_name
+         <| get_usable_rule_names module_path model then
     Nothing
   else
     let rule = Focus.get (focus_rule { module_path = module_path
@@ -290,9 +326,8 @@ apply_rule rule_name target arguments module_path model =
                                              }) rule.parameters
         param_arg_list = List.map2 (,) parameters arguments
         pattern_target_list = (rule.conclusion, target) :: param_arg_list
-        maybe_pattern_matching_info = pattern_match_multiple
+        maybe_pattern_matching_info = pattern_match_multiple module_path model
                                         pattern_target_list
-                                        rule.allow_target_substitution
         maybe_premises = Maybe.andThen maybe_pattern_matching_info
           (\pattern_matching_info -> Just <|
             List.concatMap (\premise -> case premise of
@@ -320,6 +355,8 @@ init_theorem =
   , proof = ProofTodo
   }
 
+-- get all of name of rules in this module (including imported theorems)
+-- TODO: support imported theorems
 get_theorem_names : ModulePath -> Model -> List TheoremName
 get_theorem_names module_path model =
   case get_module module_path model of
@@ -330,6 +367,7 @@ get_theorem_names module_path model =
                              NodeTheorem _  -> Just node_name
                              _              -> Nothing)
 
+-- TODO: support imported theorems
 focus_theorem : NodePath -> Focus Model Theorem
 focus_theorem node_path =
   let err_msg = "from Models.RepoUtils.focus_theorem"
@@ -428,9 +466,9 @@ pattern_root_substitute : Dict VarName RootTerm -> RootTerm -> RootTerm
 pattern_root_substitute dict top_root_term =
   Focus.update term_ (pattern_substitute dict) top_root_term
 
-pattern_matchable : RootTerm -> RootTerm -> Bool -> Bool
-pattern_matchable pattern target allow_target_substitution =
-  pattern_match pattern target allow_target_substitution /= Nothing
+pattern_matchable : ModulePath -> Model -> RootTerm -> RootTerm -> Bool
+pattern_matchable module_path model pattern target =
+  pattern_match module_path model pattern target /= Nothing
 
 merge_pattern_variables_list : List (Dict VarName (List RootTerm)) ->
                                  Dict VarName (List RootTerm)
@@ -493,21 +531,44 @@ unify a b =
               List.map2 (,) (get_sub_root_terms a_mixfix a_sub_terms)
                             (get_sub_root_terms b_mixfix b_sub_terms)
 
-vars_dict_to_pattern_matching_info : Dict VarName (List RootTerm)
+vars_dict_to_pattern_matching_info : ModulePath -> Model
+                                       -> Dict VarName (List RootTerm)
                                        -> Maybe PatternMatchingInfo
-vars_dict_to_pattern_matching_info vars_dict =
+vars_dict_to_pattern_matching_info module_path model vars_dict =
   let subst_list_func var_name root_term_list maybe_acc_subst_list =
-        case root_term_list of
-          [] -> Nothing -- impossible, pattern variable will match to something
-          root_term :: [] -> maybe_acc_subst_list -- no need for unification
-          fst_root_term :: other_root_terms ->
-            let fold_func root_term maybe_acc =
-                  let maybe_partial_subst_list =
-                        Maybe.andThen maybe_acc (\acc ->
-                          unify (multiple_root_substitute acc fst_root_term)
+        let grammar_name = (.grammar) (list_get_elem 0 root_term_list)
+            maybe_grammar = get_grammar { module_path = module_path
+                                        , node_name = grammar_name
+                                        } model
+            maybe_var_type = Maybe.andThen maybe_grammar
+                               ((flip get_variable_type) var_name)
+         in case maybe_var_type of
+              Nothing -> -- impossible, var_name must belong to some grammar
+                Nothing  -- and it must match with some VarType of its grammar
+              Just VarTypeConst -> -- each element must match exactly to pattern
+                if List.all ((==) ({ grammar = grammar_name
+                                   , term = TermVar var_name
+                                   })) root_term_list
+                  then maybe_acc_subst_list else Nothing
+              Just VarTypeSubst -> -- each element must match exactly to others
+                                   -- no unification allow,
+                                   -- i.e. no self substitution on target
+                let first_root_term = list_get_elem 0 root_term_list
+                 in if List.all ((==) first_root_term) root_term_list
+                      then maybe_acc_subst_list else Nothing
+              Just VarTypeUnify -> case root_term_list of
+                [] ->     -- impossible,
+                  Nothing -- pattern variable will match to at least something
+                root_term :: [] ->  -- no need for unification
+                  maybe_acc_subst_list
+                fst_root_term :: other_root_terms ->
+                  let fold_func root_term maybe_acc =
+                        let maybe_partial_subst_list =
+                              Maybe.andThen maybe_acc (\acc -> unify
+                                (multiple_root_substitute acc fst_root_term)
                                 (multiple_root_substitute acc root_term))
-                   in Maybe.map2 List.append maybe_acc maybe_partial_subst_list
-             in List.foldl fold_func maybe_acc_subst_list other_root_terms
+                         in Maybe.map2 (++) maybe_acc maybe_partial_subst_list
+                   in List.foldl fold_func maybe_acc_subst_list other_root_terms
       maybe_subst_list = Dict.foldl subst_list_func (Just []) vars_dict
    in Maybe.map (\subst_list ->
         { pattern_variables =
@@ -523,21 +584,19 @@ vars_dict_to_pattern_matching_info vars_dict =
 --   corresponded goal root terms 2. sequence of goal variables that needed
 --   to be substituted by the corresponded root term in order to make matching
 --   successful otherwise, return nothing
-pattern_match : RootTerm -> RootTerm -> Bool -> Maybe PatternMatchingInfo
-pattern_match pattern target allow_target_substitution =
+pattern_match : ModulePath -> Model ->
+                  RootTerm -> RootTerm -> Maybe PatternMatchingInfo
+pattern_match module_path model pattern target =
   pattern_match_get_vars_dict pattern target
-    |> (flip Maybe.andThen) vars_dict_to_pattern_matching_info
-    |> (flip Maybe.andThen) (\pattern_info ->
-          if not allow_target_substitution &&
-               not (List.isEmpty pattern_info.substitution_list)
-          then Nothing else Just pattern_info)
+    |> (flip Maybe.andThen)
+         (vars_dict_to_pattern_matching_info module_path model)
 
 -- the same as pattern match but have multiple (pattern, target)
 -- all of this need to agree on pattern match to produce a pattern_matching_info
 -- this is useful for applying rule with parameters
-pattern_match_multiple : List (RootTerm, RootTerm) -> Bool ->
-                       Maybe PatternMatchingInfo
-pattern_match_multiple list allow_target_substitution =
+pattern_match_multiple : ModulePath -> Model ->
+                          List (RootTerm, RootTerm) -> Maybe PatternMatchingInfo
+pattern_match_multiple module_path model list =
   let vars_dict_maybe_list = List.map (uncurry pattern_match_get_vars_dict) list
    in if List.any ((==) Nothing) vars_dict_maybe_list then
         Nothing
@@ -545,8 +604,4 @@ pattern_match_multiple list allow_target_substitution =
         vars_dict_maybe_list
           |> List.filterMap identity
           |> merge_pattern_variables_list
-          |> vars_dict_to_pattern_matching_info
-          |> (flip Maybe.andThen) (\pattern_info ->
-                if not allow_target_substitution &&
-                     not (List.isEmpty pattern_info.substitution_list)
-                then Nothing else Just pattern_info)
+          |> vars_dict_to_pattern_matching_info module_path model

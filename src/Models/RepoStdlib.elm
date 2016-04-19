@@ -1,6 +1,7 @@
 module Models.RepoStdlib where
 
 import Dict exposing (Dict)
+import Regex exposing (regex)
 
 import Focus
 
@@ -27,7 +28,10 @@ stdlib_package =
           ("Prop", NodeGrammar {
             comment = Nothing,
             is_folded = False,
-            var_regex = Just "[A-Z]+([1-9][0-9]*|'*)",
+            has_locked = True,
+            const_regex = Nothing,
+            subst_regex = Just (regex "^[P-Z][a-zA-Z]*([1-9][0-9]*|'*)$"),
+            unify_regex = Just (regex "^[A-O][a-zA-Z]*([1-9][0-9]*|'*)$"),
             choices = [
               striped_list_introduce ["⊤"] [],
               striped_list_introduce ["⊥"] [],
@@ -42,13 +46,19 @@ stdlib_package =
           ("Atom", NodeGrammar {
             comment = Nothing,
             is_folded = False,
-            var_regex = Just "[a-z]+([1-9][0-9]*|'*)",
+            has_locked = True,
+            const_regex = Just (regex "^[a-z]+([1-9][0-9]*|'*)$"),
+            subst_regex = Nothing,
+            unify_regex = Nothing,
             choices = []
           }),
           ("Context", NodeGrammar {
             comment = Nothing,
             is_folded = False,
-            var_regex = Just "[ΓΔ]([1-9][0-9]*|'*)",
+            has_locked = True,
+            const_regex = Nothing,
+            subst_regex = Nothing,
+            unify_regex = Just (regex "^[ΓΔ]([1-9][0-9]*|'*)$"),
             choices = [
               striped_list_introduce ["ε"] [],
               striped_list_introduce ["", ",", ""] ["Context", "Prop"]
@@ -57,7 +67,10 @@ stdlib_package =
           ("Judgement", NodeGrammar {
             comment = Nothing,
             is_folded = False,
-            var_regex = Nothing,
+            has_locked = True,
+            const_regex = Nothing,
+            subst_regex = Nothing,
+            unify_regex = Nothing,
             choices = [
               striped_list_introduce ["", "⊢", ""] ["Context", "Prop"]
             ]
@@ -65,6 +78,7 @@ stdlib_package =
           ("hypothesis-base", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion = {
               grammar = "Judgement"
@@ -74,12 +88,12 @@ stdlib_package =
                   , TermVar "A"
                   ]
               },
-            allow_target_substitution = True,
             premises = []
           }),
           ("hypothesis-next", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion = {
               grammar = "Judgement"
@@ -89,7 +103,6 @@ stdlib_package =
                   , TermVar "A"
                   ]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -100,25 +113,25 @@ stdlib_package =
           ("⊤-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion = {
               grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                     [TermVar "Γ", TermInd (striped_list_introduce ["⊤"] []) []]
               },
-            allow_target_substitution = True,
             premises = []
           }),
           ("⊥-elim", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion = {
               grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                     [TermVar "Γ", TermVar "A"]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -129,6 +142,7 @@ stdlib_package =
           ("∧-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion = {
               grammar = "Judgement"
@@ -138,7 +152,6 @@ stdlib_package =
                       [TermVar "A", TermVar "B"]
                   ]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -154,13 +167,13 @@ stdlib_package =
           ("∧-elim-left", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [{ grammar = "Prop", var_name = "B" }],
             conclusion = {
               grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [TermVar "Γ", TermVar "A"]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -174,13 +187,13 @@ stdlib_package =
           ("∧-elim-right", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [{ grammar = "Prop", var_name = "A" }],
             conclusion = {
               grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [TermVar "Γ", TermVar "B"]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -194,6 +207,7 @@ stdlib_package =
           ("∨-intro-left", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion = {
               grammar = "Judgement"
@@ -203,7 +217,6 @@ stdlib_package =
                       [TermVar "A", TermVar "B"]
                   ]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -215,6 +228,7 @@ stdlib_package =
           ("∨-intro-right", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion = {
               grammar = "Judgement"
@@ -224,7 +238,6 @@ stdlib_package =
                       [TermVar "A", TermVar "B"]
                   ]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -236,6 +249,7 @@ stdlib_package =
           ("∨-elim", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [ { grammar = "Prop", var_name = "A" }
                          , { grammar = "Prop", var_name = "B" }
                          ],
@@ -244,7 +258,6 @@ stdlib_package =
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [ TermVar "Γ", TermVar "C"]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -266,13 +279,13 @@ stdlib_package =
           ("¬-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion =
               { grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [ TermVar "Γ", TermInd (striped_list_introduce ["¬", ""] ["Prop"]) [TermVar "A"]]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -285,13 +298,13 @@ stdlib_package =
           ("¬-elim", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [{ grammar = "Prop", var_name = "A" }],
             conclusion =
               { grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [ TermVar "Γ", TermInd (striped_list_introduce ["⊥"] []) []]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -308,6 +321,7 @@ stdlib_package =
           ("double negation", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion =
               { grammar = "Judgement"
@@ -315,7 +329,6 @@ stdlib_package =
                   [ TermVar "Γ", TermInd (striped_list_introduce ["¬", ""] ["Prop"])
                       [TermInd (striped_list_introduce ["¬", ""] ["Prop"]) [TermVar "A"]]]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -327,13 +340,13 @@ stdlib_package =
           ("proof-by-contradiction", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion =
               { grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [ TermVar "Γ", TermVar "A"]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -347,13 +360,13 @@ stdlib_package =
           ("→-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion =
               { grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [ TermVar "Γ", TermInd (striped_list_introduce ["", "→", ""] ["Prop", "Prop"]) [TermVar "A", TermVar "B"]]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -365,13 +378,13 @@ stdlib_package =
           ("→-elim", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [{ grammar = "Prop", var_name = "A" }],
             conclusion =
               { grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [ TermVar "Γ", TermVar "B"]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -388,13 +401,13 @@ stdlib_package =
           ("↔-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [],
             conclusion =
               { grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [ TermVar "Γ", TermInd (striped_list_introduce ["", "↔", ""] ["Prop", "Prop"]) [TermVar "A", TermVar "B"]]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -411,13 +424,13 @@ stdlib_package =
           ("↔-elim-forward", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [{ grammar = "Prop", var_name = "A" }],
             conclusion =
               { grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [ TermVar "Γ", TermVar "B"]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"
@@ -434,13 +447,13 @@ stdlib_package =
           ("↔-elim-backward", NodeRule {
             comment = Nothing,
             is_folded = False,
+            has_locked = True,
             parameters = [{ grammar = "Prop", var_name = "B" }],
             conclusion =
               { grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                   [ TermVar "Γ", TermVar "A"]
               },
-            allow_target_substitution = True,
             premises = [
               PremiseDirect
                 { grammar = "Judgement"

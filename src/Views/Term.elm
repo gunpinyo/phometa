@@ -20,7 +20,8 @@ import Models.Cursor exposing (IntCursorPath, CursorInfo,
                                cursor_tree_go_to_sub_elem)
 import Models.RepoModel exposing (ModulePath, GrammarName,
                                   Term(..), RootTerm)
-import Models.RepoUtils exposing (root_term_undefined_grammar, get_grammar)
+import Models.RepoUtils exposing (root_term_undefined_grammar, get_grammar,
+                                  grammar_allow_variable)
 import Models.Model exposing (Model, Command,
                               RecordModeRootTerm, MicroModeRootTerm(..),
                               EditabilityRootTerm)
@@ -75,14 +76,13 @@ show_term cursor_info record grammar_name term model =
   case term of
     TermTodo ->
       let record' = Focus.set micro_mode_ (MicroModeRootTermTodo 0) record
-          has_var_regex = case get_grammar { module_path = record.module_path
+          allow_variable = case get_grammar { module_path = record.module_path
                                            , node_name = grammar_name
                                            } model of
                             Nothing -> False
-                            Just grammar ->
-                              grammar.var_regex /= Nothing
+                            Just grammar -> grammar_allow_variable grammar
 
-       in if cursor_info_is_here cursor_info && has_var_regex then
+       in if cursor_info_is_here cursor_info && allow_variable then
             Html.input [
               classList [
                 ("term-todo-block", True),
