@@ -57,7 +57,7 @@ $inline-padding: 5px;
     display: inline-block;
     margin: 0px;
     padding: 0px;
-    border-bottom: 1px solid #888888;
+    border-bottom: 2px solid #888888;
 }
 
 .underlined-child-block {
@@ -176,12 +176,12 @@ th, td {
     font-family: monospace;
     font-size: 100%;
     color: Black;
-    background-color: #73AD21;
+    background-color: Green;
 }
 
 .pane {
     border-radius: 10px;
-    background: #E9C062;
+    background: #EEE0C2;
     padding: 5px;
     /*padding: 1px;*/
     margin: 3px;
@@ -189,7 +189,7 @@ th, td {
 }
 
 .pane-on-cursor {
-    background: #E9D092;
+    background: #EEE8D2;
 }
 
 /* .pane-cursor { */

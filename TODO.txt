@@ -1,3 +1,9 @@
+- change var_regex to meta_var_regex, variable_regex, and literal_regex and pattern matching mechanism
+
+- remove allow_subst in rule
+
+- change has_locked in Grammar to has_completed and enforce it (including Rule)
+
 - change the way ModeRootTerm work, i.e. allow constructor and variables in auto complete popup
 
 - implement undo feature i.e. command that can roll back `Model` to previous state

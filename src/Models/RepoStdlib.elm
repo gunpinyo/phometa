@@ -27,7 +27,7 @@ stdlib_package =
           ("Prop", NodeGrammar {
             comment = Nothing,
             is_folded = False,
-            var_regex = Just "[A-Z]([1-9][0-9]*|'*)",
+            var_regex = Just "[A-Z]+([1-9][0-9]*|'*)",
             choices = [
               striped_list_introduce ["⊤"] [],
               striped_list_introduce ["⊥"] [],
@@ -42,7 +42,7 @@ stdlib_package =
           ("Atom", NodeGrammar {
             comment = Nothing,
             is_folded = False,
-            var_regex = Just "[a-g]([1-9][0-9]*|'*)",
+            var_regex = Just "[a-z]+([1-9][0-9]*|'*)",
             choices = []
           }),
           ("Context", NodeGrammar {
