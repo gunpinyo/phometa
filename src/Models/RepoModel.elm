@@ -147,7 +147,6 @@ type Premise
   = PremiseDirect RootTerm
   | PremiseSubRule RuleName RootTerm Arguments
   | PremiseMatch RootTerm (List { pattern : RootTerm
-                                , allow_target_substitution : Bool
                                 , premises : List Premise
                                 })
 

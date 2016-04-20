@@ -15,7 +15,8 @@ import Tools.StripedList exposing (striped_list_get_even_element,
                                    striped_list_get_odd_element,
                                    stripe_two_list_together)
 import Tools.OrderedDict exposing (ordered_dict_to_list)
-import Models.Focus exposing (root_package_, dict_, nodes_, term_, proof_)
+import Models.Focus exposing (root_package_, dict_, nodes_,
+                              term_, proof_, pattern_variables_)
 import Models.Cursor exposing (IntCursorPath)
 import Models.RepoModel exposing (..)
 import Models.Model exposing (Model)
@@ -328,22 +329,74 @@ apply_rule rule_name target arguments module_path model =
         pattern_target_list = (rule.conclusion, target) :: param_arg_list
         maybe_pattern_matching_info = pattern_match_multiple module_path model
                                         pattern_target_list
-        maybe_premises = Maybe.andThen maybe_pattern_matching_info
-          (\pattern_matching_info -> Just <|
-            List.concatMap (\premise -> case premise of
-              PremiseDirect premise_pattern ->
-                [ pattern_root_substitute
-                    pattern_matching_info.pattern_variables
-                    premise_pattern ]
-              PremiseSubRule sub_rule_name sub_rule_target sub_rule_arguments ->
-                [] -- TODO: finish this, also check about substitution and the
-                   -- case when sub_rule return nothing
-              PremiseMatch matching_pattern matching_elems ->
-                [] -- TODO: finish this, also check about substitution and the
-                   -- case when sub_rule return nothing
-            ) rule.premises)
-     in Maybe.map2 (,) maybe_premises maybe_pattern_matching_info
+     in Maybe.andThen maybe_pattern_matching_info (\pattern_matching_info ->
+          apply_rule_aux rule.premises pattern_matching_info module_path model)
 
+apply_rule_aux : List Premise -> PatternMatchingInfo -> ModulePath -> Model ->
+                        Maybe (List RootTerm, PatternMatchingInfo)
+apply_rule_aux rule_premises pm_info module_path model =
+  case rule_premises of
+    [] -> Just ([], pm_info)
+    (PremiseDirect premise_pattern) :: rule_premises' ->
+      let sub_result = apply_rule_aux rule_premises' pm_info module_path model
+          map_func (sub_premises, sub_pm_info) =
+            let head_premise = pattern_root_substitute
+                                 sub_pm_info.pattern_variables premise_pattern
+             in (head_premise :: sub_premises, sub_pm_info)
+       in Maybe.map map_func sub_result
+    (PremiseSubRule srule_name srule_target srule_arguments) :: rule_premises'->
+      let srule_subst_func = pattern_root_substitute pm_info.pattern_variables
+          srule_result = apply_rule srule_name (srule_subst_func srule_target)
+            (List.map srule_subst_func srule_arguments) module_path model
+          sub_result = Maybe.andThen srule_result (\ (_, srule_pm_info) ->
+            apply_rule_aux rule_premises' (pattern_matching_info_substitute
+              pm_info srule_pm_info.substitution_list) module_path model)
+          map_func (srule_premises, srule_pm_info) (sub_premises, sub_pm_info) =
+            let updating_subst_list = get_updating_subst_list
+                                        srule_pm_info sub_pm_info
+                srule_premises' = List.map
+                  (multiple_root_substitute updating_subst_list) srule_premises
+             in (srule_premises' ++ sub_premises, sub_pm_info)
+       in Maybe.map2 map_func srule_result sub_result
+    (PremiseMatch top_pattern match_elems) :: rule_premises' ->
+      let match_target = pattern_root_substitute
+                           pm_info.pattern_variables top_pattern
+          try_matching_func match_pattern match_rule_premises =
+            pattern_match module_path model match_pattern match_target
+              |> (flip Maybe.andThen) (try_matched_func match_rule_premises)
+          try_matched_func match_rule_premises match_pm_info =
+            let pm_info' = pattern_matching_info_substitute
+                                pm_info match_pm_info.substitution_list
+                inner_scope_pm_info =             -- if there is a collusion,
+                  Focus.update pattern_variables_ -- outer scope is invisible
+                    (Dict.union match_pm_info.pattern_variables) pm_info'
+                inner_scope_result = apply_rule_aux match_rule_premises
+                                       inner_scope_pm_info module_path model
+                map_func (inner_scope_premises, inner_scope_pm_info') =
+                  let updating_subst_list = get_updating_subst_list
+                                              pm_info' inner_scope_pm_info'
+                      pm_info'' = pattern_matching_info_substitute pm_info'
+                                    updating_subst_list
+                   in (inner_scope_premises,  pm_info'')
+             in Maybe.map map_func inner_scope_result
+          match_result = List.foldl (\r acc -> if acc /= Nothing then acc
+            else try_matching_func r.pattern r.premises) Nothing match_elems
+          sub_result = Maybe.andThen match_result (\ (_, match_pm_info) ->
+            apply_rule_aux rule_premises' match_pm_info module_path model)
+          map_func (match_premises, match_pm_info) (sub_premises, sub_pm_info) =
+            let updating_subst_list = get_updating_subst_list
+                                        match_pm_info sub_pm_info
+                match_premises' = List.map
+                  (multiple_root_substitute updating_subst_list) match_premises
+             in (match_premises' ++ sub_premises, sub_pm_info)
+       in Maybe.map2 map_func match_result sub_result
+
+-- helper of apply_rule_aux
+get_updating_subst_list : PatternMatchingInfo -> PatternMatchingInfo
+                            -> SubstitutionList
+get_updating_subst_list old_pm_info new_pm_info =
+  List.drop (List.length old_pm_info.substitution_list)
+            new_pm_info.substitution_list
 
 -- Theorem ---------------------------------------------------------------------
 
@@ -465,6 +518,14 @@ pattern_substitute dict top_term =
 pattern_root_substitute : Dict VarName RootTerm -> RootTerm -> RootTerm
 pattern_root_substitute dict top_root_term =
   Focus.update term_ (pattern_substitute dict) top_root_term
+
+pattern_matching_info_substitute : PatternMatchingInfo -> SubstitutionList
+                                     -> PatternMatchingInfo
+pattern_matching_info_substitute pm_info substitution_list =
+  { pattern_variables = Dict.map (\_ ->
+      multiple_root_substitute substitution_list) pm_info.pattern_variables
+  , substitution_list = List.append pm_info.substitution_list substitution_list
+  }
 
 pattern_matchable : ModulePath -> Model -> RootTerm -> RootTerm -> Bool
 pattern_matchable module_path model pattern target =
