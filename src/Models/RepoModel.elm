@@ -74,7 +74,6 @@ type alias NodeBase a =
 
 type Node
   = NodeGrammar Grammar -- TODO: implement this
-  | NodeReduction Reduction -- TODO: implement this
   | NodeRule Rule -- TODO: implement this
   | NodeTheorem Theorem-- TODO: implement this
 
@@ -111,17 +110,6 @@ type VarType
   = VarTypeConst
   | VarTypeSubst
   | VarTypeUnify
-
--- Definition ------------------------------------------------------------------
-
-type alias ReductionName = String
-
-type alias Reduction =
-  NodeBase
-    { parameters : Parameters
-    , pattern : RootTerm
-    -- TODO: make this similar to Rule but need exactly one premise
-    }
 
 -- Rule ------------------------------------------------------------------------
 
@@ -165,7 +153,6 @@ type Proof
   = ProofTodo
   | ProofTodoWithRule RuleName Arguments -- waiting user to enter arguments
   | ProofByRule RuleName Arguments PatternMatchingInfo (List Theorem)
-  | ProofByReduction Theorem  -- reduction on sub_term, this is beta-equivalence
   | ProofByLemma TheoremName PatternMatchingInfo
 
 -- Pattern Matching / Unification ----------------------------------------------

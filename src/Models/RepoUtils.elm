@@ -471,7 +471,6 @@ get_theorem_variables theorem =
                 (\sub_theorem -> Dict.union (get_theorem_variables sub_theorem))
                 Dict.empty sub_theorems
            in Dict.union arguments_dict sub_theorems_dict
-        ProofByReduction theorem' -> get_theorem_variables theorem'
         ProofByLemma _ _ -> Dict.empty
    in Dict.union goal_dict proof_dict
 
@@ -483,8 +482,6 @@ has_theorem_completed theorem =
       ProofTodoWithRule _ _ -> False
       ProofByRule _ _ _ sub_theorems ->
         List.all has_theorem_completed sub_theorems
-      ProofByReduction theorem' ->
-        has_theorem_completed theorem'
       ProofByLemma _ _ -> True
 
 -- Pattern Matching ------------------------------------------------------------

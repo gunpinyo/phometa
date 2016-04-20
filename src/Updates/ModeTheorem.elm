@@ -225,8 +225,6 @@ theorem_tree_substitute subst_list theorem = theorem
              sub_theorems' =
                List.map (theorem_tree_substitute subst_list) sub_theorems
           in ProofByRule rule_name arguments' pattern_match_info sub_theorems'
-       ProofByReduction theorem' ->
-         ProofByReduction <| theorem_tree_substitute subst_list theorem'
        ProofByLemma theorem_name pattern_match_info ->
          ProofByLemma theorem_name pattern_match_info)
 

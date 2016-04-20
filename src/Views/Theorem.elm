@@ -153,7 +153,6 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
            in (List.indexedMap indexed_map_func sub_theorems) ++
                 [ goal_proof_div_html
                    (show_rule_name_and_arguments False rule_name arguments) ]
-        ProofByReduction sub_theorem -> [text "TODO:"]
         ProofByLemma theorem_name pattern_matching_info ->
           [ goal_proof_div_html
               [ show_keyword_block "proof_by_lemma"
