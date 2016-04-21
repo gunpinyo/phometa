@@ -116,13 +116,14 @@ $inline-padding: 5px;
 /* button */
 .button-block {
     @extend .inline-block;
-    @include color-with-bg(#8888FF)
+    @include color-with-bg(#8888FF);
 }
 
 /* grammar */
 .grammar-block {
     @extend .inline-block;
-    @include color-with-bg(#004400)
+    @include color-with-bg(#004400);
+    font-weight: bold;
 }
 
 /* format for inductive grammar */
@@ -139,21 +140,30 @@ $inline-padding: 5px;
 }
 
 /* variable */
-.variable-block {
+.const-var-block {
     @extend .inline-block;
-    @include color-with-bg(#0000FF)
+    @include color-with-bg(#4444FF);
+}
+.subst-var-block {
+    @extend .inline-block;
+    @include color-with-bg(#0000FF);
+}
+.unify-var-block {
+    @extend .inline-block;
+    @include color-with-bg(#0000FF);
+    font-weight: bold;
 }
 
 /* rule */
 .rule-block {
     @extend .inline-block;
-    @include color-with-bg(#006622)
+    @include color-with-bg(#004400);
 }
 
 /* theorem */
 .theorem-block {
     @extend .inline-block;
-    @include color-with-bg(#009933)
+    @include color-with-bg(#009933);
 }
 
 /* place to choose rule */

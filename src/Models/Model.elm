@@ -53,8 +53,7 @@ type Mode
   | ModePackagePane
   | ModeRootTerm RecordModeRootTerm
   | ModeTheorem RecordModeTheorem
-  -- | ModeStrChoices RecordModeStrChoice
-  -- TODO: add more  mode
+  -- TODO: add more mode
 
 -- ModeRootTerm ----------------------------------------------------------------
 
@@ -94,11 +93,3 @@ type MicroModeTheorem
   = MicroModeTheoremNavigate
   | MicroModeTheoremSelectRule RingChoiceCounter
   | MicroModeTheoremSelectTheorem RingChoiceCounter
-
--- type alias RecordModeStrChoice =
---   { choices        : List String
---   , to_description : (String -> String)
---   , callback       : (String -> Model -> Model)
---   , counter        : Int
---   , previous_mode  : Mode
---   }

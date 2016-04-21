@@ -30,7 +30,7 @@ import Updates.ModeTheorem exposing (cmd_enter_mode_theorem,
 import Views.Utils exposing (show_indented_clickable_block,
                              show_clickable_block, show_text_block,
                              show_keyword_block, show_todo_keyword_block)
-import Views.Term exposing (show_root_term)
+import Views.Term exposing (show_root_term, get_variable_css)
 
 show_theorem : CursorInfo -> NodePath -> Theorem -> View
 show_theorem cursor_info node_path theorem model =
@@ -45,7 +45,7 @@ show_theorem cursor_info node_path theorem model =
                }
       header = [ div []
                    [ show_keyword_block "Theorem "
-                   , show_text_block "newly-defined-block" node_path.node_name ]
+                   , show_text_block "theorem-block" node_path.node_name ]
                , hr [] []]
       body = show_sub_theorem cursor_info record theorem theorem_focus model
    in show_indented_clickable_block
@@ -80,7 +80,9 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                                          }) model
             indexed_map_func index (parameter, argument) =
               [ show_keyword_block <| if index == 0 then "with" else ","
-              , show_text_block "variable-block" parameter.var_name
+              , let var_css = get_variable_css parameter.var_name
+                                argument.grammar module_path model
+                 in show_text_block var_css parameter.var_name
               , show_keyword_block "="
               , show_root_term
                   { module_path = module_path
@@ -133,8 +135,8 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                 ]
             ]
         ProofTodoWithRule rule_name arguments ->
-          [ show_todo_keyword_block <| "to_prove, please fill all holes "
-                                    ++ "in the arguments before continue."
+          [ show_todo_keyword_block <| "to_prove "
+                                    ++ "please enter arguments before continue."
           , goal_proof_div_html
               (show_rule_name_and_arguments True rule_name arguments) ]
         ProofByRule rule_name arguments pattern_matching_info sub_theorems ->

@@ -38,5 +38,5 @@ show_clickable_block class_name cursor_info command htmls =
         (class_name, True),
         ("block-clickable", True),
         ("block-on-cursor", cursor_info_is_here cursor_info)],
-        on_click address (ActionCommand <| command)]
+        on_click address (ActionCommand command)]
       htmls
