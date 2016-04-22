@@ -83,6 +83,10 @@ $inline-padding: 5px;
     border-top-width: 1px !important;
 }
 
+input {
+    border: 0px solid black !important;
+}
+
 @mixin color-with-bg($color) {
     color: $color;
     background-color: $color * 0.3 + white * 0.7;

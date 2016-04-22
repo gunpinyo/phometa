@@ -1,13 +1,15 @@
 module Views.Utils where
 
+import Focus exposing (Focus)
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class, classList)
 
 import Tools.CssExtra exposing (CssClass)
-import Tools.HtmlExtra exposing (on_click)
+import Tools.HtmlExtra exposing (on_click, on_typing_to_input_field)
 import Models.Cursor exposing (CursorInfo, cursor_info_is_here)
-import Models.Model exposing (Command)
+import Models.Model exposing (Model, Command, AutoComplete)
 import Models.Action exposing (Action(..), address)
+import Updates.KeymapUtils exposing (update_auto_complete)
 
 show_indented_clickable_block : CssClass -> CursorInfo ->
                                   Command -> List Html -> Html
@@ -40,3 +42,14 @@ show_clickable_block class_name cursor_info command htmls =
         ("block-on-cursor", cursor_info_is_here cursor_info)],
         on_click address (ActionCommand command)]
       htmls
+
+show_auto_complete_filter : CssClass -> String ->
+                              Focus Model AutoComplete -> Html
+show_auto_complete_filter class_name placeholder auto_complete_focus =
+  Html.input [
+    class class_name,
+    on_typing_to_input_field address (\string -> ActionCommand <|
+      update_auto_complete string auto_complete_focus),
+    Html.Attributes.type' "text",
+    Html.Attributes.placeholder placeholder,
+    Html.Attributes.attribute "data-autofocus" ""] []

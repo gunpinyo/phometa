@@ -23,13 +23,15 @@ import Models.ViewState exposing (View)
 import Updates.CommonCmd exposing (cmd_nothing)
 import Updates.Cursor exposing (cmd_click_block)
 import Updates.ModeTheorem exposing (cmd_enter_mode_theorem,
-                                     cmd_from_todo_to_proof_by_rule,
-                                     cmd_from_todo_to_proof_by_lemma,
+                                     cmd_select_rule,
+                                     cmd_select_lemma,
                                      cmd_execute_current_rule,
+                                     focus_auto_complete,
                                      focus_sub_theorem)
 import Views.Utils exposing (show_indented_clickable_block,
                              show_clickable_block, show_text_block,
-                             show_keyword_block, show_todo_keyword_block)
+                             show_keyword_block, show_todo_keyword_block,
+                             show_auto_complete_filter)
 import Views.Term exposing (show_root_term, get_variable_css)
 
 show_theorem : CursorInfo -> NodePath -> Theorem -> View
@@ -121,17 +123,23 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
             [ goal_proof_div_html
                 [ show_todo_keyword_block "to_prove"
                 , text " "
-                , show_clickable_block
-                    "button-block" (cursor_info_go_to_sub_elem 1 cursor_info)
-                    (cmd_from_todo_to_proof_by_rule 1 record)
-                    [text "Proof By Rule"]
+                , let sub_cursor_info = cursor_info_go_to_sub_elem 1 cursor_info
+                   in if cursor_info_is_here sub_cursor_info then
+                        show_auto_complete_filter "button-block"
+                          "Proof By Rule" focus_auto_complete
+                      else
+                        show_clickable_block "button-block" sub_cursor_info
+                          (cmd_select_rule 1 record) [text "Proof By Rule"]
                 , text " "
                 , show_todo_keyword_block "or"
                 , text " "
-                , show_clickable_block
-                    "button-block" (cursor_info_go_to_sub_elem 2 cursor_info)
-                    (cmd_from_todo_to_proof_by_lemma 2 record)
-                    [text "Proof By Lemma"]
+                , let sub_cursor_info = cursor_info_go_to_sub_elem 2 cursor_info
+                   in if cursor_info_is_here sub_cursor_info then
+                        show_auto_complete_filter "button-block"
+                          "Proof By Lemma" focus_auto_complete
+                      else
+                        show_clickable_block "button-block" sub_cursor_info
+                          (cmd_select_lemma 2 record) [text "Proof By Lemma"]
                 ]
             ]
         ProofTodoWithRule rule_name arguments ->

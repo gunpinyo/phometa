@@ -115,14 +115,16 @@ keymap_mode_root_term record model =
       merge_keymaps
         (keymap_after_set_grammar record model)
         (build_keymap_cond (record.editability /= EditabilityRootTermReadOnly)
-          [("Alt-t", "reset current term", KbCmd <| cmd_set_sub_term TermTodo)])
+          [(model.config.spacial_key_prefix ++ "t",
+            "reset current term", KbCmd <| cmd_set_sub_term TermTodo)])
 
 
 keymap_after_set_grammar : RecordModeRootTerm -> Model -> Keymap
 keymap_after_set_grammar record model =
   merge_keymaps_list [
     build_keymap_cond (record.editability /= EditabilityRootTermReadOnly)
-      [("Alt-r", "reset root term", KbCmd cmd_reset_root_term)],
+      [(model.config.spacial_key_prefix ++ "r",
+        "reset root term", KbCmd cmd_reset_root_term)],
     build_keymap_cond
       (not <| List.isEmpty
            <| get_term_todo_cursor_paths

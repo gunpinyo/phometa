@@ -40,6 +40,12 @@ check_model model =
     \ () -> check_package model.root_package ]
     -- TODO: finish this
 
+init_auto_complete : AutoComplete
+init_auto_complete =
+  { raw_filters = ""
+  , counter = 0
+  }
+
 init_mode : Mode
 init_mode = ModeNothing
 

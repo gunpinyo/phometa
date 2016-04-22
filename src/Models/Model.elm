@@ -46,10 +46,10 @@ type alias Keymap = Dict Keystroke ((RawKeystroke, KeyDescription), KeyBinding)
 
 type alias Counter = Int
 
--- type alias AutoComplete =
---   { raw_filtering_patterns : String
---   , counter : Counter
---   }
+type alias AutoComplete =
+  { raw_filters : String
+  , counter : Counter
+  }
 
 
 -- Mode ------------------------------------------------------------------------
@@ -97,5 +97,5 @@ type alias RecordModeTheorem =
 
 type MicroModeTheorem
   = MicroModeTheoremNavigate
-  | MicroModeTheoremSelectRule Counter
-  | MicroModeTheoremSelectTheorem Counter
+  | MicroModeTheoremSelectRule AutoComplete
+  | MicroModeTheoremSelectTheorem AutoComplete
