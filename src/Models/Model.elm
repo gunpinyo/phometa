@@ -44,7 +44,13 @@ type alias KeyDescription = String
 
 type alias Keymap = Dict Keystroke ((RawKeystroke, KeyDescription), KeyBinding)
 
-type alias RingChoiceCounter = Int
+type alias Counter = Int
+
+-- type alias AutoComplete =
+--   { raw_filtering_patterns : String
+--   , counter : Counter
+--   }
+
 
 -- Mode ------------------------------------------------------------------------
 
@@ -69,8 +75,8 @@ type alias RecordModeRootTerm =
     }
 
 type MicroModeRootTerm
-  = MicroModeRootTermSetGrammar RingChoiceCounter
-  | MicroModeRootTermTodo RingChoiceCounter
+  = MicroModeRootTermSetGrammar Counter
+  | MicroModeRootTermTodo Counter
   | MicroModeRootTermTodoForVar String
   | MicroModeRootTermNavigate
 
@@ -91,5 +97,5 @@ type alias RecordModeTheorem =
 
 type MicroModeTheorem
   = MicroModeTheoremNavigate
-  | MicroModeTheoremSelectRule RingChoiceCounter
-  | MicroModeTheoremSelectTheorem RingChoiceCounter
+  | MicroModeTheoremSelectRule Counter
+  | MicroModeTheoremSelectTheorem Counter

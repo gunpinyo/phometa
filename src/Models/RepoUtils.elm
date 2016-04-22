@@ -358,6 +358,12 @@ apply_rule_aux rule_premises pm_info module_path model =
                   (multiple_root_substitute updating_subst_list) srule_premises
              in (srule_premises' ++ sub_premises, sub_pm_info)
        in Maybe.map2 map_func srule_result sub_result
+    (PremiseLetBe letbe_pattern letbe_target) :: rule_premises' ->
+      let new_rule_premise = PremiseMatch letbe_target
+                               [{ pattern = letbe_pattern
+                                , premises = rule_premises'
+                                }]
+       in apply_rule_aux [new_rule_premise] pm_info module_path model
     (PremiseMatch top_pattern match_elems) :: rule_premises' ->
       let match_target = pattern_root_substitute
                            pm_info.pattern_variables top_pattern
@@ -397,6 +403,32 @@ get_updating_subst_list : PatternMatchingInfo -> PatternMatchingInfo
 get_updating_subst_list old_pm_info new_pm_info =
   List.drop (List.length old_pm_info.substitution_list)
             new_pm_info.substitution_list
+
+-- (sub) term can be reduce by this rule if
+--   1. `allow_reduction` of the rule is true
+--   2. the rule require no parameters
+--   3. the rule generate exactly 1 premise
+--   4. that premise and the conclusion has the same grammar as target term
+--   5. applying the rule doesn't produce any self substitution
+apply_reduction : RuleName -> RootTerm -> ModulePath -> Model -> Maybe RootTerm
+apply_reduction rule_name target module_path model =
+  if not <| List.member rule_name
+         <| get_usable_rule_names module_path model
+    then Nothing else
+  let rule = Focus.get (focus_rule { module_path = module_path
+                                   , node_name = rule_name
+                                   }) model in
+  if not rule.allow_reduction ||                                        -- (1)
+     (not <| List.isEmpty rule.parameters) ||                           -- (2)
+     rule.conclusion.grammar /=  target.grammar                         -- (4.2)
+    then Nothing else
+  let result = apply_rule rule_name target [] module_path model in
+  Maybe.andThen result (\ (premises, pm_info) -> case premises of
+    premise :: [] ->                                                    -- (3)
+      if premise.grammar /= target.grammar ||                           -- (4.1)
+         (not <| List.isEmpty pm_info.substitution_list)                -- (5)
+        then Nothing else Just premise
+    _             -> Nothing)
 
 -- Theorem ---------------------------------------------------------------------
 

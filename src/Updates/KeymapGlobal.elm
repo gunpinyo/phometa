@@ -12,7 +12,7 @@ import Updates.KeymapUtils exposing (build_keymap, merge_keymaps)
 keymap_global : Model -> Keymap
 keymap_global model =
   build_keymap [
-    ("Escape", "menu", KbPrefix <| merge_keymaps (build_keymap [
+    ("Escape", "global keymap", KbPrefix <| merge_keymaps (build_keymap [
       ("p", "toggle package pane", KbCmd cmd_toggle_package_pane),
       ("k", "toggle keymap pane", KbCmd cmd_toggle_keymap_pane),
       ("1", "reform grids to 1x1", KbCmd <| cmd_reform_grids 1 1),

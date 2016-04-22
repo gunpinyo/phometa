@@ -25,29 +25,22 @@ show_view model =
 
 show_window : View
 show_window model =
-  let side_pane  = show_side_pane model
-      grids_pane = show_grids_pane model
-      cfg        = model.config
-   in if not cfg.show_package_pane && not cfg.show_keymap_pane then
-         grids_pane
-      else
-         flex_split "row" [] [] [
-            (fst cfg.side_grids_panes_ratio, side_pane),
-            (snd cfg.side_grids_panes_ratio, grids_pane)]
-
-show_side_pane : View
-show_side_pane model =
   let package_pane = show_package_pane model
       keymap_pane  = show_keymap_pane model
-      cfg          = model.config
-      css_style = [("flex-direction"  , "column"),
-                   ("justify-content" , "center"),
-                   ("align-items"     , "stretch")]
-   in if cfg.show_package_pane && not cfg.show_keymap_pane then
-        package_pane
-      else if not cfg.show_package_pane && cfg.show_keymap_pane then
-        keymap_pane
+      grids_pane = show_grids_pane model
+      cfg        = model.config
+   in if cfg.show_package_pane && cfg.show_keymap_pane then
+        flex_split "row" [] [] [
+          (cfg.package_panes_ratio, package_pane),
+          (cfg.grids_panes_ratio,   grids_pane),
+          (cfg.keymap_panes_ratio,  keymap_pane)]
+      else if cfg.show_package_pane then
+        flex_split "row" [] [] [
+          (cfg.package_panes_ratio, package_pane),
+          (cfg.grids_panes_ratio + cfg.keymap_panes_ratio,   grids_pane)]
+      else if cfg.show_keymap_pane then
+        flex_split "row" [] [] [
+          (cfg.package_panes_ratio + cfg.grids_panes_ratio,   grids_pane),
+          (cfg.keymap_panes_ratio,  keymap_pane)]
       else
-        flex_div css_style [] [
-            package_pane,
-            flex_div [("flex", "0 auto")] [] [keymap_pane]]
+        grids_pane

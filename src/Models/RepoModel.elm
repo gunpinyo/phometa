@@ -118,6 +118,8 @@ type alias RuleName = String
 type alias Rule =
   NodeBase
     { has_locked  : Bool
+    , allow_reduction : Bool  -- check `Models.RepoUtils.allow_reduction`
+                              --   for usage of this field
     , parameters : Parameters -- TODO: when implement rule input method user
                               --       cannot put parameters directly in fact,
                               --       parameters will be generated when lock
@@ -134,6 +136,7 @@ type alias Rule =
 type Premise
   = PremiseDirect RootTerm
   | PremiseSubRule RuleName RootTerm Arguments
+  | PremiseLetBe RootTerm RootTerm
   | PremiseMatch RootTerm (List { pattern : RootTerm
                                 , premises : List Premise
                                 })
