@@ -38,4 +38,4 @@ cmd_sanity_check : Command
 cmd_sanity_check model =
   case check_model model of
     Nothing     -> model
-    Just reason -> cmd_send_message (MessageProgError reason) model
+    Just reason -> cmd_send_message (MessageFatalError reason) model

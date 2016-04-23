@@ -49,6 +49,7 @@ type alias Counter = Int
 type alias AutoComplete =
   { raw_filters : String
   , counter : Counter
+  , is_searching : Bool
   }
 
 
@@ -56,6 +57,7 @@ type alias AutoComplete =
 
 type Mode
   = ModeNothing
+  | ModeMenu
   | ModePackagePane
   | ModeRootTerm RecordModeRootTerm
   | ModeTheorem RecordModeTheorem
@@ -75,7 +77,7 @@ type alias RecordModeRootTerm =
     }
 
 type MicroModeRootTerm
-  = MicroModeRootTermSetGrammar Counter
+  = MicroModeRootTermSetGrammar AutoComplete
   | MicroModeRootTermTodo Counter
   | MicroModeRootTermTodoForVar String
   | MicroModeRootTermNavigate

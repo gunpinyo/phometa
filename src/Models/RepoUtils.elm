@@ -288,16 +288,17 @@ debug_show_root_term show_grammar root_term =
 -- get all of name of rules in this module (including imported rules)
 -- exclude any rule that hasn't been locked
 -- TODO: support imported rules
-get_usable_rule_names : ModulePath -> Model -> List RuleName
-get_usable_rule_names module_path model =
+get_usable_rule_names : GrammarName -> ModulePath -> Model -> List RuleName
+get_usable_rule_names grammar_name module_path model =
   case get_module module_path model of
     Nothing -> []
     Just module' -> ordered_dict_to_list module'.nodes
                       |> List.filterMap (\ (node_name, node) ->
                            case node of
                              NodeRule rule ->
-                               if rule.has_locked then Just node_name
-                                                  else Nothing
+                               if rule.has_locked &&
+                                  rule.conclusion.grammar == grammar_name
+                                 then Just node_name else Nothing
                              _           -> Nothing)
 
 -- TODO: support imported rules
@@ -316,7 +317,7 @@ apply_rule : RuleName -> RootTerm -> Arguments -> ModulePath -> Model ->
                Maybe (List RootTerm, PatternMatchingInfo)
 apply_rule rule_name target arguments module_path model =
   if not <| List.member rule_name
-         <| get_usable_rule_names module_path model then
+         <| get_usable_rule_names target.grammar module_path model then
     Nothing
   else
     let rule = Focus.get (focus_rule { module_path = module_path
@@ -413,7 +414,7 @@ get_updating_subst_list old_pm_info new_pm_info =
 apply_reduction : RuleName -> RootTerm -> ModulePath -> Model -> Maybe RootTerm
 apply_reduction rule_name target module_path model =
   if not <| List.member rule_name
-         <| get_usable_rule_names module_path model
+         <| get_usable_rule_names target.grammar module_path model
     then Nothing else
   let rule = Focus.get (focus_rule { module_path = module_path
                                    , node_name = rule_name
@@ -442,15 +443,21 @@ init_theorem =
 
 -- get all of name of rules in this module (including imported theorems)
 -- TODO: support imported theorems
-get_theorem_names : ModulePath -> Model -> List TheoremName
-get_theorem_names module_path model =
+get_usable_theorem_names : RootTerm -> TheoremName ->
+                             ModulePath -> Model -> List TheoremName
+get_usable_theorem_names goal self_theorem_name module_path model =
   case get_module module_path model of
     Nothing -> []
-    Just module' -> ordered_dict_to_list module'.nodes
-                      |> List.filterMap (\ (node_name, node) ->
-                           case node of
-                             NodeTheorem _  -> Just node_name
-                             _              -> Nothing)
+    Just module' -> ordered_dict_to_list module'.nodes |>
+      List.filterMap (\ (node_name, node) ->
+        if node_name == self_theorem_name
+          then Nothing -- theorem shouldn't use itself as its lemma
+        else
+          case node of
+            NodeTheorem theorem ->
+              if pattern_matchable module_path model theorem.goal goal
+                then Just node_name else Nothing
+            _                   -> Nothing)
 
 -- TODO: support imported theorems
 focus_theorem : NodePath -> Focus Model Theorem

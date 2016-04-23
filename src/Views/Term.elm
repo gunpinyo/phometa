@@ -1,7 +1,5 @@
 module Views.Term where
 
-import Debug
-
 import Focus exposing (Focus, (=>))
 import Html exposing (Html, div, text, hr)
 import Html.Attributes exposing (class, classList,
@@ -25,26 +23,35 @@ import Models.RepoUtils exposing (root_term_undefined_grammar, get_grammar,
 import Models.Model exposing (Model, Command,
                               RecordModeRootTerm, MicroModeRootTerm(..),
                               EditabilityRootTerm)
+import Models.ModelUtils exposing (init_auto_complete)
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
-import Updates.Cursor exposing (cmd_click_block)
+import Updates.CommonCmd exposing (cmd_nothing)
 import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term,
                                       cmd_safe_mode_root_term,
                                       cmd_get_var_from_term_todo,
-                                      cmd_from_todo_for_var_to_var)
+                                      cmd_from_todo_for_var_to_var,
+                                      focus_grammar_auto_complete)
 import Views.Utils exposing (show_underlined_clickable_block,
-                             show_clickable_block)
+                             show_clickable_block,
+                             show_auto_complete_filter)
 
 show_root_term : RecordModeRootTerm -> RootTerm -> View
 show_root_term raw_record root_term model =
   let cursor_info = raw_record.top_cursor_info
       record = raw_record
         |> Focus.set sub_cursor_path_ [] -- might be modified by `show_term`
-        |> Focus.set micro_mode_ (MicroModeRootTermSetGrammar 0)
+        |> Focus.set micro_mode_
+             (MicroModeRootTermSetGrammar init_auto_complete)
+      on_click_cmd = cmd_enter_mode_root_term record
    in if root_term.grammar == root_term_undefined_grammar then
-        show_clickable_block "button-block" cursor_info
-          (cmd_enter_mode_root_term record)
-          [Html.text "Choose Grammar"]
+        if cursor_info_is_here cursor_info then
+          show_auto_complete_filter "button-block" cursor_info "Choose Grammar"
+             on_click_cmd cmd_nothing focus_grammar_auto_complete model
+        else
+          show_clickable_block "button-block" cursor_info
+            (cmd_enter_mode_root_term record)
+            [Html.text "Choose Grammar"]
       else
         show_term cursor_info record root_term.grammar root_term.term model
 

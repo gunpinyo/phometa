@@ -13,7 +13,7 @@ type alias Config =
 init_config : Config
 init_config =
   { package_panes_ratio             = 2
-  , grids_panes_ratio               = 5
+  , grids_panes_ratio               = 6
   , keymap_panes_ratio              = 2
   , show_package_pane               = True
   , show_keymap_pane                = True

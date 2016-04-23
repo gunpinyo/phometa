@@ -115,41 +115,6 @@ stdlib_package =
                }
               ]]
           }),
-          -- ("hypothesis-base", NodeRule {
-          --   comment = Nothing,
-          --   is_folded = False,
-          --   has_locked = True,
-          --   parameters = [],
-          --   conclusion = {
-          --     grammar = "Judgement"
-          --     , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
-          --         [ TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"])
-          --            [TermVar "Γ", TermVar "P"]
-          --         , TermVar "P"
-          --         ]
-          --     },
-          --   premises = []
-          -- }),
-          -- ("hypothesis-next", NodeRule {
-          --   comment = Nothing,
-          --   is_folded = False,
-          --   has_locked = True,
-          --   parameters = [],
-          --   conclusion = {
-          --     grammar = "Judgement"
-          --     , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
-          --         [ TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"])
-          --            [TermVar "Γ", TermVar "B"]
-          --         , TermVar "A"
-          --         ]
-          --     },
-          --   premises = [
-          --     PremiseDirect
-          --       { grammar = "Judgement"
-          --       , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
-          --           [TermVar "Γ", TermVar "A"]
-          --       }]
-          -- }),
           ("⊤-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
@@ -521,6 +486,24 @@ stdlib_package =
                 { grammar = "Judgement"
                 , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
                     [TermVar "Γ", TermVar "B"]
+                }
+            ]
+          }),
+          ("prop-intro", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            has_locked = True,
+            allow_reduction = False,
+            parameters = [],
+            conclusion =
+              { grammar = "Prop"
+              , term = TermVar "A"
+              },
+            premises = [
+              PremiseDirect
+                { grammar = "Judgement"
+                , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                    [TermInd (striped_list_introduce ["ε"] []) [], TermVar "A"]
                 }
             ]
           }),

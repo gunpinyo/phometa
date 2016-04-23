@@ -6,8 +6,6 @@ import Debug
 import Html exposing (Html, text, div)
 import Html.Attributes exposing (class)
 
-import Tools.HtmlExtra exposing (debug_to_html)
-
 type alias CssKey = String
 type alias CssValue = String
 type alias CssStyle = List (CssKey, CssValue)
@@ -31,17 +29,21 @@ css_inline_str_embed css_class string =
     ++ string
     ++ css_inline_str_delimiter ++ css_inline_str_delimiter
 
+css_inline_str_tokenise : CssInlineStr -> List CssInlineToken
+css_inline_str_tokenise css_inline_str =
+  String.split css_inline_str_delimiter css_inline_str
+    |> List.indexedMap (\index raw_token ->
+         if index % 2 == 0 then
+           CssInlineTokenText raw_token
+         else if raw_token /= "" then
+           CssInlineTokenOpen raw_token
+         else
+           CssInlineTokenClose)
+
 css_inline_str_compile : CssInlineStr -> List Html
 css_inline_str_compile css_inline_str =
   let err_msg = "bug in function Tools.CssExtra.css_inline_str_complie"
-      tokens = String.split css_inline_str_delimiter css_inline_str
-                 |> List.indexedMap (\index raw_token ->
-                      if index % 2 == 0 then
-                        CssInlineTokenText raw_token
-                      else if raw_token /= "" then
-                        CssInlineTokenOpen raw_token
-                      else
-                        CssInlineTokenClose)
+      tokens = css_inline_str_tokenise css_inline_str
       -- this function operate with reverse order
       -- this play well with list representation
       func token stack = case (token, stack) of

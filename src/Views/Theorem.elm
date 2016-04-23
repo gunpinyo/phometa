@@ -11,8 +11,9 @@ import Models.Focus exposing (goal_)
 import Models.Cursor exposing (CursorInfo, cursor_info_go_to_sub_elem,
                                cursor_tree_go_to_sub_elem, cursor_info_is_here)
 import Models.RepoModel exposing (NodePath, Node(..), Theorem, Proof(..))
-import Models.RepoUtils exposing (focus_rule,
-                                  focus_theorem, has_root_term_completed,
+import Models.RepoUtils exposing (focus_rule, get_usable_rule_names,
+                                  focus_theorem, get_usable_theorem_names,
+                                  has_root_term_completed,
                                   focus_theorem_rule_argument,
                                   get_theorem_variables_from_model)
 import Models.Model exposing (Model,
@@ -66,7 +67,7 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
         , top_cursor_info = (cursor_info_go_to_sub_elem 0 cursor_info)
         , sub_cursor_path = [] -- meaningless here but need to make type checked
                                -- will be replaced in `show_root_term` function
-        , micro_mode = MicroModeRootTermSetGrammar 0        -- the same as above
+        , micro_mode = MicroModeRootTermNavigate            -- the same as above
         , editability = (if is_setting_main_goal
                            then EditabilityRootTermUpToGrammar
                            else EditabilityRootTermReadOnly)
@@ -93,7 +94,7 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                   , top_cursor_info =
                       cursor_info_go_to_sub_elem (index + 1) cursor_info
                   , sub_cursor_path = [] -- meaningless the same as above
-                  , micro_mode = MicroModeRootTermSetGrammar 0 -- the same
+                  , micro_mode = MicroModeRootTermNavigate -- the same
                   , editability = if is_editable
                                     then EditabilityRootTermUpToTerm
                                     else EditabilityRootTermReadOnly
@@ -120,28 +121,49 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                 , show_todo_keyword_block
                     "Please fill all holes in the goal before continue."]]
           else
-            [ goal_proof_div_html
-                [ show_todo_keyword_block "to_prove"
-                , text " "
-                , let sub_cursor_info = cursor_info_go_to_sub_elem 1 cursor_info
+            let rule_html =
+                  let sub_cursor_info = cursor_info_go_to_sub_elem 1 cursor_info
+                      on_click_cmd = cmd_select_rule 1 record
                    in if cursor_info_is_here sub_cursor_info then
-                        show_auto_complete_filter "button-block"
-                          "Proof By Rule" focus_auto_complete
+                        show_auto_complete_filter "button-block" sub_cursor_info
+                          "Proof By Rule" on_click_cmd cmd_nothing
+                           focus_auto_complete model
                       else
                         show_clickable_block "button-block" sub_cursor_info
-                          (cmd_select_rule 1 record) [text "Proof By Rule"]
-                , text " "
-                , show_todo_keyword_block "or"
-                , text " "
-                , let sub_cursor_info = cursor_info_go_to_sub_elem 2 cursor_info
+                          on_click_cmd [text "Proof By Rule"]
+                lemma_html =
+                  let sub_cursor_info = cursor_info_go_to_sub_elem 2 cursor_info
+                      on_click_cmd = cmd_select_lemma 2 record
                    in if cursor_info_is_here sub_cursor_info then
-                        show_auto_complete_filter "button-block"
-                          "Proof By Lemma" focus_auto_complete
+                        show_auto_complete_filter "button-block" sub_cursor_info
+                          "Proof By Lemma" on_click_cmd cmd_nothing
+                           focus_auto_complete model
                       else
                         show_clickable_block "button-block" sub_cursor_info
-                          (cmd_select_lemma 2 record) [text "Proof By Lemma"]
+                          on_click_cmd [text "Proof By Lemma"]
+                rule_exists = not <| List.isEmpty <|
+                  get_usable_rule_names theorem.goal.grammar module_path model
+                lemma_exists = not <| List.isEmpty <|
+                  get_usable_theorem_names theorem.goal
+                    record.node_path.node_name module_path model
+                possibly_rule_lemma_htmls =
+                  if rule_exists && lemma_exists then
+                    [ rule_html
+                    , text " "
+                    , show_todo_keyword_block "or"
+                    , text " "
+                    , lemma_html ]
+                  else if rule_exists then
+                    [ rule_html ]
+                  else if lemma_exists then
+                    [ lemma_html ]
+                  else
+                    [ show_todo_keyword_block
+                        "but there are nothing possible to prove it."]
+             in [ goal_proof_div_html <|
+                    [ show_todo_keyword_block "to_prove"
+                    , text " "] ++ possibly_rule_lemma_htmls
                 ]
-            ]
         ProofTodoWithRule rule_name arguments ->
           [ show_todo_keyword_block <| "to_prove "
                                     ++ "please enter arguments before continue."

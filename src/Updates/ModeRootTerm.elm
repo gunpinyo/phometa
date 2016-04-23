@@ -5,7 +5,7 @@ import Debug
 import Dict
 import String
 
-import Focus exposing ((=>))
+import Focus exposing (Focus, (=>))
 
 import Tools.Utils exposing (list_get_elem, sorted_list_get_index)
 import Tools.CssExtra exposing (css_inline_str_embed)
@@ -23,15 +23,16 @@ import Models.RepoUtils exposing (init_root_term, root_term_undefined_grammar,
                                   init_term_ind)
 import Models.Cursor exposing (IntCursorPath, get_cursor_info_from_cursor_tree,
                                cursor_tree_go_to_sub_elem)
-import Models.Model exposing (Model, Command, KeyBinding(..), Keymap, Mode(..),
+import Models.Model exposing (Model, Command, KeyBinding(..), Keymap,
+                              AutoComplete, Mode(..),
                               RecordModeRootTerm, MicroModeRootTerm(..),
                               EditabilityRootTerm(..))
-import Models.ModelUtils exposing (focus_record_mode_root_term)
+import Models.ModelUtils exposing (focus_record_mode_root_term,
+                                   init_auto_complete)
 import Updates.KeymapUtils exposing (empty_keymap,
                                      merge_keymaps, merge_keymaps_list,
                                      build_keymap, build_keymap_cond,
-                                     keymap_ring_choices)
-import Updates.CommonCmd exposing (cmd_nothing)
+                                     keymap_auto_complete, keymap_ring_choices)
 import Updates.Cursor exposing (cmd_click_block)
 
 
@@ -72,18 +73,14 @@ cmd_from_todo_for_var_to_var model =
 keymap_mode_root_term : RecordModeRootTerm -> Model -> Keymap
 keymap_mode_root_term record model =
   case record.micro_mode of
-    MicroModeRootTermSetGrammar ring_choices_counter ->
+    MicroModeRootTermSetGrammar auto_complete ->
       let choices = get_usable_grammar_names record.module_path model |>
             List.map (\grammar_name ->
               (css_inline_str_embed "grammar-block" grammar_name,
-                 grammar_name))
-          choice_handler (_, grammar_name) =
-            cmd_set_grammar grammar_name
-          counter_handler counter =
-            cmd_set_micro_mode (MicroModeRootTermSetGrammar counter)
+               cmd_set_grammar grammar_name))
        in merge_keymaps
-            (keymap_ring_choices
-              choices ring_choices_counter choice_handler counter_handler)
+            (keymap_auto_complete choices Nothing
+              focus_grammar_auto_complete model)
             (build_keymap
               [("⭡", "quit root term", KbCmd record.on_quit_callback)])
     MicroModeRootTermTodo ring_choices_counter ->
@@ -214,7 +211,8 @@ cmd_reset_root_term model =
           let model' = Focus.set record.root_term_focus init_root_term model
               record' = record
                 |> Focus.set sub_cursor_path_ []
-                |> Focus.set micro_mode_ (MicroModeRootTermSetGrammar 0)
+                |> Focus.set micro_mode_
+                     (MicroModeRootTermSetGrammar init_auto_complete)
            in cmd_enter_mode_root_term record' model'
 
 cmd_quit_if_has_no_todo : Command
@@ -270,3 +268,16 @@ auto_manipulate_term grammar term module_path model =
                Just sub_grammar ->
                  auto_manipulate_term sub_grammar sub_term module_path model)
         |> TermInd grammar_choice
+
+focus_grammar_auto_complete : Focus Model AutoComplete
+focus_grammar_auto_complete =
+  let err_msg = "from Updates.ModeRootTerm.focus_grammar_auto_complete"
+      getter record = case record.micro_mode of
+        MicroModeRootTermSetGrammar auto_complete -> auto_complete
+        _                                         -> Debug.crash err_msg
+      updater update_func record = case record.micro_mode of
+        MicroModeRootTermSetGrammar auto_complete ->
+          Focus.set micro_mode_
+            (MicroModeRootTermSetGrammar <| update_func auto_complete) record
+        _                                         -> record
+   in (focus_record_mode_root_term => Focus.create getter updater)

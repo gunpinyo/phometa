@@ -14,16 +14,18 @@ import Models.RepoModel exposing (Term(..), RuleName, TheoremName, Theorem,
                                   Proof(..), SubstitutionList)
 import Models.RepoUtils exposing (has_root_term_completed,
                                   get_usable_rule_names, focus_rule, apply_rule,
-                                  init_theorem, get_theorem_names,
+                                  init_theorem, get_usable_theorem_names,
                                   focus_theorem, has_theorem_completed,
                                   multiple_root_substitute,
                                   pattern_matchable, pattern_match)
+import Models.Message exposing (Message(..))
 import Models.Model exposing (Model, Command, KeyBinding(..), Keymap, Command,
                               AutoComplete,
                               Mode(..), RecordModeTheorem, MicroModeTheorem(..))
 import Models.ModelUtils exposing (focus_record_mode_theorem,
                                    init_auto_complete)
 import Updates.CommonCmd exposing (cmd_nothing)
+import Updates.Message exposing (cmd_send_message)
 import Updates.KeymapUtils exposing (empty_keymap,
                                      merge_keymaps, merge_keymaps_list,
                                      build_keymap, build_keymap_cond,
@@ -69,28 +71,21 @@ keymap_mode_theorem record model =
       MicroModeTheoremNavigate -> empty_keymap
       MicroModeTheoremSelectRule auto_complete ->
         let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
-            choices = get_usable_rule_names record.node_path.module_path model
-              |> List.filter (\rule_name ->
-                   let rule = Focus.get (focus_rule (Focus.set node_name_
-                                rule_name record.node_path)) model
-                    in pattern_matchable record.node_path.module_path model
-                         rule.conclusion cur_sub_theorem.goal)
+            choices = get_usable_rule_names cur_sub_theorem.goal.grammar
+                        record.node_path.module_path model
               |> List.map (\rule_name ->
                    (css_inline_str_embed "rule-block" rule_name,
                     cmd_set_rule rule_name))
-         in keymap_auto_complete choices focus_auto_complete model
+         in keymap_auto_complete choices Nothing focus_auto_complete model
       MicroModeTheoremSelectTheorem auto_complete ->
         let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
-            choices = get_theorem_names record.node_path.module_path model
-              |> List.filter (\theorem_name ->
-                   let theorem = Focus.get (focus_theorem (Focus.set node_name_
-                                   theorem_name record.node_path)) model
-                    in pattern_matchable record.node_path.module_path model
-                         theorem.goal cur_sub_theorem.goal)
+            choices = get_usable_theorem_names cur_sub_theorem.goal
+                        record.node_path.node_name
+                        record.node_path.module_path model
               |> List.map (\theorem_name ->
                    (css_inline_str_embed "theorem-block" theorem_name,
                     cmd_set_theorem theorem_name))
-         in keymap_auto_complete choices focus_auto_complete model)
+         in keymap_auto_complete choices Nothing focus_auto_complete model)
 
 cmd_set_rule : RuleName -> Command
 cmd_set_rule rule_name model =
@@ -118,36 +113,39 @@ cmd_execute_current_rule model =
   let err_msg = "from Updates.ModeTheorem.cmd_execute_current_rule"
       record = Focus.get focus_record_mode_theorem model
       top_theorem_focus = focus_theorem record.node_path
-      sub_theorems_update_func current_sub_theorem =
-        case current_sub_theorem.proof of
+      top_sub_focus = focus_sub_theorem record.sub_cursor_path
+      top_theorem = Focus.get top_theorem_focus model
+      sub_theorem = Focus.get top_sub_focus top_theorem
+      on_success rule_name arguments premises pm_info =
+        let sub_sub_theorems = List.map
+              (\premise -> Focus.set goal_ premise init_theorem) premises
+            new_proof = ProofByRule rule_name arguments pm_info sub_sub_theorems
+            new_sub_theorem = Focus.set proof_ new_proof sub_theorem
+            new_top_theorem = theorem_tree_substitute pm_info.substitution_list
+              (Focus.set top_sub_focus new_sub_theorem top_theorem)
+         in Focus.set top_theorem_focus new_top_theorem
+      on_failure rule_name arguments =
+        let -- TODO: show current sub goal and arguments in exception
+            exception_msg = "Cannot apply "
+                         ++ css_inline_str_embed "rule-block" rule_name
+                         ++ " with current sub goal, Please try other ways."
+            proof_focus = (top_theorem_focus => top_sub_focus => proof_)
+         in (Focus.set proof_focus ProofTodo) >>
+            (cmd_send_message <| MessageException exception_msg)
+      main_command =
+        case sub_theorem.proof of
           ProofTodoWithRule rule_name arguments ->
             if not <| List.all has_root_term_completed arguments then
-              current_sub_theorem
+              cmd_nothing
             else
-              case apply_rule rule_name current_sub_theorem.goal
+              case apply_rule rule_name sub_theorem.goal
                      arguments record.node_path.module_path model of
-                Nothing -> current_sub_theorem
-                Just (premises, pattern_match_info) ->
-                  let sub_theorems = List.map (\premise ->
-                        Focus.set goal_ premise init_theorem) premises
-                      new_proof = ProofByRule rule_name arguments
-                                    pattern_match_info sub_theorems
-                   in Focus.set proof_ new_proof current_sub_theorem
-          _ -> current_sub_theorem
-      top_theorem_update_func top_theorem =
-        let top_sub_focus = focus_sub_theorem record.sub_cursor_path
-            top_theorem' = Focus.update top_sub_focus
-                             sub_theorems_update_func top_theorem
-            sub_theorem = Focus.get top_sub_focus top_theorem
-            sub_theorem' = Focus.get top_sub_focus top_theorem'
-            subst_list = if sub_theorem == sub_theorem' then [] else
-                           case sub_theorem'.proof of
-                             ProofByRule _ _ pattern_match_info _ ->
-                               pattern_match_info.substitution_list
-                             _ -> Debug.crash err_msg
-         in theorem_tree_substitute subst_list top_theorem'
+                Nothing -> on_failure rule_name arguments
+                Just (premises, pm_info) ->
+                  on_success rule_name arguments premises pm_info
+          _ -> cmd_nothing
    in model
-        |> Focus.update top_theorem_focus top_theorem_update_func
+        |> main_command
         |> cmd_resume_to_navigate_micro_mode
 
 cmd_set_theorem : TheoremName -> Command

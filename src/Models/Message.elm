@@ -1,12 +1,14 @@
 module Models.Message where
 
+import Tools.CssExtra exposing (CssInlineStr)
+
 type Message
-  = MessageSuccess String
-  | MessageInfo String
-  | MessageWarning String
-  | MessageUserError String -- error from user than can happend
-  | MessageProgError String -- fatal error, if happened, contract Gun Pinyo
-  | MessageDebug String
+  = MessageSuccess CssInlineStr
+  | MessageInfo CssInlineStr
+  | MessageWarning CssInlineStr
+  | MessageException CssInlineStr -- error from user than can happend
+  | MessageFatalError CssInlineStr -- fatal error, if happened, contact Gun Pinyo
+  | MessageDebug CssInlineStr
 
 type alias MessageList = List Message
 

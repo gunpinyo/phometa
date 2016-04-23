@@ -190,15 +190,14 @@ th, td {
     font-family: monospace;
     font-size: 100%;
     color: Black;
-    background-color: Green;
+    background-color: #8888AA;
 }
 
 .pane {
-    border-radius: 10px;
+    border-radius: 5px;
     background: #EEE0C2;
     padding: 5px;
-    /*padding: 1px;*/
-    margin: 3px;
+    margin: 2px;
     overflow: auto;
 }
 
