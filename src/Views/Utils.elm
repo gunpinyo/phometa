@@ -9,7 +9,7 @@ import Tools.HtmlExtra exposing (on_click, on_blur, on_typing_to_input_field)
 import Models.Cursor exposing (CursorInfo, cursor_info_is_here)
 import Models.Model exposing (Model, Command, AutoComplete)
 import Models.Action exposing (Action(..), address)
-import Updates.KeymapUtils exposing (update_auto_complete, cmd_toggle_search)
+import Updates.KeymapUtils exposing (update_auto_complete, cmd_disable_search)
 import Models.ViewState exposing (View)
 
 show_indented_clickable_block : CssClass -> CursorInfo ->
@@ -50,7 +50,6 @@ show_auto_complete_filter : CssClass -> CursorInfo -> String ->
 show_auto_complete_filter class_name cursor_info placeholder
                             click_cmd blur_cmd auto_complete_focus model =
   let auto_complete = Focus.get auto_complete_focus model
-      toggle_search_cmd = cmd_toggle_search auto_complete_focus
    in if auto_complete.is_searching then
         Html.input [
           classList [
@@ -58,11 +57,13 @@ show_auto_complete_filter class_name cursor_info placeholder
             ("block-clickable", True),
             ("block-on-cursor", cursor_info_is_here cursor_info)],
           on_click address (ActionCommand click_cmd),
-          on_blur address (ActionCommand <| toggle_search_cmd >> blur_cmd),
+          on_blur address (ActionCommand <|
+            cmd_disable_search auto_complete_focus >> blur_cmd),
           on_typing_to_input_field address (\string -> ActionCommand <|
             update_auto_complete string auto_complete_focus),
           Html.Attributes.type' "text",
           Html.Attributes.placeholder placeholder,
+          Html.Attributes.value auto_complete.raw_filters,
           Html.Attributes.attribute "data-autofocus" ""] []
       else
         show_clickable_block class_name cursor_info click_cmd

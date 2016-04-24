@@ -73,9 +73,13 @@ update_auto_complete raw_filters auto_complete_focus model =
                           }
    in Focus.set auto_complete_focus new_auto_complete model
 
-cmd_toggle_search : Focus Model AutoComplete -> Command
-cmd_toggle_search auto_complete_focus =
-  Focus.update (auto_complete_focus => is_searching_) not
+cmd_enable_search : Focus Model AutoComplete -> Command
+cmd_enable_search auto_complete_focus =
+  Focus.set (auto_complete_focus => is_searching_) True
+
+cmd_disable_search : Focus Model AutoComplete -> Command
+cmd_disable_search auto_complete_focus =
+  Focus.set (auto_complete_focus => is_searching_) False
 
 keymap_auto_complete : List (CssInlineStr, Command) ->
                          Maybe (String -> Command) ->
@@ -97,17 +101,17 @@ keymap_auto_complete raw_choices maybe_on_hit_return auto_complete_focus model =
                                         (String.toLower choice_plain_str)
                       ) filtering_patterns
                 ) raw_choices
-      toggle_search_cmd = cmd_toggle_search auto_complete_focus
       hit_return_cmd = case maybe_on_hit_return of
                          Nothing -> cmd_nothing
                          Just on_hit_return -> on_hit_return unicode_filters
       toggle_items = if not auto_complete.is_searching then
-          [("Space", "go to typing mode", KbCmd toggle_search_cmd)]
-        else if unicode_filters /= "" then
+          [("Return", "go to typing mode",
+            KbCmd <| cmd_enable_search auto_complete_focus)]
+        else
           [("Return",
-            css_inline_str_embed "newly-defined-block" unicode_filters,
-            KbCmd <| toggle_search_cmd >> hit_return_cmd)]
-        else []
+            css_inline_str_embed "newly-defined-block" <|
+              if unicode_filters == "" then " " else unicode_filters,
+            KbCmd <| cmd_disable_search auto_complete_focus >> hit_return_cmd)]
    in if List.isEmpty choices then build_keymap toggle_items else let
       number_of_pages = (List.length choices // 9)
                           + if List.length choices % 9 == 0 then 0 else 1

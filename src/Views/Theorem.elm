@@ -98,7 +98,7 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                   , editability = if is_editable
                                     then EditabilityRootTermUpToTerm
                                     else EditabilityRootTermReadOnly
-                  , can_create_fresh_vars = True
+                  , can_create_fresh_vars = False
                   , get_existing_variables = get_theorem_variables_from_model
                                                record.node_path
                   , on_quit_callback =
