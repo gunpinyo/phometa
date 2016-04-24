@@ -147,6 +147,7 @@ input {
 .const-var-block {
     @extend .inline-block;
     @include color-with-bg(#4444FF);
+    font-weight: bold;
 }
 .subst-var-block {
     @extend .inline-block;
@@ -156,6 +157,10 @@ input {
     @extend .inline-block;
     @include color-with-bg(#0000FF);
     font-weight: bold;
+}
+.unknown-var-block {
+    @extend .inline-block;
+    @include color-with-bg(#4444FF);
 }
 
 /* rule */
@@ -232,6 +237,10 @@ th, td {
 }
 
 .keymap-table tr:hover:nth-child(n+2) {
+    background-color: #FEFEFE;
+}
+
+.message-table tr:hover:nth-child(n+1) {
     background-color: #FEFEFE;
 }
 

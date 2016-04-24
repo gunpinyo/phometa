@@ -3,13 +3,13 @@ module Views.View where
 import Html.Attributes exposing (class)
 import Html.Lazy exposing (lazy)
 
-import Tools.Flex exposing (flex_div, flex_split, fullbleed)
+import Tools.Flex exposing (flex_div, flex_grow, flex_split, fullbleed)
 import Tools.HtmlExtra exposing (import_css, import_javascript)
 import Models.ViewState exposing (View)
 import Views.Package exposing (show_package_pane)
 import Views.Keymap exposing (show_keymap_pane)
 import Views.Grid exposing (show_grids_pane)
--- import Views.Message exposing (show_messages_pane)
+import Views.Message exposing (show_messages_pane)
 
 view : View
 view = lazy show_view
@@ -28,19 +28,32 @@ show_window model =
   let package_pane = show_package_pane model
       keymap_pane  = show_keymap_pane model
       grids_pane = show_grids_pane model
+      massages_grids_pane =
+        if List.isEmpty model.message_list then
+          grids_pane
+        else
+          flex_div [ ("flex-direction", "column")
+                   , ("justify-content", "flex_start")
+                   , ("align-items", "stretch")
+                   , ("width", "-moz-max-content")
+                   , ("width", "-webkit-max-content")
+                   ] []
+            [ flex_div [ ("flex", "0 auto")
+                       , ("flex-basis", "0px") ] [] [show_messages_pane model]
+            , flex_grow 1 grids_pane ]
       cfg        = model.config
    in if cfg.show_package_pane && cfg.show_keymap_pane then
         flex_split "row" [] [] [
           (cfg.package_panes_ratio, package_pane),
-          (cfg.grids_panes_ratio,   grids_pane),
+          (cfg.grids_panes_ratio,   massages_grids_pane),
           (cfg.keymap_panes_ratio,  keymap_pane)]
       else if cfg.show_package_pane then
         flex_split "row" [] [] [
           (cfg.package_panes_ratio, package_pane),
-          (cfg.grids_panes_ratio + cfg.keymap_panes_ratio, grids_pane)]
+          (cfg.grids_panes_ratio + cfg.keymap_panes_ratio, massages_grids_pane)]
       else if cfg.show_keymap_pane then
         flex_split "row" [] [] [
-          (cfg.package_panes_ratio + cfg.grids_panes_ratio, grids_pane),
+          (cfg.package_panes_ratio + cfg.grids_panes_ratio,massages_grids_pane),
           (cfg.keymap_panes_ratio,  keymap_pane)]
       else
         grids_pane

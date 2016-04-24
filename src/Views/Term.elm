@@ -24,14 +24,10 @@ import Models.Model exposing (Model, Command,
                               RecordModeRootTerm, MicroModeRootTerm(..),
                               EditabilityRootTerm)
 import Models.ModelUtils exposing (init_auto_complete)
-import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.CommonCmd exposing (cmd_nothing)
 import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term,
-                                      cmd_safe_mode_root_term,
-                                      cmd_get_var_from_term_todo,
-                                      cmd_from_todo_for_var_to_var,
-                                      focus_grammar_auto_complete)
+                                      focus_auto_complete)
 import Views.Utils exposing (show_underlined_clickable_block,
                              show_clickable_block,
                              show_auto_complete_filter)
@@ -47,7 +43,7 @@ show_root_term raw_record root_term model =
    in if root_term.grammar == root_term_undefined_grammar then
         if cursor_info_is_here cursor_info then
           show_auto_complete_filter "button-block" cursor_info "Choose Grammar"
-             on_click_cmd cmd_nothing focus_grammar_auto_complete model
+            cmd_nothing focus_auto_complete model
         else
           show_clickable_block "button-block" cursor_info
             (cmd_enter_mode_root_term record)
@@ -60,29 +56,11 @@ show_term : CursorInfo -> RecordModeRootTerm -> GrammarName -> Term -> View
 show_term cursor_info record grammar_name term model =
   case term of
     TermTodo ->
-      let record' = Focus.set micro_mode_ (MicroModeRootTermTodo 0) record
-          allow_variable = case get_grammar { module_path = record.module_path
-                                           , node_name = grammar_name
-                                           } model of
-                            Nothing -> False
-                            Just grammar -> grammar_allow_variable grammar
-
-       in if cursor_info_is_here cursor_info && allow_variable then
-            Html.input [
-              classList [
-                ("term-todo-block", True),
-                ("block-clickable", True),
-                ("block-on-cursor", cursor_info_is_here cursor_info)],
-              on_click address
-                (ActionCommand <| cmd_enter_mode_root_term record'),
-              on_typing_to_input_field address
-                (\string -> ActionCommand <|
-                   cmd_safe_mode_root_term (cmd_get_var_from_term_todo string)),
-              on_blur address (ActionCommand <|
-                   cmd_safe_mode_root_term cmd_from_todo_for_var_to_var),
-              type' "text",
-              placeholder grammar_name,
-              attribute "data-autofocus" ""] []
+      let record' = Focus.set micro_mode_
+                      (MicroModeRootTermTodo init_auto_complete) record
+       in if cursor_info_is_here cursor_info then
+            show_auto_complete_filter "term-todo-block" cursor_info grammar_name
+              cmd_nothing focus_auto_complete model
           else
             show_clickable_block "term-todo-block" cursor_info
               (cmd_enter_mode_root_term record')

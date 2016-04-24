@@ -1,6 +1,5 @@
 module Updates.ModeRootTerm where
 
-import Char
 import Debug
 import Dict
 import String
@@ -8,27 +7,32 @@ import String
 import Focus exposing (Focus, (=>))
 
 import Tools.Utils exposing (list_get_elem, sorted_list_get_index)
-import Tools.CssExtra exposing (css_inline_str_embed)
+import Tools.CssExtra exposing (CssInlineStr, css_inline_str_embed)
+import Tools.KeyboardExtra exposing (transfrom_to_unicode_string)
 import Tools.StripedList exposing (striped_list_get_odd_element,
                                    striped_list_eliminate)
 import Models.Focus exposing (mode_, micro_mode_, grammar_, reversed_ref_path_,
                               sub_cursor_path_, root_term_focus_, term_)
-import Models.RepoModel exposing (ModulePath,
+import Models.RepoModel exposing (VarName, ModulePath,
                                   GrammarName, Grammar, GrammarChoice,
-                                  RootTerm, Term(..))
+                                  RootTerm, Term(..), VarType(..))
 import Models.RepoUtils exposing (init_root_term, root_term_undefined_grammar,
                                   get_usable_grammar_names, get_grammar,
+                                  get_variable_type,
                                   focus_grammar, grammar_allow_variable,
                                   focus_sub_term, get_term_todo_cursor_paths,
                                   init_term_ind)
 import Models.Cursor exposing (IntCursorPath, get_cursor_info_from_cursor_tree,
                                cursor_tree_go_to_sub_elem)
+import Models.Message exposing (Message(..))
 import Models.Model exposing (Model, Command, KeyBinding(..), Keymap,
                               AutoComplete, Mode(..),
                               RecordModeRootTerm, MicroModeRootTerm(..),
                               EditabilityRootTerm(..))
 import Models.ModelUtils exposing (focus_record_mode_root_term,
                                    init_auto_complete)
+import Updates.CommonCmd exposing (cmd_nothing)
+import Updates.Message exposing (cmd_send_message)
 import Updates.KeymapUtils exposing (empty_keymap,
                                      merge_keymaps, merge_keymaps_list,
                                      build_keymap, build_keymap_cond,
@@ -36,39 +40,63 @@ import Updates.KeymapUtils exposing (empty_keymap,
 import Updates.Cursor exposing (cmd_click_block)
 
 
+embed_css_term_var : VarName -> Grammar -> CssInlineStr
+embed_css_term_var var_name grammar =
+  let css_class = case get_variable_type grammar var_name of
+                    Nothing -> "unknown-var-block"
+                    Just VarTypeConst -> "const-var-block"
+                    Just VarTypeSubst -> "subst-var-block"
+                    Just VarTypeUnify -> "unify-var-block"
+   in css_inline_str_embed css_class var_name
+
 cmd_enter_mode_root_term : RecordModeRootTerm -> Command
 cmd_enter_mode_root_term record =
   let cursor_info = get_cursor_info_from_cursor_tree record
    in (Focus.set mode_ (ModeRootTerm record)) >> (cmd_click_block cursor_info)
 
-cmd_safe_mode_root_term : Command -> Command
-cmd_safe_mode_root_term command model =
-  case model.mode of
-    ModeRootTerm _  -> command model
-    _               -> model
-
-cmd_get_var_from_term_todo : String -> Command
-cmd_get_var_from_term_todo input_string model =
-  -- TODO: also use other way to verify input_string
-  -- e.g. check against var_regex,
-  --      check that there is no this name with different grammar
-  --      (inside rule only) check that this name is defined
-  if input_string == "" || String.all Char.isDigit input_string then
-    cmd_set_micro_mode (MicroModeRootTermTodo 0) model
-  else
-    cmd_set_micro_mode (MicroModeRootTermTodoForVar input_string) model
-
---  if micro_mode is not MicroModeRootTermTodoForVar, then do nothing
-cmd_from_todo_for_var_to_var : Command
-cmd_from_todo_for_var_to_var model =
+cmd_set_var_at_sub_term : Bool -> String -> Command
+cmd_set_var_at_sub_term verbose cur_var_name model =
   let record = Focus.get focus_record_mode_root_term model
-   in case record.micro_mode of
-        MicroModeRootTermTodoForVar input_string ->
-          model
-            |> cmd_set_sub_term (TermVar input_string)
-            |> cmd_quit_if_has_no_todo
-          -- TODO: verify that this input_string are legitimate var_name
-        _                                        -> model
+      existing_vars = record.get_existing_variables model
+      (cur_grammar_name, cur_grammar) = get_grammar_at_sub_term model
+      cur_var_css_inline = embed_css_term_var cur_var_name cur_grammar
+      cur_grammar_css_inline = css_inline_str_embed
+                                 "grammar-block" cur_grammar_name
+      maybe_exception_str = case Dict.get cur_var_name existing_vars of
+        Nothing ->
+          if not record.can_create_fresh_vars then
+            Just "cannot create fresh variable here"
+          else if get_variable_type cur_grammar cur_var_name == Nothing then
+            Just <| cur_var_css_inline
+                 ++ " doesn't match any variable regex of "
+                 ++ cur_grammar_css_inline
+          else
+            Nothing
+        Just existing_grammar_name ->
+          if existing_grammar_name /= cur_grammar_name then
+            Just <| cur_var_css_inline
+                 ++ " exists but has grammar as "
+                 ++ css_inline_str_embed "grammar-block" existing_grammar_name
+                 ++ " rather than "
+                 ++ cur_grammar_css_inline
+          else
+            Nothing
+   in case maybe_exception_str of
+        Nothing -> model
+          |> cmd_set_sub_term (TermVar cur_var_name)
+          |> cmd_quit_if_has_no_todo
+        Just exception_str -> model
+          |> Focus.set focus_auto_complete init_auto_complete
+          |> if verbose then
+               cmd_send_message (MessageException exception_str)
+             else
+               cmd_nothing
+
+cmd_auto_set_var_at_sub_term : Command
+cmd_auto_set_var_at_sub_term model =
+  let auto_complete = Focus.get focus_auto_complete model
+      unicode_filters = transfrom_to_unicode_string auto_complete.raw_filters
+   in cmd_set_var_at_sub_term False unicode_filters model
 
 keymap_mode_root_term : RecordModeRootTerm -> Model -> Keymap
 keymap_mode_root_term record model =
@@ -80,34 +108,37 @@ keymap_mode_root_term record model =
                cmd_set_grammar grammar_name))
        in merge_keymaps
             (keymap_auto_complete choices Nothing
-              focus_grammar_auto_complete model)
+              focus_auto_complete model)
             (build_keymap
               [("⭡", "quit root term", KbCmd record.on_quit_callback)])
-    MicroModeRootTermTodo ring_choices_counter ->
-      let grammar = get_grammar_at_sub_term model
-          choices = grammar.choices |>
+    MicroModeRootTermTodo auto_complete ->
+      let (grammar_name, grammar) = get_grammar_at_sub_term model
+          grammar_choice_choices = grammar.choices |>
             List.map (\grammar_choice ->
               let description = String.concat <|
                     striped_list_eliminate
                       (css_inline_str_embed "ind-format-block")
                       (css_inline_str_embed "grammar-block")
                       grammar_choice
-               in (description, grammar_choice))
-          choice_handler (_, grammar_choice) =
-            cmd_set_sub_term (init_term_ind grammar_choice)
-              >> cmd_jump_to_next_todo 0
-              >> cmd_quit_if_has_no_todo
-          counter_handler counter =
-            cmd_set_micro_mode (MicroModeRootTermTodo counter)
+               in (description, cmd_set_sub_term (init_term_ind grammar_choice)
+                                  >> cmd_jump_to_next_todo 0
+                                  >> cmd_quit_if_has_no_todo))
+          variable_choices = model
+            |> record.get_existing_variables
+            |> Dict.toList
+            |> List.filterMap (\ (var_name, var_grammar_name) ->
+                 let var_grammar_focus = focus_grammar
+                           { module_path = record.module_path
+                           , node_name = grammar_name }
+                     var_grammar = Focus.get var_grammar_focus model
+                  in if grammar_name == var_grammar_name then
+                       Just (embed_css_term_var var_name var_grammar,
+                             cmd_set_var_at_sub_term True var_name)
+                     else
+                       Nothing)
        in merge_keymaps (keymap_after_set_grammar record model)
-            (keymap_ring_choices
-              choices ring_choices_counter choice_handler counter_handler)
-    MicroModeRootTermTodoForVar input_string ->
-      merge_keymaps
-        (keymap_after_set_grammar record model)
-        (build_keymap [
-          ("Return", "make current term as variable",
-             KbCmd cmd_from_todo_for_var_to_var)])
+            (keymap_auto_complete (grammar_choice_choices ++ variable_choices)
+               (Just <| cmd_set_var_at_sub_term True) focus_auto_complete model)
     MicroModeRootTermNavigate ->
       merge_keymaps
         (keymap_after_set_grammar record model)
@@ -127,13 +158,13 @@ keymap_after_set_grammar record model =
            <| get_term_todo_cursor_paths
            <| Focus.get (record.root_term_focus => term_) model)
       [("⭠", "jump to prev todo",
-          KbCmd <| (cmd_jump_to_next_todo -1) << cmd_from_todo_for_var_to_var),
+          KbCmd <| (cmd_jump_to_next_todo -1) << cmd_auto_set_var_at_sub_term),
        ("⭢", "jump to next todo",
-          KbCmd <| (cmd_jump_to_next_todo 1) << cmd_from_todo_for_var_to_var)],
+          KbCmd <| (cmd_jump_to_next_todo 1) << cmd_auto_set_var_at_sub_term)],
     if not <| List.isEmpty record.sub_cursor_path then
       build_keymap
         [("⭡", "jump to parent term",
-            KbCmd <| cmd_jump_to_parent_term << cmd_from_todo_for_var_to_var)]
+            KbCmd <| cmd_jump_to_parent_term << cmd_auto_set_var_at_sub_term)]
     else
       build_keymap [("⭡", "quit root term", KbCmd record.on_quit_callback)]
   ]
@@ -144,7 +175,7 @@ cmd_set_grammar grammar_name model =
    in model
        |> Focus.set (record.root_term_focus => grammar_) grammar_name
        |> Focus.set (focus_record_mode_root_term => micro_mode_)
-                    (MicroModeRootTermTodo 0)
+                    (MicroModeRootTermTodo init_auto_complete)
        |> cmd_set_sub_term TermTodo -- for auto manipulation of TermTodo
 
 cmd_set_sub_term : Term -> Command
@@ -153,8 +184,8 @@ cmd_set_sub_term term model =
    in model
         |> Focus.set (record.root_term_focus =>
              (focus_sub_term record.sub_cursor_path))
-             (auto_manipulate_term
-                (get_grammar_at_sub_term model) term record.module_path model)
+             (auto_manipulate_term (snd <| get_grammar_at_sub_term model)
+                term record.module_path model)
         |> cmd_jump_to_next_todo 0
 
 cmd_jump_to_parent_term : Command
@@ -188,7 +219,7 @@ cmd_jump_to_next_todo displacement model =
                      index = (pre_index + displacement) %
                                List.length todo_cursor_paths
                   in list_get_elem index todo_cursor_paths)
-            |> Focus.set micro_mode_ (MicroModeRootTermTodo 0)
+            |> Focus.set micro_mode_ (MicroModeRootTermTodo init_auto_complete)
    in cmd_enter_mode_root_term record' model
 
 cmd_set_micro_mode : MicroModeRootTerm -> Command
@@ -203,7 +234,8 @@ cmd_reset_root_term model =
         EditabilityRootTermUpToTerm ->
           let record' = record
                 |> Focus.set sub_cursor_path_ []
-                |> Focus.set micro_mode_ (MicroModeRootTermTodo 0)
+                |> Focus.set micro_mode_
+                     (MicroModeRootTermTodo init_auto_complete)
            in model
                 |> cmd_enter_mode_root_term record'
                 |> cmd_set_sub_term TermTodo
@@ -223,7 +255,7 @@ cmd_quit_if_has_no_todo model =
    in if List.isEmpty todo_cursor_paths
         then record.on_quit_callback model else model
 
-get_grammar_at_sub_term : Model -> Grammar
+get_grammar_at_sub_term : Model -> (GrammarName, Grammar)
 get_grammar_at_sub_term model =
   let record = Focus.get focus_record_mode_root_term model
       root_term = Focus.get record.root_term_focus model
@@ -231,14 +263,14 @@ get_grammar_at_sub_term model =
         root_term.grammar root_term.term record.sub_cursor_path
 
 get_grammar_at_sub_term' : ModulePath -> Model -> GrammarName ->
-                                 Term -> IntCursorPath -> Grammar
+                                 Term -> IntCursorPath -> (GrammarName, Grammar)
 get_grammar_at_sub_term' module_path model grammar_name term cursor_path =
   let err_msg = "from Updates.ModeRootTerm.cmd_get_grammar_at_sub_term'"
    in case cursor_path of
         [] -> let node_path = { module_path = module_path
                               , node_name = grammar_name
                               }
-               in Focus.get (focus_grammar node_path) model
+               in (grammar_name, Focus.get (focus_grammar node_path) model)
         cursor_index :: cursor_path' ->
           case term of
             TermInd grammar_choice sub_terms ->
@@ -269,15 +301,19 @@ auto_manipulate_term grammar term module_path model =
                  auto_manipulate_term sub_grammar sub_term module_path model)
         |> TermInd grammar_choice
 
-focus_grammar_auto_complete : Focus Model AutoComplete
-focus_grammar_auto_complete =
-  let err_msg = "from Updates.ModeRootTerm.focus_grammar_auto_complete"
+focus_auto_complete : Focus Model AutoComplete
+focus_auto_complete =
+  let err_msg = "from Updates.ModeRootTerm.focus_auto_complete"
       getter record = case record.micro_mode of
         MicroModeRootTermSetGrammar auto_complete -> auto_complete
-        _                                         -> Debug.crash err_msg
+        MicroModeRootTermTodo auto_complete       -> auto_complete
+        MicroModeRootTermNavigate                 -> Debug.crash err_msg
       updater update_func record = case record.micro_mode of
         MicroModeRootTermSetGrammar auto_complete ->
           Focus.set micro_mode_
             (MicroModeRootTermSetGrammar <| update_func auto_complete) record
-        _                                         -> record
+        MicroModeRootTermTodo auto_complete ->
+          Focus.set micro_mode_
+            (MicroModeRootTermTodo <| update_func auto_complete) record
+        MicroModeRootTermNavigate                 -> record
    in (focus_record_mode_root_term => Focus.create getter updater)

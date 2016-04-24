@@ -46,6 +46,13 @@ list_insert n x xs =
       []      -> [x]
       y :: ys -> y :: (list_insert (n - 1) x ys)
 
+list_remove : Int -> List a -> List a
+list_remove n xs =
+  if n < 0 then xs else
+    case xs of
+      [] -> []
+      y :: ys -> if n == 0 then ys else y :: list_remove (n - 1) ys
+
 parity_pair_extract : Int -> (a, a) -> a
 parity_pair_extract parity =
   if parity % 2 == 0 then fst else snd

@@ -126,8 +126,7 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                       on_click_cmd = cmd_select_rule 1 record
                    in if cursor_info_is_here sub_cursor_info then
                         show_auto_complete_filter "button-block" sub_cursor_info
-                          "Proof By Rule" on_click_cmd cmd_nothing
-                           focus_auto_complete model
+                          "Proof By Rule" cmd_nothing focus_auto_complete model
                       else
                         show_clickable_block "button-block" sub_cursor_info
                           on_click_cmd [text "Proof By Rule"]
@@ -136,8 +135,7 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                       on_click_cmd = cmd_select_lemma 2 record
                    in if cursor_info_is_here sub_cursor_info then
                         show_auto_complete_filter "button-block" sub_cursor_info
-                          "Proof By Lemma" on_click_cmd cmd_nothing
-                           focus_auto_complete model
+                          "Proof By Lemma" cmd_nothing focus_auto_complete model
                       else
                         show_clickable_block "button-block" sub_cursor_info
                           on_click_cmd [text "Proof By Lemma"]

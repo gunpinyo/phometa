@@ -9,7 +9,8 @@ import Tools.HtmlExtra exposing (on_click, on_blur, on_typing_to_input_field)
 import Models.Cursor exposing (CursorInfo, cursor_info_is_here)
 import Models.Model exposing (Model, Command, AutoComplete)
 import Models.Action exposing (Action(..), address)
-import Updates.KeymapUtils exposing (update_auto_complete, cmd_disable_search)
+import Updates.KeymapUtils exposing (update_auto_complete,
+                                     cmd_enable_search, cmd_disable_search)
 import Models.ViewState exposing (View)
 
 show_indented_clickable_block : CssClass -> CursorInfo ->
@@ -44,11 +45,10 @@ show_clickable_block class_name cursor_info command htmls =
         on_click address (ActionCommand command)]
       htmls
 
-show_auto_complete_filter : CssClass -> CursorInfo -> String ->
-                              Command -> Command ->
+show_auto_complete_filter : CssClass -> CursorInfo -> String -> Command ->
                               Focus Model AutoComplete -> View
 show_auto_complete_filter class_name cursor_info placeholder
-                            click_cmd blur_cmd auto_complete_focus model =
+                            blur_cmd auto_complete_focus model =
   let auto_complete = Focus.get auto_complete_focus model
    in if auto_complete.is_searching then
         Html.input [
@@ -56,7 +56,6 @@ show_auto_complete_filter class_name cursor_info placeholder
             (class_name, True),
             ("block-clickable", True),
             ("block-on-cursor", cursor_info_is_here cursor_info)],
-          on_click address (ActionCommand click_cmd),
           on_blur address (ActionCommand <|
             cmd_disable_search auto_complete_focus >> blur_cmd),
           on_typing_to_input_field address (\string -> ActionCommand <|
@@ -66,6 +65,7 @@ show_auto_complete_filter class_name cursor_info placeholder
           Html.Attributes.value auto_complete.raw_filters,
           Html.Attributes.attribute "data-autofocus" ""] []
       else
-        show_clickable_block class_name cursor_info click_cmd
+        show_clickable_block class_name cursor_info
+          (cmd_enable_search auto_complete_focus)
           [ Html.text <| if auto_complete.raw_filters == ""
                            then placeholder else auto_complete.raw_filters ]
