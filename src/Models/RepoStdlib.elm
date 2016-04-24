@@ -115,7 +115,7 @@ stdlib_package =
                }
               ]]
           }),
-          ("⊤-intro", NodeRule {
+          ("top-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -128,7 +128,7 @@ stdlib_package =
               },
             premises = []
           }),
-          ("⊥-elim", NodeRule {
+          ("bottom-elim", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -146,7 +146,7 @@ stdlib_package =
                     [TermVar "Γ", TermInd (striped_list_introduce ["⊥"] []) []]
                 }]
           }),
-          ("∧-intro", NodeRule {
+          ("and-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -172,7 +172,7 @@ stdlib_package =
                     [TermVar "Γ", TermVar "B"]
                 }]
           }),
-          ("∧-elim-left", NodeRule {
+          ("and-elim-left", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -193,7 +193,7 @@ stdlib_package =
                     ]
                 }]
           }),
-          ("∧-elim-right", NodeRule {
+          ("and-elim-right", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -214,7 +214,7 @@ stdlib_package =
                     ]
                 }]
           }),
-          ("∨-intro-left", NodeRule {
+          ("or-intro-left", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -236,7 +236,7 @@ stdlib_package =
                     ]
                 }]
           }),
-          ("∨-intro-right", NodeRule {
+          ("or-intro-right", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -258,7 +258,7 @@ stdlib_package =
                     ]
                 }]
           }),
-          ("∨-elim", NodeRule {
+          ("or-elim", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -289,7 +289,7 @@ stdlib_package =
                 }
             ]
           }),
-          ("¬-intro", NodeRule {
+          ("not-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -309,7 +309,7 @@ stdlib_package =
                 }
             ]
           }),
-          ("¬-elim", NodeRule {
+          ("not-elim", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -333,7 +333,7 @@ stdlib_package =
                 }
             ]
           }),
-          ("double negation", NodeRule {
+          ("double-negation", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -374,7 +374,7 @@ stdlib_package =
                 }
             ]
           }),
-          ("→-intro", NodeRule {
+          ("imply-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -393,7 +393,7 @@ stdlib_package =
                 }
             ]
           }),
-          ("→-elim", NodeRule {
+          ("imply-elim", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -417,7 +417,7 @@ stdlib_package =
                 }
             ]
           }),
-          ("↔-intro", NodeRule {
+          ("iff-intro", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -441,7 +441,7 @@ stdlib_package =
                 }
             ]
           }),
-          ("↔-elim-forward", NodeRule {
+          ("iff-elim-forward", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
@@ -465,7 +465,7 @@ stdlib_package =
                 }
             ]
           }),
-          ("↔-elim-backward", NodeRule {
+          ("iff-elim-backward", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,

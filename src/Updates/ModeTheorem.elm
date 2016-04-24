@@ -1,5 +1,7 @@
 module Updates.ModeTheorem where
 
+import String
+
 import Focus exposing (Focus, (=>))
 
 import Tools.Utils exposing (list_get_elem, list_update_elem)
@@ -31,6 +33,7 @@ import Updates.KeymapUtils exposing (empty_keymap,
                                      build_keymap, build_keymap_cond,
                                      keymap_auto_complete)
 import Updates.Cursor exposing (cmd_click_block)
+import Updates.ModeRootTerm exposing (embed_css_root_term)
 
 cmd_enter_mode_theorem : RecordModeTheorem -> Command
 cmd_enter_mode_theorem record =
@@ -112,6 +115,7 @@ cmd_execute_current_rule : Command
 cmd_execute_current_rule model =
   let err_msg = "from Updates.ModeTheorem.cmd_execute_current_rule"
       record = Focus.get focus_record_mode_theorem model
+      module_path = record.node_path.module_path
       top_theorem_focus = focus_theorem record.node_path
       top_sub_focus = focus_sub_theorem record.sub_cursor_path
       top_theorem = Focus.get top_theorem_focus model
@@ -125,10 +129,14 @@ cmd_execute_current_rule model =
               (Focus.set top_sub_focus new_sub_theorem top_theorem)
          in Focus.set top_theorem_focus new_top_theorem
       on_failure rule_name arguments =
-        let -- TODO: show current sub goal and arguments in exception
-            exception_msg = "Cannot apply "
-                         ++ css_inline_str_embed "rule-block" rule_name
-                         ++ " with current sub goal, Please try other ways."
+        let parameters_inline = if List.isEmpty arguments then " " else
+              " with parameter" ++ (if List.length arguments == 1
+                                      then " " else "s ") ++
+              (String.concat <| List.map (\argument ->
+                embed_css_root_term module_path model argument ++ " ")arguments)
+            exception_msg = "cannot apply "
+              ++ css_inline_str_embed "rule-block" rule_name ++parameters_inline
+              ++ "on " ++ embed_css_root_term module_path model sub_theorem.goal
             proof_focus = (top_theorem_focus => top_sub_focus => proof_)
          in (Focus.set proof_focus ProofTodo) >>
             (cmd_send_message <| MessageException exception_msg)

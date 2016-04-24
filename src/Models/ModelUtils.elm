@@ -44,7 +44,7 @@ init_auto_complete : AutoComplete
 init_auto_complete =
   { raw_filters = ""
   , counter = 0
-  , is_searching = False
+  , is_searching = True
   }
 
 init_mode : Mode

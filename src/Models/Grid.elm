@@ -18,31 +18,8 @@ type Grid
   | GridModule ModulePath IntCursorPath
   | GridNode NodePath IntCursorPath
 
--- TODO: reset to real initial
 init_grids : Grids
-init_grids =
-  Grids2x1
-    (GridNode {
-      module_path = {
-        package_path = ["Standard Library"],
-        module_name = "Propositional Logic"
-      },
-      node_name = "theorem-1"
-    } [])
-    (GridNode {
-      module_path = {
-        package_path = ["Standard Library"],
-        module_name = "Propositional Logic"
-      },
-      node_name = "theorem-2"
-    } [])
-    -- (GridNode {
-    --   module_path = {
-    --     package_path = ["Standard Library"],
-    --     module_name = "Simply type lambda calculus"
-    --   },
-    --   node_name = "theorem-a"
-    -- } [])
+init_grids = Grids1x1 <| GridHome []
 
 get_grid : PaneCursor -> Grids -> Maybe Grid
 get_grid pane_cursor grids =

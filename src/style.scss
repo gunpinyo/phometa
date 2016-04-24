@@ -120,7 +120,7 @@ input {
 /* button */
 .button-block {
     @extend .inline-block;
-    @include color-with-bg(#8888FF);
+    @include color-with-bg(#444488);
 }
 
 /* grammar */
@@ -210,16 +210,6 @@ th, td {
     background: #EEE8D2;
 }
 
-/* .pane-cursor { */
-/*     border-color: DarkGreen; */
-/*     border-width: 5px; */
-/* } */
-
-/* .pane-hovered { */
-/*     border-color: Lime; */
-/*     border-width: 5px; */
-/* } */
-
 .package-package-td {
     font-weight: bold;
     text-decoration: underline;
@@ -237,10 +227,6 @@ th, td {
 }
 
 .keymap-table tr:hover:nth-child(n+2) {
-    background-color: #FEFEFE;
-}
-
-.message-table tr:hover:nth-child(n+1) {
     background-color: #FEFEFE;
 }
 

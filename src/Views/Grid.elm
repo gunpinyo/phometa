@@ -2,7 +2,6 @@ module Views.Grid where
 
 import Html exposing (Html, div)
 import Html.Attributes exposing (classList)
-import Graphics.Element exposing (show)
 
 import Tools.Flex exposing (flex_div, flex_split)
 import Tools.HtmlExtra exposing (debug_to_html, on_click)
@@ -10,7 +9,6 @@ import Models.Cursor exposing (PaneCursor(..), init_cursor_info)
 import Models.Grid exposing (Grids(..), Grid(..))
 import Models.RepoModel exposing (Node(..))
 import Models.RepoUtils exposing (get_node)
-import Models.Model exposing (Model)
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.Cursor exposing (cmd_change_pane_cursor)
@@ -60,20 +58,25 @@ show_grid_pane pane_cursor grid model =
         GridHome int_cursor_path ->
           show_home (cursor_func int_cursor_path) model
         GridModule module_path int_cursor_path ->
-          debug_to_html (module_path, int_cursor_path) -- TODO: finish this
+          -- TODO: finish this
+          div [] [debug_to_html (module_path, int_cursor_path)]
         GridNode node_path int_cursor_path ->
-          case get_node node_path model of
-            Nothing -> show_home (cursor_func int_cursor_path) model
-            Just (NodeGrammar grammar) ->
-              show_grammar (cursor_func int_cursor_path) node_path grammar model
-            Just (NodeRule rule) ->
-              show_rule (cursor_func int_cursor_path) node_path rule model
-            Just (NodeTheorem theorem) ->
-              show_theorem (cursor_func int_cursor_path) node_path theorem model
-      attrs  = [ classList [("pane", True), ("pane-on-cursor", has_cursor) ]
+          let node_content =
+                case get_node node_path model of
+                  Nothing -> show_home (cursor_func int_cursor_path) model
+                  Just (NodeGrammar grammar) ->
+                    show_grammar (cursor_func int_cursor_path)
+                      node_path grammar model
+                  Just (NodeRule rule) ->
+                    show_rule (cursor_func int_cursor_path)
+                      node_path rule model
+                  Just (NodeTheorem theorem) ->
+                    show_theorem (cursor_func int_cursor_path)
+                      node_path theorem model
+           in -- if it is not `GridHome` use div inside flex_div to detach flex
+              -- since its elements doesn't depend on monitor size anymore
+              div [] [node_content]
+      attrs  = [ classList [("pane", True), ("pane-on-cursor", has_cursor)]
                , on_click address
-                   (ActionCommand <| cmd_change_pane_cursor pane_cursor)
-               ]
-   in -- use div inside flex_div to detach flex
-      -- since its elements doesn't depend on monitor size anymore
-      flex_div [] attrs [div [] [content]]
+                   (ActionCommand <| cmd_change_pane_cursor pane_cursor) ]
+   in flex_div [] attrs [content]

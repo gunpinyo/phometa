@@ -57,7 +57,8 @@ show_auto_complete_filter class_name cursor_info placeholder
             ("block-clickable", True),
             ("block-on-cursor", cursor_info_is_here cursor_info)],
           on_blur address (ActionCommand <|
-            cmd_disable_search auto_complete_focus >> blur_cmd),
+            -- cmd_disable_search auto_complete_focus >>
+            blur_cmd),
           on_typing_to_input_field address (\string -> ActionCommand <|
             update_auto_complete string auto_complete_focus),
           Html.Attributes.type' "text",

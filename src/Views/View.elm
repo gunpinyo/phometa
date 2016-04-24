@@ -22,7 +22,6 @@ show_view model =
        , show_window model
        , import_javascript "naive.js"]
 
--- TODO: include messages_pane
 show_window : View
 show_window model =
   let package_pane = show_package_pane model
@@ -38,8 +37,7 @@ show_window model =
                    , ("width", "-moz-max-content")
                    , ("width", "-webkit-max-content")
                    ] []
-            [ flex_div [ ("flex", "0 auto")
-                       , ("flex-basis", "0px") ] [] [show_messages_pane model]
+            [ flex_div [ ("flex", "0 auto")] [] [show_messages_pane model]
             , flex_grow 1 grids_pane ]
       cfg        = model.config
    in if cfg.show_package_pane && cfg.show_keymap_pane then

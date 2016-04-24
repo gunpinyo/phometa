@@ -9,8 +9,10 @@ import Focus exposing (Focus, (=>))
 import Tools.Utils exposing (list_get_elem, sorted_list_get_index)
 import Tools.CssExtra exposing (CssInlineStr, css_inline_str_embed)
 import Tools.KeyboardExtra exposing (transfrom_to_unicode_string)
-import Tools.StripedList exposing (striped_list_get_odd_element,
-                                   striped_list_eliminate)
+import Tools.StripedList exposing (striped_list_get_even_element,
+                                   striped_list_get_odd_element,
+                                   striped_list_eliminate,
+                                   stripe_two_list_together)
 import Models.Focus exposing (mode_, micro_mode_, grammar_, reversed_ref_path_,
                               sub_cursor_path_, root_term_focus_, term_)
 import Models.RepoModel exposing (VarName, ModulePath,
@@ -36,13 +38,39 @@ import Updates.Message exposing (cmd_send_message)
 import Updates.KeymapUtils exposing (empty_keymap,
                                      merge_keymaps, merge_keymaps_list,
                                      build_keymap, build_keymap_cond,
-                                     keymap_auto_complete, keymap_ring_choices)
+                                     keymap_auto_complete)
 import Updates.Cursor exposing (cmd_click_block)
 
+embed_css_root_term : ModulePath -> Model -> RootTerm -> CssInlineStr
+embed_css_root_term module_path model root_term =
+  embed_css_term module_path model root_term.term root_term.grammar
 
-embed_css_term_var : VarName -> Grammar -> CssInlineStr
-embed_css_term_var var_name grammar =
-  let css_class = case get_variable_type grammar var_name of
+embed_css_term : ModulePath -> Model -> Term -> GrammarName -> CssInlineStr
+embed_css_term module_path model term grammar_name =
+  case term of
+    TermTodo ->
+      css_inline_str_embed "term-todo-block" grammar_name
+    TermVar var_name ->
+      embed_css_term_var module_path model var_name grammar_name
+    TermInd grammar_choice sub_terms ->
+      let sub_grammars = striped_list_get_odd_element grammar_choice
+          sub_term_inlines = List.map2 (embed_css_term module_path model)
+                               sub_terms sub_grammars
+          format_inlines = striped_list_get_even_element grammar_choice
+            |> List.map (\format ->
+                 if format == "" then "" else
+                   css_inline_str_embed "ind-format-block" format)
+       in stripe_two_list_together format_inlines sub_term_inlines
+            |> String.concat
+            |> css_inline_str_embed "underlined-child-block"
+            |> css_inline_str_embed "underlined-block"
+
+embed_css_term_var : ModulePath -> Model -> VarName-> GrammarName-> CssInlineStr
+embed_css_term_var module_path model var_name grammar_name =
+  let grammar = Focus.get (focus_grammar { module_path = module_path
+                                         , node_name = grammar_name
+                                         }) model
+      css_class = case get_variable_type grammar var_name of
                     Nothing -> "unknown-var-block"
                     Just VarTypeConst -> "const-var-block"
                     Just VarTypeSubst -> "subst-var-block"
@@ -59,7 +87,8 @@ cmd_set_var_at_sub_term verbose cur_var_name model =
   let record = Focus.get focus_record_mode_root_term model
       existing_vars = record.get_existing_variables model
       (cur_grammar_name, cur_grammar) = get_grammar_at_sub_term model
-      cur_var_css_inline = embed_css_term_var cur_var_name cur_grammar
+      cur_var_css_inline = embed_css_term_var record.module_path model
+                             cur_var_name cur_grammar_name
       cur_grammar_css_inline = css_inline_str_embed
                                  "grammar-block" cur_grammar_name
       maybe_exception_str = case Dict.get cur_var_name existing_vars of
@@ -127,15 +156,12 @@ keymap_mode_root_term record model =
             |> record.get_existing_variables
             |> Dict.toList
             |> List.filterMap (\ (var_name, var_grammar_name) ->
-                 let var_grammar_focus = focus_grammar
-                           { module_path = record.module_path
-                           , node_name = grammar_name }
-                     var_grammar = Focus.get var_grammar_focus model
-                  in if grammar_name == var_grammar_name then
-                       Just (embed_css_term_var var_name var_grammar,
-                             cmd_set_var_at_sub_term True var_name)
-                     else
-                       Nothing)
+                 if grammar_name == var_grammar_name then
+                   Just (embed_css_term_var record.module_path model
+                           var_name var_grammar_name,
+                         cmd_set_var_at_sub_term True var_name)
+                 else
+                   Nothing)
        in merge_keymaps (keymap_after_set_grammar record model)
             (keymap_auto_complete (grammar_choice_choices ++ variable_choices)
                (Just <| cmd_set_var_at_sub_term True) focus_auto_complete model)

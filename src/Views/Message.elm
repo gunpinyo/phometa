@@ -1,7 +1,7 @@
 module Views.Message where
 
-import Html exposing (Html, text, table, tr, th, td)
-import Html.Attributes exposing (class, style, align)
+import Html exposing (Html, div, text, table, tr, th, td)
+import Html.Attributes exposing (class, classList, style, align)
 
 import Tools.Flex exposing (flex_div)
 import Tools.CssExtra exposing (css_inline_str_compile)
@@ -22,9 +22,13 @@ show_messages_pane model =
                MessageException css_inline  -> ("EXCEPTION", css_inline)
                MessageFatalError css_inline -> ("FATAL ERROR", css_inline)
                MessageDebug css_inline      -> ("DEBUG", css_inline)
-         in tr [on_click address (ActionCommand <| cmd_remove_message index)]
-              [ td [] [show_todo_keyword_block keyword]
-              , td [] (css_inline_str_compile msg_css_inline)]
-      table' = table [style [("width", "100%")], class "message-table"]
+         in tr [] [ td [] [show_todo_keyword_block keyword]
+                  , td [] (css_inline_str_compile msg_css_inline)
+                  , td [] [div [classList [("button-block", True)
+                                          ,("block-clickable", True)],
+                                on_click address
+                                 (ActionCommand <| cmd_remove_message index)]
+                           [text "✖"]]]
+      table' = table [style [("width", "100%")]]
         <| List.indexedMap msg_tr_func model.message_list
    in flex_div [] [class "pane"] [table']
