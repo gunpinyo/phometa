@@ -4,26 +4,35 @@ import String
 
 import Focus exposing (Focus, (=>))
 
-import Tools.Utils exposing (list_get_elem, list_update_elem)
+import Tools.Utils exposing (list_get_elem, list_update_elem, list_rotate)
 import Tools.CssExtra exposing (css_inline_str_embed)
 import Models.Focus exposing (mode_, micro_mode_, reversed_ref_path_,
                               node_name_, goal_, proof_, has_locked_,
                               sub_cursor_path_)
-import Models.Cursor exposing (IntCursorPath,
+import Models.Cursor exposing (IntCursorPath, CursorInfo,
+                               cursor_info_is_here,
                                get_cursor_info_from_cursor_tree,
+                               cursor_info_go_to_sub_elem,
                                cursor_tree_go_to_sub_elem)
 import Models.RepoModel exposing (Term(..), RuleName, TheoremName, Theorem,
                                   Proof(..), SubstitutionList)
 import Models.RepoUtils exposing (has_root_term_completed,
                                   get_usable_rule_names, focus_rule, apply_rule,
+                                  has_root_term_completed,
+                                  focus_theorem_rule_argument,
                                   init_theorem, get_usable_theorem_names,
+                                  focus_theorem_rule_argument,
                                   focus_theorem, has_theorem_completed,
                                   multiple_root_substitute,
-                                  pattern_matchable, pattern_match)
+                                  pattern_matchable, pattern_match,
+                                  get_theorem_variables_from_model,
+                                  root_term_undefined_grammar,
+                                  get_term_todo_cursor_paths)
 import Models.Message exposing (Message(..))
 import Models.Model exposing (Model, Command, KeyBinding(..), Keymap, Command,
-                              AutoComplete,
-                              Mode(..), RecordModeTheorem, MicroModeTheorem(..))
+                              AutoComplete, Mode(..),
+                              EditabilityRootTerm(..), MicroModeRootTerm(..),
+                              RecordModeTheorem, MicroModeTheorem(..))
 import Models.ModelUtils exposing (focus_record_mode_theorem,
                                    init_auto_complete)
 import Updates.CommonCmd exposing (cmd_nothing)
@@ -33,18 +42,125 @@ import Updates.KeymapUtils exposing (empty_keymap,
                                      build_keymap, build_keymap_cond,
                                      keymap_auto_complete)
 import Updates.Cursor exposing (cmd_click_block)
-import Updates.ModeRootTerm exposing (embed_css_root_term)
+import Updates.ModeRootTerm exposing (embed_css_root_term,
+                                      cmd_enter_mode_root_term)
 
 cmd_enter_mode_theorem : RecordModeTheorem -> Command
 cmd_enter_mode_theorem record =
   let cursor_info = get_cursor_info_from_cursor_tree record
    in (Focus.set mode_ (ModeTheorem record)) >> (cmd_click_block cursor_info)
 
+cmd_theorem_auto_focus_next_todo : Command
+cmd_theorem_auto_focus_next_todo model =
+  let record = Focus.get focus_record_mode_theorem model
+   in case auto_focus_next_todo
+             record.top_cursor_info
+             (Focus.set sub_cursor_path_ [] record)
+             record.sub_cursor_path
+             (focus_theorem record.node_path)
+             model of
+        Nothing -> cmd_click_block record.top_cursor_info model
+        Just cmd -> cmd model
+
+auto_focus_next_todo : CursorInfo -> RecordModeTheorem -> IntCursorPath ->
+                         Focus Model Theorem -> Model -> Maybe Command
+auto_focus_next_todo cursor_info record remaining_path theorem_focus model =
+  let (marked_index, sub_remaining_path) =
+        case remaining_path of
+          [] -> (0, [])
+          marked_index :: sub_remaining_path ->
+            (marked_index, sub_remaining_path)
+      theorem = Focus.get theorem_focus model
+      module_path = record.node_path.module_path
+   in case theorem.proof of
+        ProofTodo ->
+          if not <| has_root_term_completed theorem.goal then
+            let set_grammar_goal_record =
+                  { module_path = module_path
+                  , root_term_focus = (theorem_focus => goal_)
+                  , top_cursor_info = (cursor_info_go_to_sub_elem 0 cursor_info)
+                  , sub_cursor_path = []
+                  , micro_mode = MicroModeRootTermSetGrammar init_auto_complete
+                  , editability = EditabilityRootTermUpToGrammar
+                  , can_create_fresh_vars = True
+                  , get_existing_variables = get_theorem_variables_from_model
+                                               record.node_path
+                  , on_quit_callback = cmd_enter_mode_theorem record
+                                         >> cmd_theorem_auto_focus_next_todo
+                  }
+                goal_record =
+                  if theorem.goal.grammar == root_term_undefined_grammar then
+                    set_grammar_goal_record
+                  else
+                    set_grammar_goal_record
+                       |> Focus.set micro_mode_
+                            (MicroModeRootTermTodo init_auto_complete)
+                       |> Focus.set sub_cursor_path_
+                            (theorem.goal.term
+                               |> get_term_todo_cursor_paths
+                               |> list_get_elem 0)
+             in Just <| cmd_enter_mode_root_term goal_record
+          else
+            let rule_exists = not <| List.isEmpty <|
+                  get_usable_rule_names theorem.goal.grammar module_path model
+                lemma_exists = not <| List.isEmpty <|
+                  get_usable_theorem_names theorem.goal
+                    record.node_path.node_name module_path model
+             in if rule_exists then
+                  Just <| cmd_select_rule 1 record
+                else if lemma_exists then
+                  Just <| cmd_select_lemma 2 record
+                else
+                  Nothing
+        ProofTodoWithRule _ arguments ->
+          arguments
+            |> List.indexedMap (\index argument ->
+                 (index, not <| has_root_term_completed argument))
+            |> List.filter snd
+            |> List.head
+            |> Maybe.map (\ (arg_index, _) ->
+                 cmd_enter_mode_root_term  <|
+                   { module_path = module_path
+                   , root_term_focus =
+                       (theorem_focus => focus_theorem_rule_argument arg_index)
+                   , top_cursor_info =
+                       (cursor_info_go_to_sub_elem (arg_index + 1) cursor_info)
+                   , sub_cursor_path = arguments
+                       |> list_get_elem arg_index
+                       |> .term
+                       |> get_term_todo_cursor_paths
+                       |> list_get_elem 0
+                   , micro_mode = MicroModeRootTermTodo init_auto_complete
+                   , editability = EditabilityRootTermUpToTerm
+                   , can_create_fresh_vars = False
+                   , get_existing_variables = get_theorem_variables_from_model
+                                                record.node_path
+                   , on_quit_callback = cmd_enter_mode_theorem record
+                                          >> cmd_execute_current_rule
+                   })
+        ProofByRule _ arguments _ sub_theorems ->
+          let index_offset = 1 + List.length arguments
+              fold_func (index, sub_theorem) acc = case acc of
+                Nothing -> auto_focus_next_todo
+                 (cursor_info_go_to_sub_elem (index + index_offset) cursor_info)
+                 (cursor_tree_go_to_sub_elem (index + index_offset) record)
+                 sub_remaining_path
+                 (theorem_focus => focus_sub_theorem [index + index_offset])
+                 model
+                Just cmd -> Just cmd
+           in sub_theorems
+                |> List.indexedMap (,)
+                |> list_rotate (marked_index - index_offset)
+                |> List.foldl fold_func Nothing
+        ProofByLemma _ _ -> Nothing
+
+
 cmd_resume_to_navigate_micro_mode : Command
 cmd_resume_to_navigate_micro_mode model =
   model
     |> cmd_enter_mode_theorem (Focus.get focus_record_mode_theorem model)
     |> cmd_set_micro_mode (MicroModeTheoremNavigate)
+    |> cmd_theorem_auto_focus_next_todo
 
 cmd_select_rule : Int -> RecordModeTheorem -> Command
 cmd_select_rule index record model =

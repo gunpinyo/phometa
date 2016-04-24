@@ -53,6 +53,9 @@ list_remove n xs =
       [] -> []
       y :: ys -> if n == 0 then ys else y :: list_remove (n - 1) ys
 
+list_rotate : Int -> List a -> List a
+list_rotate n xs = (List.drop n xs) ++ (List.take n xs)
+
 parity_pair_extract : Int -> (a, a) -> a
 parity_pair_extract parity =
   if parity % 2 == 0 then fst else snd

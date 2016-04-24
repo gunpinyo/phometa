@@ -93,7 +93,6 @@ type alias RecordModeTheorem =
     { node_path        : NodePath
     , micro_mode       : MicroModeTheorem
     , has_locked       : Bool
-    , on_quit_callback : Command
     }
 
 type MicroModeTheorem

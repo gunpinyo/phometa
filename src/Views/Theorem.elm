@@ -24,6 +24,7 @@ import Models.ViewState exposing (View)
 import Updates.CommonCmd exposing (cmd_nothing)
 import Updates.Cursor exposing (cmd_click_block)
 import Updates.ModeTheorem exposing (cmd_enter_mode_theorem,
+                                     cmd_theorem_auto_focus_next_todo,
                                      cmd_select_rule,
                                      cmd_select_lemma,
                                      cmd_execute_current_rule,
@@ -44,7 +45,6 @@ show_theorem cursor_info node_path theorem model =
                , sub_cursor_path  = []
                , micro_mode       = MicroModeTheoremNavigate
                , has_locked       = False
-               , on_quit_callback = cmd_nothing
                }
       header = [ div []
                    [ show_keyword_block "Theorem "
@@ -71,10 +71,11 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
         , editability = (if is_setting_main_goal
                            then EditabilityRootTermUpToGrammar
                            else EditabilityRootTermReadOnly)
-        , can_create_fresh_vars = True
+        , can_create_fresh_vars = is_setting_main_goal
         , get_existing_variables = get_theorem_variables_from_model
                                      record.node_path
         , on_quit_callback = cmd_enter_mode_theorem record
+                               >> cmd_theorem_auto_focus_next_todo
         }
       goal_html = show_root_term goal_record theorem.goal model
       show_rule_name_and_arguments is_editable rule_name arguments =
@@ -101,8 +102,8 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                   , can_create_fresh_vars = False
                   , get_existing_variables = get_theorem_variables_from_model
                                                record.node_path
-                  , on_quit_callback =
-                      cmd_enter_mode_theorem record >> cmd_execute_current_rule
+                  , on_quit_callback = cmd_enter_mode_theorem record
+                                         >> cmd_execute_current_rule
                   } argument model
               ]
          in List.map2 (,) rule.parameters arguments

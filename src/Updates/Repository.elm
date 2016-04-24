@@ -8,6 +8,7 @@ import Models.RepoModel exposing (PackagePath, ModulePath, NodePath)
 import Models.RepoUtils exposing (focus_package, focus_module)
 import Models.Grid exposing (Grid(..), focus_grid)
 import Models.Model exposing (Command)
+import Updates.CommonCmd exposing (cmd_reset_mode)
 
 cmd_select_node : NodePath -> Command
 cmd_select_node node_path model =
@@ -17,6 +18,7 @@ cmd_select_node node_path model =
    in model
         |> Focus.set pane_cursor_ pane_cursor
         |> Focus.set (grids_ => focus_grid pane_cursor) grid
+        |> cmd_reset_mode
 
 cmd_package_fold_unfold : PackagePath -> Command
 cmd_package_fold_unfold package_path model =

@@ -189,8 +189,7 @@ keymap_after_set_grammar record model =
           KbCmd <| (cmd_jump_to_next_todo 1) << cmd_auto_set_var_at_sub_term)],
     if not <| List.isEmpty record.sub_cursor_path then
       build_keymap
-        [("⭡", "jump to parent term",
-            KbCmd <| cmd_jump_to_parent_term << cmd_auto_set_var_at_sub_term)]
+        [("⭡", "jump to parent term", KbCmd <| cmd_jump_to_parent_term)]
     else
       build_keymap [("⭡", "quit root term", KbCmd record.on_quit_callback)]
   ]
