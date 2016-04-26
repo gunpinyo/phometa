@@ -71,45 +71,59 @@ stdlib_package =
               striped_list_introduce ["", "⊢", ""] ["Context", "Prop"]
             ]
           }),
+          ("hypothesis-base", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            has_locked = True,
+            allow_reduction = False,
+            parameters = [],
+            conclusion =
+              { grammar = "Judgement"
+              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                  [ TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"])
+                     [TermVar "Γ", TermVar "A"]
+                  , TermVar "A"
+                  ]
+              },
+            premises = []
+          }),
           ("hypothesis", NodeRule {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
             parameters = [],
-            conclusion = {
-              grammar = "Judgement"
-              , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
-                  [ TermVar "Γ", TermVar "A"]
-              },
-            premises = [ PremiseMatch
+            conclusion =
               { grammar = "Judgement"
               , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
-                  [ TermVar "Γ", TermVar "A"]
-              }
-              [{ pattern = { grammar = "Judgement"
-                           , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
-                               [ TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"])
-                                  [TermVar "Γ", TermVar "P"]
-                               , TermVar "P"
-                               ]
-                           }
-               , premises = []
-               },
-               { pattern = { grammar = "Judgement"
-                           , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
-                               [ TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"])
-                                  [TermVar "Γ", TermVar "B"]
-                               , TermVar "A"
-                               ]
-                           }
-               , premises = [ PremiseSubRule "hypothesis"
-                   { grammar = "Judgement"
-                   , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
-                       [TermVar "Γ", TermVar "A"]
-                   } []]
-               }
-              ]]
+                  [ TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"])
+                     [TermVar "Γ", TermVar "B"]
+                  , TermVar "A"
+                  ]
+              },
+            premises = [ PremiseCascade
+              [ { rule_name = "hypothesis-base"
+                , pattern =
+                    { grammar = "Judgement"
+                    , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                        [ TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"])
+                           [TermVar "Γ", TermVar "B"]
+                        , TermVar "A"
+                        ]
+                    }
+                , arguments = []
+                , allow_unification = False
+                }
+              , { rule_name = "hypothesis"
+                , pattern =
+                    { grammar = "Judgement"
+                    , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Prop"])
+                        [ TermVar "Γ", TermVar "A" ]
+                    }
+                , arguments = []
+                , allow_unification = False
+                }
+              ] ]
           }),
           ("top-intro", NodeRule {
             comment = Nothing,

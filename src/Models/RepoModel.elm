@@ -133,11 +133,11 @@ type alias Rule =
 
 type Premise
   = PremiseDirect RootTerm
-  | PremiseSubRule RuleName RootTerm Arguments
-  | PremiseLetBe RootTerm RootTerm
-  | PremiseMatch RootTerm (List { pattern : RootTerm
-                                , premises : List Premise
-                                })
+  | PremiseCascade (List { rule_name : RuleName
+                         , pattern : RootTerm
+                         , arguments : Arguments
+                         , allow_unification : Bool
+                         })
 
 
 -- Theorem ---------------------------------------------------------------------

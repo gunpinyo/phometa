@@ -355,58 +355,33 @@ apply_rule_aux rule_premises pm_info module_path model =
                                  sub_pm_info.pattern_variables premise_pattern
              in (head_premise :: sub_premises, sub_pm_info)
        in Maybe.map map_func sub_result
-    (PremiseSubRule srule_name srule_target srule_arguments) :: rule_premises'->
-      let srule_subst_func = pattern_root_substitute pm_info.pattern_variables
-          srule_result = apply_rule srule_name (srule_subst_func srule_target)
-            (List.map srule_subst_func srule_arguments) module_path model
-          sub_result = Maybe.andThen srule_result (\ (_, srule_pm_info) ->
-            apply_rule_aux rule_premises' (pattern_matching_info_substitute
-              pm_info srule_pm_info.substitution_list) module_path model)
-          map_func (srule_premises, srule_pm_info) (sub_premises, sub_pm_info) =
+    (PremiseCascade cascades) :: rule_premises' ->
+      let try_func cascade =
+            let pattern_subst_func = pattern_root_substitute
+                                       pm_info.pattern_variables
+                result = apply_rule cascade.rule_name
+                           (pattern_subst_func cascade.pattern)
+                           (List.map pattern_subst_func cascade.arguments)
+                           module_path model
+                and_then_func pair =
+                  if not cascade.allow_unification &&
+                      (snd pair).substitution_list /= []
+                    then Nothing else Just pair
+             in Maybe.andThen result and_then_func
+          cas_result = List.foldl (\cascade acc ->
+            if acc == Nothing then try_func cascade else acc) Nothing cascades
+          sub_result = Maybe.andThen cas_result
+            (\ (_, cas_pm_info) -> apply_rule_aux rule_premises'
+                                     (pattern_matching_info_substitute pm_info
+                                        cas_pm_info.substitution_list)
+                                     module_path model)
+          map_func (cas_premises, cas_pm_info) (sub_premises, sub_pm_info) =
             let updating_subst_list = get_updating_subst_list
-                                        srule_pm_info sub_pm_info
-                srule_premises' = List.map
-                  (multiple_root_substitute updating_subst_list) srule_premises
-             in (srule_premises' ++ sub_premises, sub_pm_info)
-       in Maybe.map2 map_func srule_result sub_result
-    (PremiseLetBe letbe_pattern letbe_target) :: rule_premises' ->
-      let new_rule_premise = PremiseMatch letbe_target
-                               [{ pattern = letbe_pattern
-                                , premises = rule_premises'
-                                }]
-       in apply_rule_aux [new_rule_premise] pm_info module_path model
-    (PremiseMatch top_pattern match_elems) :: rule_premises' ->
-      let match_target = pattern_root_substitute
-                           pm_info.pattern_variables top_pattern
-          try_matching_func match_pattern match_rule_premises =
-            pattern_match module_path model match_pattern match_target
-              |> (flip Maybe.andThen) (try_matched_func match_rule_premises)
-          try_matched_func match_rule_premises match_pm_info =
-            let pm_info' = pattern_matching_info_substitute
-                                pm_info match_pm_info.substitution_list
-                inner_scope_pm_info =             -- if there is a collusion,
-                  Focus.update pattern_variables_ -- outer scope is invisible
-                    (Dict.union match_pm_info.pattern_variables) pm_info'
-                inner_scope_result = apply_rule_aux match_rule_premises
-                                       inner_scope_pm_info module_path model
-                map_func (inner_scope_premises, inner_scope_pm_info') =
-                  let updating_subst_list = get_updating_subst_list
-                                              pm_info' inner_scope_pm_info'
-                      pm_info'' = pattern_matching_info_substitute pm_info'
-                                    updating_subst_list
-                   in (inner_scope_premises,  pm_info'')
-             in Maybe.map map_func inner_scope_result
-          match_result = List.foldl (\r acc -> if acc /= Nothing then acc
-            else try_matching_func r.pattern r.premises) Nothing match_elems
-          sub_result = Maybe.andThen match_result (\ (_, match_pm_info) ->
-            apply_rule_aux rule_premises' match_pm_info module_path model)
-          map_func (match_premises, match_pm_info) (sub_premises, sub_pm_info) =
-            let updating_subst_list = get_updating_subst_list
-                                        match_pm_info sub_pm_info
-                match_premises' = List.map
-                  (multiple_root_substitute updating_subst_list) match_premises
-             in (match_premises' ++ sub_premises, sub_pm_info)
-       in Maybe.map2 map_func match_result sub_result
+                                        cas_pm_info sub_pm_info
+                cas_premises' = List.map
+                  (multiple_root_substitute updating_subst_list) cas_premises
+             in (cas_premises' ++ sub_premises, sub_pm_info)
+       in Maybe.map2 map_func cas_result sub_result
 
 -- helper of apply_rule_aux
 get_updating_subst_list : PatternMatchingInfo -> PatternMatchingInfo
