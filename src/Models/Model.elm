@@ -47,9 +47,11 @@ type alias Keymap = Dict Keystroke ((RawKeystroke, KeyDescription), KeyBinding)
 type alias Counter = Int
 
 type alias AutoComplete =
-  { raw_filters : String
+  { filters : String
   , counter : Counter
-  , is_searching : Bool
+  , unicode_state : Maybe { filters : String
+                          , counter : Counter
+                          }
   }
 
 

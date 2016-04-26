@@ -9,8 +9,7 @@ import Tools.HtmlExtra exposing (on_click, on_blur, on_typing_to_input_field)
 import Models.Cursor exposing (CursorInfo, cursor_info_is_here)
 import Models.Model exposing (Model, Command, AutoComplete)
 import Models.Action exposing (Action(..), address)
-import Updates.KeymapUtils exposing (update_auto_complete,
-                                     cmd_enable_search, cmd_disable_search)
+import Updates.KeymapUtils exposing (update_auto_complete)
 import Models.ViewState exposing (View)
 
 show_indented_clickable_block : CssClass -> CursorInfo ->
@@ -50,23 +49,29 @@ show_auto_complete_filter : CssClass -> CursorInfo -> String -> Command ->
 show_auto_complete_filter class_name cursor_info placeholder
                             blur_cmd auto_complete_focus model =
   let auto_complete = Focus.get auto_complete_focus model
-   in if auto_complete.is_searching then
-        Html.input [
-          classList [
-            (class_name, True),
-            ("block-clickable", True),
-            ("block-on-cursor", cursor_info_is_here cursor_info)],
-          on_blur address (ActionCommand <|
-            -- cmd_disable_search auto_complete_focus >>
-            blur_cmd),
-          on_typing_to_input_field address (\string -> ActionCommand <|
-            update_auto_complete string auto_complete_focus),
-          Html.Attributes.type' "text",
-          Html.Attributes.placeholder placeholder,
-          Html.Attributes.value auto_complete.raw_filters,
-          Html.Attributes.attribute "data-autofocus" ""] []
-      else
-        show_clickable_block class_name cursor_info
-          (cmd_enable_search auto_complete_focus)
-          [ Html.text <| if auto_complete.raw_filters == ""
-                           then placeholder else auto_complete.raw_filters ]
+      css_style = classList [
+        (class_name, True),
+        ("block-clickable", True),
+        ("block-on-cursor", cursor_info_is_here cursor_info)]
+   in case auto_complete.unicode_state of
+        Nothing ->
+          Html.input [
+            css_style,
+            on_blur address (ActionCommand blur_cmd),
+            on_typing_to_input_field address (\string -> ActionCommand <|
+              update_auto_complete string auto_complete_focus),
+            Html.Attributes.type' "text",
+            Html.Attributes.placeholder placeholder,
+            Html.Attributes.value auto_complete.filters,
+            Html.Attributes.attribute "data-autofocus" ""] []
+        Just record ->
+          div [css_style] [
+            text auto_complete.filters,
+            Html.input [
+              class "auto-complete-unicode-block",
+              on_typing_to_input_field address (\string -> ActionCommand <|
+                update_auto_complete string auto_complete_focus),
+              Html.Attributes.type' "text",
+              Html.Attributes.placeholder "Unicode",
+              Html.Attributes.value record.filters,
+              Html.Attributes.attribute "data-autofocus" ""] []]

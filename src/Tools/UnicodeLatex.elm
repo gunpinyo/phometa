@@ -1,13 +1,13 @@
 -- Credit - this file is derived from `unicode-math` package.
 -- https://www.ctan.org/pkg/unicode-math
 
-module Tools.UnicodeMath where
+module Tools.UnicodeLatex where
 
 import Char exposing (KeyCode)
 import Dict exposing (Dict)
 
-latex_to_unicode : Dict String KeyCode
-latex_to_unicode = Dict.fromList [
+latex_to_unicode : List (String, KeyCode)
+latex_to_unicode = [
   ("mathexclam", 0x00021),
   ("mathoctothorpe", 0x00023),
   ("mathdollar", 0x00024),

@@ -8,7 +8,6 @@ import Focus exposing (Focus, (=>))
 
 import Tools.Utils exposing (list_get_elem, sorted_list_get_index)
 import Tools.CssExtra exposing (CssInlineStr, css_inline_str_embed)
-import Tools.KeyboardExtra exposing (transfrom_to_unicode_string)
 import Tools.StripedList exposing (striped_list_get_even_element,
                                    striped_list_get_odd_element,
                                    striped_list_eliminate,
@@ -115,12 +114,6 @@ cmd_set_var_at_sub_term verbose cur_var_name model =
              else
                cmd_nothing
 
-cmd_auto_set_var_at_sub_term : Command
-cmd_auto_set_var_at_sub_term model =
-  let auto_complete = Focus.get focus_auto_complete model
-      unicode_filters = transfrom_to_unicode_string auto_complete.raw_filters
-   in cmd_set_var_at_sub_term False unicode_filters model
-
 keymap_mode_root_term : RecordModeRootTerm -> Model -> Keymap
 keymap_mode_root_term record model =
   case record.micro_mode of
@@ -178,12 +171,12 @@ keymap_after_set_grammar record model =
            <| get_term_todo_cursor_paths
            <| Focus.get (record.root_term_focus => term_) model)
       [("⭠", "jump to prev todo",
-          KbCmd <| (cmd_jump_to_next_todo -1) << cmd_auto_set_var_at_sub_term),
+          KbCmd <| cmd_jump_to_next_todo -1),
        ("⭢", "jump to next todo",
-          KbCmd <| (cmd_jump_to_next_todo 1) << cmd_auto_set_var_at_sub_term)],
+          KbCmd <| cmd_jump_to_next_todo 1)],
     if not <| List.isEmpty record.sub_cursor_path then
       build_keymap
-        [("⭡", "jump to parent term", KbCmd <| cmd_jump_to_parent_term)]
+        [("⭡", "jump to parent term", KbCmd cmd_jump_to_parent_term)]
     else
       build_keymap [("⭡", "quit root term", KbCmd record.on_quit_callback)]
   ]

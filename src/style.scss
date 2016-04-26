@@ -123,6 +123,11 @@ input {
     @include color-with-bg(#444488);
 }
 
+/* auto complete unicode state */
+.auto-complete-unicode-block {
+    @include color-with-bg(#EE8888);
+}
+
 /* grammar */
 .grammar-block {
     @extend .inline-block;

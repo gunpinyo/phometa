@@ -42,4 +42,5 @@ pattern_variables_ = create .pattern_variables (\u r -> {r|pattern_variables=u r
 substitution_list_ = create .substitution_list (\u r -> {r|substitution_list=u r.substitution_list})
 is_folded_ = create .is_folded (\u r -> {r|is_folded=u r.is_folded})
 counter_ = create .counter (\u r -> {r|counter=u r.counter})
-is_searching_ = create .is_searching (\u r -> {r|is_searching=u r.is_searching})
+filters_ = create .filters (\u r -> {r|filters=u r.filters})
+unicode_state_ = create .unicode_state (\u r -> {r|unicode_state=u r.unicode_state})

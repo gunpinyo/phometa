@@ -6,7 +6,7 @@ import Focus exposing (Focus, (=>))
 
 import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
 import Tools.SanityCheck exposing (CheckResult, sequentially_check)
-import Models.Focus exposing (mode_)
+import Models.Focus exposing (mode_, unicode_state_)
 import Models.Config exposing (init_config)
 import Models.Cursor exposing (init_pane_cursor)
 import Models.RepoUtils exposing (check_package)
@@ -42,10 +42,21 @@ check_model model =
 
 init_auto_complete : AutoComplete
 init_auto_complete =
-  { raw_filters = ""
-  , counter = 0
-  , is_searching = True
+  { filters       = ""
+  , counter       = 0
+  , unicode_state = Nothing
   }
+
+focus_auto_complete_unicode : Focus AutoComplete { filters : String
+                                                 , counter : Counter}
+focus_auto_complete_unicode =
+  let getter maybe_record = case maybe_record of
+        Nothing -> { filters = ""
+                   , counter = 0}
+        Just record -> record
+      updater = Maybe.map
+   in unicode_state_ => Focus.create getter updater
+
 
 init_mode : Mode
 init_mode = ModeNothing
