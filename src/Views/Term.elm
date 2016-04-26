@@ -19,7 +19,7 @@ import Models.Cursor exposing (IntCursorPath, CursorInfo,
 import Models.RepoModel exposing (ModulePath, GrammarName, VarName, VarType(..),
                                   Term(..), RootTerm)
 import Models.RepoUtils exposing (root_term_undefined_grammar, get_grammar,
-                                  grammar_allow_variable, get_variable_type)
+                                  grammar_allow_variable, get_variable_css)
 import Models.Model exposing (Model, Command,
                               RecordModeRootTerm, MicroModeRootTerm(..),
                               EditabilityRootTerm)
@@ -67,8 +67,8 @@ show_term cursor_info record grammar_name term model =
               [Html.text grammar_name]
     TermVar var_name ->
       let record' = Focus.set micro_mode_ MicroModeRootTermNavigate record
-          var_css = get_variable_css var_name
-                      grammar_name record.module_path model
+          var_css = get_variable_css record.module_path model
+                      var_name grammar_name
        in show_clickable_block var_css cursor_info
             (cmd_enter_mode_root_term record')
             [Html.text var_name]
@@ -88,15 +88,3 @@ show_term cursor_info record grammar_name term model =
           htmls = stripe_two_list_together format_htmls sub_blocks
        in show_underlined_clickable_block cursor_info
             (cmd_enter_mode_root_term record') htmls
-
-get_variable_css : VarName -> GrammarName -> ModulePath -> Model -> String
-get_variable_css var_name grammar_name module_path model =
-  case Maybe.andThen
-         (get_grammar { module_path = module_path
-                      , node_name = grammar_name
-                      } model)
-         (\grammar -> get_variable_type grammar var_name) of
-    Nothing -> "" -- impossible
-    Just VarTypeConst -> "const-var-block"
-    Just VarTypeSubst -> "subst-var-block"
-    Just VarTypeUnify -> "unify-var-block"

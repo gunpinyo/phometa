@@ -29,9 +29,8 @@ stdlib_package =
             comment = Nothing,
             is_folded = False,
             has_locked = True,
-            const_regex = Nothing,
-            subst_regex = Just (regex "^[P-Z][a-zA-Z]*([1-9][0-9]*|'*)$"),
-            unify_regex = Just (regex "^[A-O][a-zA-Z]*([1-9][0-9]*|'*)$"),
+            metavar_regex = Just (regex "^[A-Z][a-zA-Z]*([1-9][0-9]*|'*)$"),
+            literal_regex = Nothing,
             choices = [
               striped_list_introduce ["⊤"] [],
               striped_list_introduce ["⊥"] [],
@@ -47,18 +46,16 @@ stdlib_package =
             comment = Nothing,
             is_folded = False,
             has_locked = True,
-            const_regex = Just (regex "^[a-z]+([1-9][0-9]*|'*)$"),
-            subst_regex = Nothing,
-            unify_regex = Nothing,
+            metavar_regex = Nothing,
+            literal_regex = Just (regex "^[a-z]+([1-9][0-9]*|'*)$"),
             choices = []
           }),
           ("Context", NodeGrammar {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
-            const_regex = Nothing,
-            subst_regex = Nothing,
-            unify_regex = Just (regex "^[ΓΔ]([1-9][0-9]*|'*)$"),
+            metavar_regex = Just (regex "^[ΓΔ]([1-9][0-9]*|'*)$"),
+            literal_regex = Nothing,
             choices = [
               striped_list_introduce ["ε"] [],
               striped_list_introduce ["", ",", ""] ["Context", "Prop"]
@@ -68,9 +65,8 @@ stdlib_package =
             comment = Nothing,
             is_folded = False,
             has_locked = True,
-            const_regex = Nothing,
-            subst_regex = Nothing,
-            unify_regex = Nothing,
+            metavar_regex = Nothing,
+            literal_regex = Nothing,
             choices = [
               striped_list_introduce ["", "⊢", ""] ["Context", "Prop"]
             ]
@@ -508,9 +504,9 @@ stdlib_package =
             ]
           }),
           -- TODO: remove this from stdlib
-          ("theorem-1", NodeTheorem init_theorem),
+          ("theorem-1", NodeTheorem init_theorem False),
           -- TODO: remove this from stdlib
-          ("theorem-2", NodeTheorem init_theorem)
+          ("theorem-2", NodeTheorem init_theorem False)
         ],
         is_folded = False
       }) -- ,

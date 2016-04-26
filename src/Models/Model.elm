@@ -92,10 +92,9 @@ type alias RecordModeTheorem =
   CursorTree
     { node_path        : NodePath
     , micro_mode       : MicroModeTheorem
-    , has_locked       : Bool
     }
 
 type MicroModeTheorem
   = MicroModeTheoremNavigate
   | MicroModeTheoremSelectRule AutoComplete
-  | MicroModeTheoremSelectTheorem AutoComplete
+  | MicroModeTheoremSelectLemma AutoComplete

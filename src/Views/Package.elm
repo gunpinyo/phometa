@@ -53,7 +53,7 @@ show_module module_name module_path module' model =
         let css_class = case node of
                           NodeGrammar _ -> "grammar-block"
                           NodeRule _ -> "rule-block"
-                          NodeTheorem _ -> "theorem-block"
+                          NodeTheorem _ _ -> "theorem-block"
             node_path = { module_path = module_path
                         , node_name = node_name
                         }

@@ -7,7 +7,7 @@ import Focus exposing (Focus, (=>))
 import Tools.Utils exposing (list_get_elem, list_update_elem, list_rotate)
 import Tools.CssExtra exposing (css_inline_str_embed)
 import Models.Focus exposing (mode_, micro_mode_, reversed_ref_path_,
-                              node_name_, goal_, proof_, has_locked_,
+                              node_name_, goal_, proof_,
                               sub_cursor_path_)
 import Models.Cursor exposing (IntCursorPath, CursorInfo,
                                cursor_info_is_here,
@@ -20,9 +20,10 @@ import Models.RepoUtils exposing (has_root_term_completed,
                                   get_usable_rule_names, focus_rule, apply_rule,
                                   has_root_term_completed,
                                   focus_theorem_rule_argument,
-                                  init_theorem, get_usable_theorem_names,
+                                  init_theorem, get_lemma_names,
                                   focus_theorem_rule_argument,
-                                  focus_theorem, has_theorem_completed,
+                                  focus_theorem, focus_theorem_has_locked,
+                                  has_theorem_completed,
                                   multiple_root_substitute,
                                   pattern_matchable, pattern_match,
                                   get_theorem_variables_from_model,
@@ -104,8 +105,7 @@ auto_focus_next_todo cursor_info record remaining_path theorem_focus model =
             let rule_exists = not <| List.isEmpty <|
                   get_usable_rule_names theorem.goal.grammar module_path model
                 lemma_exists = not <| List.isEmpty <|
-                  get_usable_theorem_names theorem.goal
-                    record.node_path.node_name module_path model
+                  get_lemma_names theorem.goal module_path model
              in if rule_exists then
                   Just <| cmd_select_rule 1 record
                 else if lemma_exists then
@@ -176,18 +176,24 @@ cmd_select_lemma index record model =
     |> cmd_click_block (get_cursor_info_from_cursor_tree
                           <| cursor_tree_go_to_sub_elem index record)
     |> Focus.set mode_ (ModeTheorem record)
-    |> cmd_set_micro_mode (MicroModeTheoremSelectTheorem init_auto_complete)
+    |> cmd_set_micro_mode (MicroModeTheoremSelectLemma init_auto_complete)
 
 keymap_mode_theorem : RecordModeTheorem -> Model -> Keymap
 keymap_mode_theorem record model =
   merge_keymaps
-    (build_keymap
+    (build_keymap_cond (not <| has_mode_theorem_locked model)
       [(model.config.spacial_key_prefix ++ "r",
         "reset whole theorem", KbCmd cmd_reset_top_theorem)
       ,(model.config.spacial_key_prefix ++ "t",
         "reset current proof", KbCmd cmd_reset_current_proof)])
     (case record.micro_mode of
-      MicroModeTheoremNavigate -> empty_keymap
+      MicroModeTheoremNavigate ->
+        build_keymap_cond
+          ((not <| has_mode_theorem_locked model) &&
+            (let top_theorem = Focus.get (focus_theorem record.node_path) model
+              in has_theorem_completed top_theorem))
+          [(model.config.spacial_key_prefix ++ "l",
+            "lock as lemma", KbCmd <| cmd_lock_as_lemma)]
       MicroModeTheoremSelectRule auto_complete ->
         let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
             choices = get_usable_rule_names cur_sub_theorem.goal.grammar
@@ -196,15 +202,26 @@ keymap_mode_theorem record model =
                    (css_inline_str_embed "rule-block" rule_name,
                     cmd_set_rule rule_name))
          in keymap_auto_complete choices Nothing focus_auto_complete model
-      MicroModeTheoremSelectTheorem auto_complete ->
+      MicroModeTheoremSelectLemma auto_complete ->
         let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
-            choices = get_usable_theorem_names cur_sub_theorem.goal
-                        record.node_path.node_name
+            choices = get_lemma_names cur_sub_theorem.goal
                         record.node_path.module_path model
               |> List.map (\theorem_name ->
                    (css_inline_str_embed "theorem-block" theorem_name,
-                    cmd_set_theorem theorem_name))
+                    cmd_set_lemma theorem_name))
          in keymap_auto_complete choices Nothing focus_auto_complete model)
+
+has_mode_theorem_locked : Model -> Bool
+has_mode_theorem_locked model =
+  let record = Focus.get focus_record_mode_theorem model
+      has_locked_focus = focus_theorem_has_locked record.node_path
+   in Focus.get has_locked_focus model
+
+cmd_lock_as_lemma : Command
+cmd_lock_as_lemma model =
+  let record = Focus.get focus_record_mode_theorem model
+      has_locked_focus = focus_theorem_has_locked record.node_path
+   in Focus.set has_locked_focus True model
 
 cmd_set_rule : RuleName -> Command
 cmd_set_rule rule_name model =
@@ -272,9 +289,9 @@ cmd_execute_current_rule model =
         |> main_command
         |> cmd_resume_to_navigate_micro_mode
 
-cmd_set_theorem : TheoremName -> Command
-cmd_set_theorem theorem_name model =
-  let err_msg = "from Updates.ModeTheorem.cmd_set_theorem"
+cmd_set_lemma : TheoremName -> Command
+cmd_set_lemma theorem_name model =
+  let err_msg = "from Updates.ModeTheorem.cmd_set_lemma"
       record = Focus.get focus_record_mode_theorem model
       pattern_theorem_path = Focus.set node_name_ theorem_name record.node_path
       pattern_theorem = Focus.get (focus_theorem pattern_theorem_path) model
@@ -316,7 +333,6 @@ cmd_reset_current_proof model =
       proof_focus = top_theorem_focus => top_sub_focus => proof_
    in model
         |> Focus.set proof_focus ProofTodo
-        |> Focus.set (focus_record_mode_theorem => has_locked_) False
         |> cmd_resume_to_navigate_micro_mode
 
 cmd_reset_top_theorem : Command
@@ -325,7 +341,6 @@ cmd_reset_top_theorem model =
    in model
         |> Focus.set (focus_theorem record.node_path) init_theorem
         |> Focus.set (focus_record_mode_theorem => sub_cursor_path_) []
-        |> Focus.set (focus_record_mode_theorem => has_locked_) False
         |> cmd_resume_to_navigate_micro_mode
 
 theorem_tree_substitute : SubstitutionList -> Theorem -> Theorem
@@ -352,7 +367,7 @@ focus_auto_complete =
         case record.micro_mode of
           MicroModeTheoremNavigate -> Debug.crash err_msg
           MicroModeTheoremSelectRule auto_complete -> auto_complete
-          MicroModeTheoremSelectTheorem auto_complete -> auto_complete
+          MicroModeTheoremSelectLemma auto_complete -> auto_complete
       updater update_func record =
         case record.micro_mode of
           MicroModeTheoremNavigate -> record
@@ -360,9 +375,9 @@ focus_auto_complete =
             Focus.set micro_mode_
               (MicroModeTheoremSelectRule <| update_func auto_complete)
               record
-          MicroModeTheoremSelectTheorem auto_complete ->
+          MicroModeTheoremSelectLemma auto_complete ->
             Focus.set micro_mode_
-              (MicroModeTheoremSelectTheorem <| update_func auto_complete)
+              (MicroModeTheoremSelectLemma <| update_func auto_complete)
               record
    in (focus_record_mode_theorem => Focus.create getter updater)
 

@@ -20,7 +20,7 @@ import Models.RepoModel exposing (VarName, ModulePath,
                                   RootTerm, Term(..), VarType(..))
 import Models.RepoUtils exposing (init_root_term, root_term_undefined_grammar,
                                   get_usable_grammar_names, get_grammar,
-                                  get_variable_type,
+                                  get_variable_type, get_variable_css,
                                   focus_grammar, grammar_allow_variable,
                                   focus_sub_term, get_term_todo_cursor_paths,
                                   init_term_ind)
@@ -67,14 +67,7 @@ embed_css_term module_path model term grammar_name =
 
 embed_css_term_var : ModulePath -> Model -> VarName-> GrammarName-> CssInlineStr
 embed_css_term_var module_path model var_name grammar_name =
-  let grammar = Focus.get (focus_grammar { module_path = module_path
-                                         , node_name = grammar_name
-                                         }) model
-      css_class = case get_variable_type grammar var_name of
-                    Nothing -> "unknown-var-block"
-                    Just VarTypeConst -> "const-var-block"
-                    Just VarTypeSubst -> "subst-var-block"
-                    Just VarTypeUnify -> "unify-var-block"
+  let css_class = get_variable_css module_path model var_name grammar_name
    in css_inline_str_embed css_class var_name
 
 cmd_enter_mode_root_term : RecordModeRootTerm -> Command
@@ -86,7 +79,7 @@ cmd_set_var_at_sub_term : Bool -> String -> Command
 cmd_set_var_at_sub_term verbose cur_var_name model =
   let record = Focus.get focus_record_mode_root_term model
       existing_vars = record.get_existing_variables model
-      (cur_grammar_name, cur_grammar) = get_grammar_at_sub_term model
+      (cur_grammar_name, _) = get_grammar_at_sub_term model
       cur_var_css_inline = embed_css_term_var record.module_path model
                              cur_var_name cur_grammar_name
       cur_grammar_css_inline = css_inline_str_embed
@@ -95,7 +88,8 @@ cmd_set_var_at_sub_term verbose cur_var_name model =
         Nothing ->
           if not record.can_create_fresh_vars then
             Just "cannot create fresh variable here"
-          else if get_variable_type cur_grammar cur_var_name == Nothing then
+          else if get_variable_type record.module_path model
+                    cur_var_name cur_grammar_name == Nothing then
             Just <| cur_var_css_inline
                  ++ " doesn't match any variable regex of "
                  ++ cur_grammar_css_inline

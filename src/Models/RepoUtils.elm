@@ -167,24 +167,34 @@ focus_grammar node_path =
 
 grammar_allow_variable : Grammar -> Bool
 grammar_allow_variable grammar =
-  grammar.const_regex /= Nothing ||
-  grammar.subst_regex /= Nothing ||
-  grammar.unify_regex /= Nothing
+  grammar.metavar_regex /= Nothing ||
+  grammar.literal_regex /= Nothing
 
-get_variable_type : Grammar -> VarName -> Maybe VarType
-get_variable_type grammar var_name =
-  let match_func getter = case getter grammar of
+get_variable_type : ModulePath -> Model -> VarName ->
+                      GrammarName -> Maybe VarType
+get_variable_type module_path model var_name grammar_name =
+  let maybe_grammar = get_grammar { module_path = module_path
+                                  , node_name = grammar_name
+                                  } model
+      match_func maybe_regex = case maybe_regex of
         Nothing -> False
         Just regex ->                -- can use `contains` function directly
           contains regex var_name    -- since all of regex in phometa is /^...$/
-   in if match_func .unify_regex then
-        Just VarTypeUnify
-      else if match_func .subst_regex then
-        Just VarTypeSubst
-      else if match_func .const_regex then
-        Just VarTypeConst
-      else
-        Nothing
+      and_then_func grammar =
+        if match_func grammar.metavar_regex then
+          Just VarTypeMetaVar
+        else if match_func grammar.literal_regex then
+          Just VarTypeLiteral
+        else
+          Nothing
+   in Maybe.andThen maybe_grammar and_then_func
+
+get_variable_css : ModulePath -> Model -> VarName -> GrammarName -> String
+get_variable_css module_path model var_name grammar_name =
+  case get_variable_type module_path model var_name grammar_name of
+    Nothing -> "unknown-var-block"
+    Just VarTypeMetaVar -> "metavar-block"
+    Just VarTypeLiteral -> "literal-block"
 
 -- Term ------------------------------------------------------------------------
 
@@ -406,9 +416,9 @@ get_updating_subst_list old_pm_info new_pm_info =
             new_pm_info.substitution_list
 
 -- (sub) term can be reduce by this rule if
---   1. `allow_reduction` of the rule is true
---   2. the rule require no parameters
---   3. the rule generate exactly 1 premise
+--   1. field `allow_reduction` of the rule is true
+--   2. the rule requires no parameters
+--   3. the rule generates exactly 1 premise
 --   4. that premise and the conclusion has the same grammar as target term
 --   5. applying the rule doesn't produce any self substitution
 apply_reduction : RuleName -> RootTerm -> ModulePath -> Model -> Maybe RootTerm
@@ -443,21 +453,18 @@ init_theorem =
 
 -- get all of name of rules in this module (including imported theorems)
 -- TODO: support imported theorems
-get_usable_theorem_names : RootTerm -> TheoremName ->
-                             ModulePath -> Model -> List TheoremName
-get_usable_theorem_names goal self_theorem_name module_path model =
+get_lemma_names : RootTerm -> ModulePath -> Model -> List TheoremName
+get_lemma_names goal module_path model =
   case get_module module_path model of
     Nothing -> []
     Just module' -> ordered_dict_to_list module'.nodes |>
       List.filterMap (\ (node_name, node) ->
-        if node_name == self_theorem_name
-          then Nothing -- theorem shouldn't use itself as its lemma
-        else
-          case node of
-            NodeTheorem theorem ->
-              if pattern_matchable module_path model theorem.goal goal
-                then Just node_name else Nothing
-            _                   -> Nothing)
+        case node of
+          NodeTheorem theorem has_locked ->
+            if not has_locked then Nothing else
+            if pattern_matchable module_path model theorem.goal goal
+              then Just node_name else Nothing
+          _                   -> Nothing)
 
 -- TODO: support imported theorems
 focus_theorem : NodePath -> Focus Model Theorem
@@ -465,10 +472,23 @@ focus_theorem node_path =
   let err_msg = "from Models.RepoUtils.focus_theorem"
    in (focus_node node_path => (Focus.create
         (\node -> case node of
-            NodeTheorem theorem -> theorem
+            NodeTheorem theorem _ -> theorem
             _ -> Debug.crash err_msg)
         (\update_func node -> case node of
-            NodeTheorem theorem -> NodeTheorem (update_func theorem)
+            NodeTheorem theorem has_locked ->
+              NodeTheorem (update_func theorem) has_locked
+            other -> other)))
+
+focus_theorem_has_locked : NodePath -> Focus Model Bool
+focus_theorem_has_locked node_path =
+  let err_msg = "from Models.RepoUtils.focus_theorem_has_locked"
+   in (focus_node node_path => (Focus.create
+        (\node -> case node of
+            NodeTheorem _ has_locked -> has_locked
+            _ -> Debug.crash err_msg)
+        (\update_func node -> case node of
+            NodeTheorem theorem has_locked ->
+              NodeTheorem theorem (update_func has_locked)
             other -> other)))
 
 focus_theorem_rule_argument : Int -> Focus Theorem RootTerm
@@ -582,6 +602,7 @@ merge_pattern_variables_list main_list =
 -- if success, return a dict from pattern variables to corresponded root terms
 --      this may be more than one of the pattern variable occur multiple time
 -- otherwise, return nothing
+-- please note that this function is not aware of `VarType`
 pattern_match_get_vars_dict : RootTerm -> RootTerm ->
                                 Maybe (Dict VarName (List RootTerm))
 pattern_match_get_vars_dict pattern target =
@@ -606,20 +627,39 @@ pattern_match_get_vars_dict pattern target =
 
 -- if success, return substitution list needed to make both of term identical
 -- otherwise, return nothing
-unify : RootTerm -> RootTerm -> Maybe (SubstitutionList)
-unify a b =
+unify : ModulePath -> Model -> RootTerm -> RootTerm -> Maybe (SubstitutionList)
+unify module_path model a b =
   if a.grammar /= b.grammar then Nothing else
   case (a.term, b.term) of
     (TermTodo, _) -> Nothing -- impossible to have `TermTodo` on this stage
     (_, TermTodo) -> Nothing -- impossible to have `TermTodo` on this stage
-    (TermVar var_name, _) -> Just ([{old_var = var_name, new_root_term = b}])
-    (_, TermVar var_name) -> Just ([{old_var = var_name, new_root_term = a}])
+    (TermVar a_var_name, _) ->
+      case get_variable_type module_path model a_var_name a.grammar of
+        Nothing -> Nothing
+        Just VarTypeMetaVar -> Just ([{ old_var = a_var_name
+                                      , new_root_term = b}])
+        Just VarTypeLiteral -> case b.term of
+          TermVar b_var_name ->
+            case get_variable_type module_path model b_var_name b.grammar of
+              Nothing -> Nothing
+              Just VarTypeMetaVar -> Just ([{ old_var = b_var_name
+                                            , new_root_term = a}])
+              Just VarTypeLiteral -> if a_var_name == b_var_name
+                                       then Just [] else Nothing
+          _                  -> Nothing
+    (_, TermVar b_var_name) ->
+      case get_variable_type module_path model b_var_name b.grammar of
+        Nothing -> Nothing
+        Just VarTypeMetaVar -> Just ([{ old_var = b_var_name
+                                      , new_root_term = a}])
+        Just VarTypeLiteral -> -- `a` cannot be `TermVar` on this stage
+          Nothing              -- so it is impossible to unify this literal
     (TermInd a_mixfix a_sub_terms, TermInd b_mixfix b_sub_terms) ->
       if a_mixfix /= b_mixfix then Nothing else
         let fold_func (a_root_sub_term, b_root_sub_term) maybe_acc_subst_list =
               let maybe_partial_subst_list =
                     Maybe.andThen maybe_acc_subst_list
-                      (\subst_list -> unify
+                      (\subst_list -> unify module_path model
                          (multiple_root_substitute subst_list a_root_sub_term)
                          (multiple_root_substitute subst_list b_root_sub_term))
                in Maybe.map2 List.append maybe_acc_subst_list
@@ -634,26 +674,10 @@ vars_dict_to_pattern_matching_info : ModulePath -> Model
 vars_dict_to_pattern_matching_info module_path model vars_dict =
   let subst_list_func var_name root_term_list maybe_acc_subst_list =
         let grammar_name = (.grammar) (list_get_elem 0 root_term_list)
-            maybe_grammar = get_grammar { module_path = module_path
-                                        , node_name = grammar_name
-                                        } model
-            maybe_var_type = Maybe.andThen maybe_grammar
-                               ((flip get_variable_type) var_name)
-         in case maybe_var_type of
+         in case get_variable_type module_path model var_name grammar_name of
               Nothing -> -- impossible, var_name must belong to some grammar
                 Nothing  -- and it must match with some VarType of its grammar
-              Just VarTypeConst -> -- each element must match exactly to pattern
-                if List.all ((==) ({ grammar = grammar_name
-                                   , term = TermVar var_name
-                                   })) root_term_list
-                  then maybe_acc_subst_list else Nothing
-              Just VarTypeSubst -> -- each element must match exactly to others
-                                   -- no unification allow,
-                                   -- i.e. no self substitution on target
-                let first_root_term = list_get_elem 0 root_term_list
-                 in if List.all ((==) first_root_term) root_term_list
-                      then maybe_acc_subst_list else Nothing
-              Just VarTypeUnify -> case root_term_list of
+              Just VarTypeMetaVar -> case root_term_list of
                 [] ->     -- impossible,
                   Nothing -- pattern variable will match to at least something
                 root_term :: [] ->  -- no need for unification
@@ -661,11 +685,17 @@ vars_dict_to_pattern_matching_info module_path model vars_dict =
                 fst_root_term :: other_root_terms ->
                   let fold_func root_term maybe_acc =
                         let maybe_partial_subst_list =
-                              Maybe.andThen maybe_acc (\acc -> unify
-                                (multiple_root_substitute acc fst_root_term)
-                                (multiple_root_substitute acc root_term))
+                              Maybe.andThen maybe_acc (\acc ->
+                                unify module_path model
+                                  (multiple_root_substitute acc fst_root_term)
+                                  (multiple_root_substitute acc root_term))
                          in Maybe.map2 (++) maybe_acc maybe_partial_subst_list
                    in List.foldl fold_func maybe_acc_subst_list other_root_terms
+              Just VarTypeLiteral ->
+                if List.all ((==) ({ grammar = grammar_name
+                                   , term = TermVar var_name
+                                   })) root_term_list
+                  then maybe_acc_subst_list else Nothing
       maybe_subst_list = Dict.foldl subst_list_func (Just []) vars_dict
    in Maybe.map (\subst_list ->
         { pattern_variables =

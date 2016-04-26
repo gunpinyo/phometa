@@ -11,8 +11,9 @@ import Models.Focus exposing (goal_)
 import Models.Cursor exposing (CursorInfo, cursor_info_go_to_sub_elem,
                                cursor_tree_go_to_sub_elem, cursor_info_is_here)
 import Models.RepoModel exposing (NodePath, Node(..), Theorem, Proof(..))
-import Models.RepoUtils exposing (focus_rule, get_usable_rule_names,
-                                  focus_theorem, get_usable_theorem_names,
+import Models.RepoUtils exposing (get_variable_css,
+                                  focus_rule, get_usable_rule_names,
+                                  focus_theorem, get_lemma_names,
                                   has_root_term_completed,
                                   focus_theorem_rule_argument,
                                   get_theorem_variables_from_model)
@@ -34,20 +35,20 @@ import Views.Utils exposing (show_indented_clickable_block,
                              show_clickable_block, show_text_block,
                              show_keyword_block, show_todo_keyword_block,
                              show_auto_complete_filter)
-import Views.Term exposing (show_root_term, get_variable_css)
+import Views.Term exposing (show_root_term)
 
-show_theorem : CursorInfo -> NodePath -> Theorem -> View
-show_theorem cursor_info node_path theorem model =
+show_theorem : CursorInfo -> NodePath -> Theorem -> Bool -> View
+show_theorem cursor_info node_path theorem has_locked model =
   let err_msg = "from Views.Theorem.show_theorem"
       theorem_focus = focus_theorem node_path
       record = { node_path        = node_path
                , top_cursor_info  = cursor_info
                , sub_cursor_path  = []
                , micro_mode       = MicroModeTheoremNavigate
-               , has_locked       = False
                }
       header = [ div []
-                   [ show_keyword_block "Theorem "
+                   [ show_keyword_block
+                       (if has_locked then "Lemma" else "Theorem ")
                    , show_text_block "theorem-block" node_path.node_name ]
                , hr [] []]
       body = show_sub_theorem cursor_info record theorem theorem_focus model
@@ -84,8 +85,8 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                                          }) model
             indexed_map_func index (parameter, argument) =
               [ show_keyword_block <| if index == 0 then "with" else ","
-              , let var_css = get_variable_css parameter.var_name
-                                argument.grammar module_path model
+              , let var_css = get_variable_css module_path model
+                                parameter.var_name argument.grammar
                  in show_text_block var_css parameter.var_name
               , show_keyword_block "="
               , show_root_term
@@ -143,8 +144,7 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                 rule_exists = not <| List.isEmpty <|
                   get_usable_rule_names theorem.goal.grammar module_path model
                 lemma_exists = not <| List.isEmpty <|
-                  get_usable_theorem_names theorem.goal
-                    record.node_path.node_name module_path model
+                  get_lemma_names theorem.goal module_path model
                 possibly_rule_lemma_htmls =
                   if rule_exists && lemma_exists then
                     [ rule_html

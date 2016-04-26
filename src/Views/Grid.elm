@@ -70,9 +70,9 @@ show_grid_pane pane_cursor grid model =
                   Just (NodeRule rule) ->
                     show_rule (cursor_func int_cursor_path)
                       node_path rule model
-                  Just (NodeTheorem theorem) ->
+                  Just (NodeTheorem theorem has_locked) ->
                     show_theorem (cursor_func int_cursor_path)
-                      node_path theorem model
+                      node_path theorem has_locked model
            in -- if it is not `GridHome` use div inside flex_div to detach flex
               -- since its elements doesn't depend on monitor size anymore
               div [] [node_content]

@@ -75,7 +75,7 @@ type alias NodeBase a =
 type Node
   = NodeGrammar Grammar -- TODO: implement this
   | NodeRule Rule -- TODO: implement this
-  | NodeTheorem Theorem-- TODO: implement this
+  | NodeTheorem Theorem Bool -- Bool = has_locked
 
 -- Grammar ---------------------------------------------------------------------
 
@@ -84,9 +84,8 @@ type alias GrammarName = String
 type alias Grammar =
   NodeBase
     { has_locked  : Bool
-    , const_regex : Maybe Regex
-    , subst_regex : Maybe Regex
-    , unify_regex : Maybe Regex
+    , metavar_regex : Maybe Regex
+    , literal_regex : Maybe Regex
     , choices     : List GrammarChoice
     }
 
@@ -107,9 +106,8 @@ type alias RootTerm =
   }
 
 type VarType
-  = VarTypeConst
-  | VarTypeSubst
-  | VarTypeUnify
+  = VarTypeMetaVar
+  | VarTypeLiteral
 
 -- Rule ------------------------------------------------------------------------
 
