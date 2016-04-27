@@ -517,6 +517,67 @@ stdlib_package =
                 }
             ]
           }),
+          ("context-commutative", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            has_locked = True,
+            allow_reduction = True,
+            parameters = [],
+            conclusion =
+              { grammar = "Context"
+              , term = TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [
+                         TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [
+                           TermVar "Γ", TermVar "A"], TermVar "B"]
+              },
+            premises = [
+              PremiseDirect
+                { grammar = "Context"
+                , term = TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [
+                           TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [
+                             TermVar "Γ", TermVar "B"], TermVar "A"]
+                }
+            ]
+          }),
+          ("context-idempotent-1", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            has_locked = True,
+            allow_reduction = True,
+            parameters = [],
+            conclusion =
+              { grammar = "Context"
+              , term = TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [
+                        TermVar "Γ", TermVar "A"]
+              },
+            premises = [
+              PremiseDirect
+                { grammar = "Context"
+                , term = TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [
+                           TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [
+                            TermVar "Γ", TermVar "A"], TermVar "A"]
+                }
+            ]
+          }),
+          ("context-idempotent-2", NodeRule {
+            comment = Nothing,
+            is_folded = False,
+            has_locked = True,
+            allow_reduction = True,
+            parameters = [],
+            conclusion =
+              { grammar = "Context"
+              , term = TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [
+                         TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [
+                          TermVar "Γ", TermVar "A"], TermVar "A"]
+              },
+            premises = [
+              PremiseDirect
+                { grammar = "Context"
+                , term = TermInd (striped_list_introduce ["", ",", ""] ["Context", "Prop"]) [
+                          TermVar "Γ", TermVar "A"]
+                }
+            ]
+          }),
           -- TODO: remove this from stdlib
           ("theorem-1", NodeTheorem init_theorem False),
           -- TODO: remove this from stdlib

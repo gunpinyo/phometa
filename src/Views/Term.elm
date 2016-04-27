@@ -66,14 +66,16 @@ show_term cursor_info record grammar_name term model =
               (cmd_enter_mode_root_term record')
               [Html.text grammar_name]
     TermVar var_name ->
-      let record' = Focus.set micro_mode_ MicroModeRootTermNavigate record
+      let record' = Focus.set micro_mode_
+                      (MicroModeRootTermNavigate init_auto_complete) record
           var_css = get_variable_css record.module_path model
                       var_name grammar_name
        in show_clickable_block var_css cursor_info
             (cmd_enter_mode_root_term record')
             [Html.text var_name]
     TermInd grammar_choice sub_terms ->
-      let record' = Focus.set micro_mode_ MicroModeRootTermNavigate record
+      let record' = Focus.set micro_mode_
+                      (MicroModeRootTermNavigate init_auto_complete) record
           sub_grammars = striped_list_get_odd_element grammar_choice
           sub_blocks = List.map2 (,) sub_grammars sub_terms
             |> List.indexedMap (\index (sub_grammar, sub_term) ->

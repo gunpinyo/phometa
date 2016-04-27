@@ -201,7 +201,7 @@ keymap_mode_theorem record model =
               |> List.map (\rule_name ->
                    (css_inline_str_embed "rule-block" rule_name,
                     cmd_set_rule rule_name))
-         in keymap_auto_complete choices Nothing focus_auto_complete model
+         in keymap_auto_complete choices True Nothing focus_auto_complete model
       MicroModeTheoremSelectLemma auto_complete ->
         let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
             choices = get_lemma_names cur_sub_theorem.goal
@@ -209,7 +209,7 @@ keymap_mode_theorem record model =
               |> List.map (\theorem_name ->
                    (css_inline_str_embed "theorem-block" theorem_name,
                     cmd_set_lemma theorem_name))
-         in keymap_auto_complete choices Nothing focus_auto_complete model)
+         in keymap_auto_complete choices True Nothing focus_auto_complete model)
 
 has_mode_theorem_locked : Model -> Bool
 has_mode_theorem_locked model =

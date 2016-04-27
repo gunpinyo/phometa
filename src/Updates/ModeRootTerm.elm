@@ -22,7 +22,8 @@ import Models.RepoUtils exposing (init_root_term, root_term_undefined_grammar,
                                   get_variable_type, get_variable_css,
                                   focus_grammar, grammar_allow_variable,
                                   focus_sub_term, get_term_todo_cursor_paths,
-                                  init_term_ind)
+                                  init_term_ind, get_sub_root_terms,
+                                  get_usable_rule_names, apply_reduction)
 import Models.Cursor exposing (IntCursorPath, get_cursor_info_from_cursor_tree,
                                cursor_tree_go_to_sub_elem)
 import Models.Message exposing (Message(..))
@@ -123,7 +124,7 @@ keymap_mode_root_term record model =
               (css_inline_str_embed "grammar-block" grammar_name,
                cmd_set_grammar grammar_name))
        in merge_keymaps
-            (keymap_auto_complete choices Nothing
+            (keymap_auto_complete choices True Nothing
               focus_auto_complete model)
             (build_keymap
               [("⭡", "quit root term", KbCmd record.on_quit_callback)])
@@ -151,14 +152,46 @@ keymap_mode_root_term record model =
                    Nothing)
        in merge_keymaps (keymap_after_set_grammar record model)
             (keymap_auto_complete (grammar_choice_choices ++ variable_choices)
-               (Just <| cmd_set_var_at_sub_term True) focus_auto_complete model)
-    MicroModeRootTermNavigate ->
-      merge_keymaps
-        (keymap_after_set_grammar record model)
-        (build_keymap_cond (record.editability /= EditabilityRootTermReadOnly)
-          [(model.config.spacial_key_prefix ++ "t",
-            "reset current term", KbCmd <| cmd_set_sub_term TermTodo)])
-
+               True (Just <| cmd_set_var_at_sub_term True)
+               focus_auto_complete model)
+    MicroModeRootTermNavigate auto_complete ->
+      let sub_term_focus = (record.root_term_focus =>
+                                 (focus_sub_term record.sub_cursor_path))
+          cur_root_sub_term =
+            { grammar = fst (get_grammar_at_sub_term model)
+            , term = Focus.get sub_term_focus model}
+          reduction_choices = get_usable_rule_names cur_root_sub_term.grammar
+                                record.module_path model
+            |> List.map (\rule_name -> (apply_reduction rule_name
+                 cur_root_sub_term record.module_path model, rule_name))
+            |> List.filterMap (\ (maybe_root_term, rule_name) -> Maybe.map
+                 (\root_term -> (root_term, rule_name)) maybe_root_term)
+            |> List.map (\ (root_term, rule_name) ->
+                 ( css_inline_str_embed "rule-block" rule_name
+                 , Focus.set sub_term_focus root_term.term ))
+          children_choices = case cur_root_sub_term.term of
+            TermTodo -> []   -- impossible for Todo to be navigate mode
+            TermVar _ -> []  -- doesn't have any children
+            TermInd grammar_choice sub_terms ->
+              get_sub_root_terms grammar_choice sub_terms
+                |> List.indexedMap (\index sub_root_sub_term ->
+                     ( "jump to child " ++ toString (index + 1)
+                     , Focus.get focus_record_mode_root_term model
+                         |> Focus.update sub_cursor_path_ ((flip (++)) [index])
+                         |> Focus.set micro_mode_
+                             (if sub_root_sub_term.term == TermTodo
+                              then MicroModeRootTermTodo init_auto_complete
+                              else MicroModeRootTermNavigate init_auto_complete)
+                         |> cmd_enter_mode_root_term
+                     ))
+       in merge_keymaps_list
+           [ keymap_after_set_grammar record model
+           , build_keymap_cond (record.editability/=EditabilityRootTermReadOnly)
+               [(model.config.spacial_key_prefix ++ "t",
+                 "reset current term", KbCmd <| cmd_set_sub_term TermTodo)]
+           , keymap_auto_complete (children_choices ++ reduction_choices)
+               False Nothing focus_auto_complete model
+           ]
 
 keymap_after_set_grammar : RecordModeRootTerm -> Model -> Keymap
 keymap_after_set_grammar record model =
@@ -203,11 +236,10 @@ cmd_set_sub_term term model =
 cmd_jump_to_parent_term : Command
 cmd_jump_to_parent_term model =
   let record = Focus.get focus_record_mode_root_term model
-                 |> Focus.update sub_cursor_path_
-                      (\cursor_path ->
-                         List.take ((List.length cursor_path) - 1) cursor_path)
+                 |> Focus.update sub_cursor_path_ (\cursor_path ->
+                      List.take ((List.length cursor_path) - 1) cursor_path)
                  |> Focus.set micro_mode_
-                      MicroModeRootTermNavigate
+                      (MicroModeRootTermNavigate init_auto_complete)
    in cmd_enter_mode_root_term record model
 
 cmd_jump_to_next_todo : Int -> Command
@@ -219,7 +251,8 @@ cmd_jump_to_next_todo displacement model =
         if List.isEmpty todo_cursor_paths then
           record -- if no todos, go to root_term
             |> Focus.set sub_cursor_path_ []
-            |> Focus.set micro_mode_ MicroModeRootTermNavigate
+            |> Focus.set micro_mode_
+                 (MicroModeRootTermNavigate init_auto_complete)
         else
           record
             |> Focus.update sub_cursor_path_ (\old_cursor_path ->
@@ -319,7 +352,7 @@ focus_auto_complete =
       getter record = case record.micro_mode of
         MicroModeRootTermSetGrammar auto_complete -> auto_complete
         MicroModeRootTermTodo auto_complete       -> auto_complete
-        MicroModeRootTermNavigate                 -> Debug.crash err_msg
+        MicroModeRootTermNavigate auto_complete   -> auto_complete
       updater update_func record = case record.micro_mode of
         MicroModeRootTermSetGrammar auto_complete ->
           Focus.set micro_mode_
@@ -327,5 +360,7 @@ focus_auto_complete =
         MicroModeRootTermTodo auto_complete ->
           Focus.set micro_mode_
             (MicroModeRootTermTodo <| update_func auto_complete) record
-        MicroModeRootTermNavigate                 -> record
+        MicroModeRootTermNavigate auto_complete ->
+          Focus.set micro_mode_
+            (MicroModeRootTermNavigate <| update_func auto_complete) record
    in (focus_record_mode_root_term => Focus.create getter updater)

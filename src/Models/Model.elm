@@ -81,7 +81,7 @@ type alias RecordModeRootTerm =
 type MicroModeRootTerm
   = MicroModeRootTermSetGrammar AutoComplete
   | MicroModeRootTermTodo AutoComplete
-  | MicroModeRootTermNavigate
+  | MicroModeRootTermNavigate AutoComplete
 
 type EditabilityRootTerm
   = EditabilityRootTermReadOnly

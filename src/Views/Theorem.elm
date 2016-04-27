@@ -20,6 +20,7 @@ import Models.RepoUtils exposing (get_variable_css,
 import Models.Model exposing (Model,
                               EditabilityRootTerm(..), MicroModeRootTerm(..),
                               RecordModeTheorem, MicroModeTheorem(..))
+import Models.ModelUtils exposing (init_auto_complete)
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.CommonCmd exposing (cmd_nothing)
@@ -68,7 +69,7 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
         , top_cursor_info = (cursor_info_go_to_sub_elem 0 cursor_info)
         , sub_cursor_path = [] -- meaningless here but need to make type checked
                                -- will be replaced in `show_root_term` function
-        , micro_mode = MicroModeRootTermNavigate            -- the same as above
+        , micro_mode = MicroModeRootTermNavigate init_auto_complete  -- the same
         , editability = (if is_setting_main_goal
                            then EditabilityRootTermUpToGrammar
                            else EditabilityRootTermReadOnly)
@@ -96,7 +97,8 @@ show_sub_theorem cursor_info record theorem theorem_focus model =
                   , top_cursor_info =
                       cursor_info_go_to_sub_elem (index + 1) cursor_info
                   , sub_cursor_path = [] -- meaningless the same as above
-                  , micro_mode = MicroModeRootTermNavigate -- the same
+                  , micro_mode = MicroModeRootTermNavigate -- meaningless
+                                   init_auto_complete      -- the same as above
                   , editability = if is_editable
                                     then EditabilityRootTermUpToTerm
                                     else EditabilityRootTermReadOnly

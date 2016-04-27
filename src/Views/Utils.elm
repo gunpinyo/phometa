@@ -72,6 +72,6 @@ show_auto_complete_filter class_name cursor_info placeholder
               on_typing_to_input_field address (\string -> ActionCommand <|
                 update_auto_complete string auto_complete_focus),
               Html.Attributes.type' "text",
-              Html.Attributes.placeholder "Unicode",
+              Html.Attributes.placeholder "unicode",
               Html.Attributes.value record.filters,
               Html.Attributes.attribute "data-autofocus" ""] []]

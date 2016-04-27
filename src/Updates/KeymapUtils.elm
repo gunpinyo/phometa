@@ -53,10 +53,10 @@ update_auto_complete filters auto_complete_focus model =
                                                      , counter = 0
                                                      }) model
 
-keymap_auto_complete : List (CssInlineStr, Command) ->
+keymap_auto_complete : List (CssInlineStr, Command) -> Bool ->
                          Maybe (String -> Command) ->
                          Focus Model AutoComplete -> Model -> Keymap
-keymap_auto_complete original_choices maybe_on_hit_return
+keymap_auto_complete original_choices is_visible maybe_on_hit_return
                        auto_complete_focus model =
   let auto_complete = Focus.get auto_complete_focus model
       in_unicode_state = auto_complete.unicode_state /= Nothing
@@ -91,14 +91,15 @@ keymap_auto_complete original_choices maybe_on_hit_return
                 ( key ++ " " ++ (css_inline_str_embed "newly-defined-block" val)
                 , cmd_func val )
            in (record.filters,record.counter,List.map map_func filtered_unicode)
-      key_prefix = model.config.spacial_key_prefix
+      key_prefix = if is_visible then model.config.spacial_key_prefix else ""
       filters_css = css_inline_str_embed "newly-defined-block" <|
                       if filters == "" then " " else filters
-      toggle_items = if in_unicode_state then
-          [ ("Escape", "quit Unicode input method", KbCmd quit_unicode_cmd)
+      toggle_items = if not is_visible then []
+        else if in_unicode_state then
+          [ ("Escape", "quit searching unicode", KbCmd quit_unicode_cmd)
           , ("Return", filters_css, KbCmd cmd_nothing)]
         else
-          [ (key_prefix ++ "Space", "enter Unicode input method",
+          [ (key_prefix ++ "Space", "search unicode",
             KbCmd <| Focus.set unicode_focus
                   <| Just {filters = "", counter = 0})
           , ("Return", filters_css, KbCmd <| case maybe_on_hit_return of
