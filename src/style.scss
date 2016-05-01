@@ -13,44 +13,38 @@ $inline-padding: 5px;
 }
 
 .indented-block {
-    margin: 1px;
-    margin-left: 5px;
-    margin-right: 4px;
-    margin-bottom: 10px;
-    padding: 0px;
-    border: 0px solid #888888;
+    margin-left: 4px;
+    margin-right: 1px;
+    margin-top: 1px;
+    margin-bottom: 7px;
+    padding: 5px;
+    border: 2px solid transparent;
+    border-left-color: #888888;
     border-left-width: 3px;
+    border-right-width: 3px;
 }
 
 .indented-block:hover {
-    margin: 0px;
-    margin-left: 4px;
-    margin-right: 5px;
-    margin-bottom: 9px;
-    padding: 0px;
-    border: 1px solid #888888;
-    border-left-width: 4px;
-    border-right-width: 4px;
+    @extend .indented-block;
+    border: 2px solid #888888;
+    border-left-width: 3px;
+    border-right-width: 3px;
 }
 
 .indented-block-on-cursor {
-    margin: 1px !important;
-    margin-left: 5px !important;
-    margin-bottom: 10px !important;
-    padding: 0px !important;
-    border: 0px solid black !important;
+    @extend .indented-block;
+    border: 2px solid black !important;
     border-left-width: 3px !important;
     border-right-width: 3px !important;
 }
 
 .indented-block-on-cursor:hover {
-    margin: 0px !important;
-    margin-left: 4px !important;
-    margin-bottom: 9px !important;
-    padding: 0px !important;
-    border: 1px solid #888888 !important;
-    border-left-width: 4px !important;
-    border-right-width: 4px !important;
+    @extend .indented-block;
+    border: 2px solid #888888 !important;
+    border-left-color: black !important;
+    border-left-width: 3px !important;
+    border-right-color: black !important;
+    border-right-width: 3px !important;
 }
 
 .underlined-block {
@@ -75,6 +69,11 @@ $inline-padding: 5px;
     @extend .block-spacial;
     border: 0px solid #AAAAAA;
     border-top-width: 1px;
+
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
 }
 
 .block-on-cursor {
@@ -102,25 +101,42 @@ input {
 /* keyword */
 .keyword-block {
     @extend .inline-block;
-    margin-top: 3px;
-    margin-bottom: 2px;
+    margin-top: 5px;
+    margin-bottom: 4px;
     color: #880000;
     font-weight: bold;
 }
 
 /* todo keyword */
 .todo-keyword-block {
-    @extend .inline-block;
-    margin-top: 3px;
-    margin-bottom: 2px;
+    @extend .keyword-block;
     @include color-with-bg(#880000);
-    font-weight: bold;
+}
+
+/* regex */
+.regex-block {
+    @extend .inline-block;
+    @include color-with-bg(#EE4444);
 }
 
 /* button */
+.button-panel {
+    float: right;
+    margin-top: 3px
+}
+
 .button-block {
     @extend .inline-block;
-    @include color-with-bg(#444488);
+    color: #000000;
+    background-color: #DDDDDD;
+}
+
+/* icon */
+.icon-block {
+    @extend .inline-block;
+    @include color-with-bg(#880000);
+    vertical-align:middle;
+    font-weight: bold;
 }
 
 /* auto complete unicode state */
@@ -166,19 +182,13 @@ input {
 /* rule */
 .rule-block {
     @extend .inline-block;
-    @include color-with-bg(#004400);
+    @include color-with-bg(#005500);
 }
 
 /* theorem */
 .theorem-block {
     @extend .inline-block;
-    @include color-with-bg(#009933);
-}
-
-/* place to choose rule */
-.rule-todo-block {
-    @extend .rule-block;
-    @include color-with-bg(#005533)
+    @include color-with-bg(#004488);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -190,6 +200,19 @@ div {
 th, td {
     padding: 5px;
 }
+
+/* hr { */
+/*   -moz-border-bottom-colors: none; */
+/*   -moz-border-image: none; */
+/*   -moz-border-left-colors: none; */
+/*   -moz-border-right-colors: none; */
+/*   -moz-border-top-colors: none; */
+/*   border-color: #EEEEEE -moz-use-text-color #FFFFFF; */
+/*   border-style: solid none; */
+/*   border-width: 1px 0; */
+/*   color: gray; */
+/*   margin: 7px 0; */
+/* } */
 
 .window {
     font-family: monospace;
@@ -232,6 +255,10 @@ th, td {
 
 .keymap-keystroke-td {
     color: #BB00BB;
+}
+
+.keymap-inactive-keystroke-td {
+    color: #666666;
 }
 
 .keymap-prefix-description-td {

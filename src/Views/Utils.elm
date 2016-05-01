@@ -1,8 +1,8 @@
 module Views.Utils where
 
 import Focus exposing (Focus)
-import Html exposing (Html, div, text)
-import Html.Attributes exposing (class, classList)
+import Html exposing (Html, div, text, span, i, button)
+import Html.Attributes exposing (class, classList, style)
 
 import Tools.CssExtra exposing (CssClass)
 import Tools.HtmlExtra exposing (on_click, on_blur, on_typing_to_input_field)
@@ -12,13 +12,13 @@ import Models.Action exposing (Action(..), address)
 import Updates.KeymapUtils exposing (update_auto_complete)
 import Models.ViewState exposing (View)
 
-show_indented_clickable_block : CssClass -> CursorInfo ->
-                                  Command -> List Html -> Html
-show_indented_clickable_block class_name cursor_info command htmls =
+show_indented_clickable_block : CursorInfo -> Command -> List Html -> Html
+show_indented_clickable_block cursor_info command htmls =
   div [ classList [
           ("indented-block", True),
-          ("indented-block-on-cursor", cursor_info_is_here cursor_info)]]
-      [show_clickable_block class_name cursor_info command htmls]
+          ("indented-block-on-cursor", cursor_info_is_here cursor_info)],
+        on_click address (ActionCommand command)]
+      htmls
 
 show_underlined_clickable_block : CursorInfo -> Command -> List Html -> Html
 show_underlined_clickable_block cursor_info command htmls =
@@ -43,6 +43,34 @@ show_clickable_block class_name cursor_info command htmls =
         ("block-on-cursor", cursor_info_is_here cursor_info)],
         on_click address (ActionCommand command)]
       htmls
+
+show_button : Command -> List Html -> Html
+show_button command htmls =
+  button
+    [ Html.Attributes.type' "button"
+    , on_click address (ActionCommand command) ]
+    htmls
+
+show_icon_button : String -> Command -> Html
+show_icon_button string command =
+  div [ class "button-panel" ]
+      [ text "    "
+      , button [ Html.Attributes.type' "button"
+               , on_click address (ActionCommand command) ]
+          [ i [ classList [ ("fa", True)
+                          , ("fa-lg", True)
+                          , (string, True)]] [] ]
+      ]
+
+show_close_button : Command -> Html
+show_close_button = show_icon_button "fa-times"
+
+show_reset_button : Command -> Html
+show_reset_button = show_icon_button "fa-undo"
+
+show_lock_button : Command -> Html
+show_lock_button = show_icon_button "fa-lock"
+
 
 show_auto_complete_filter : CssClass -> CursorInfo -> String -> Command ->
                               Focus Model AutoComplete -> View

@@ -116,7 +116,7 @@ type alias RuleName = String
 type alias Rule =
   NodeBase
     { has_locked  : Bool
-    , allow_reduction : Bool  -- check `Models.RepoUtils.allow_reduction`
+    , allow_reduction : Bool  -- check `Models.RepoUtils.apply_reduction`
                               --   for usage of this field
     , parameters : Parameters -- TODO: when implement rule input method user
                               --       cannot put parameters directly in fact,

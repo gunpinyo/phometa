@@ -30,7 +30,8 @@ import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term,
                                       focus_auto_complete)
 import Views.Utils exposing (show_underlined_clickable_block,
                              show_clickable_block,
-                             show_auto_complete_filter)
+                             show_auto_complete_filter,
+                             show_button)
 
 show_root_term : RecordModeRootTerm -> RootTerm -> View
 show_root_term raw_record root_term model =
@@ -45,8 +46,7 @@ show_root_term raw_record root_term model =
           show_auto_complete_filter "button-block" cursor_info "Choose Grammar"
             cmd_nothing focus_auto_complete model
         else
-          show_clickable_block "button-block" cursor_info
-            (cmd_enter_mode_root_term record)
+          show_button (cmd_enter_mode_root_term record)
             [Html.text "Choose Grammar"]
       else
         show_term cursor_info record root_term.grammar root_term.term model

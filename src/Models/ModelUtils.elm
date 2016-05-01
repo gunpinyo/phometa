@@ -61,6 +61,17 @@ focus_auto_complete_unicode =
 init_mode : Mode
 init_mode = ModeNothing
 
+focus_record_mode_grammar : Focus Model RecordModeGrammar
+focus_record_mode_grammar =
+  (mode_ => (Focus.create
+     (\mode -> case mode of
+        ModeGrammar record -> record
+        _                  ->
+          Debug.crash "from Models.ModelUtils.focus_record_mode_grammar")
+     (\update_func mode -> case mode of
+        ModeGrammar record -> ModeGrammar <| update_func record
+        other               -> other)))
+
 focus_record_mode_root_term : Focus Model RecordModeRootTerm
 focus_record_mode_root_term =
   (mode_ => (Focus.create
@@ -70,6 +81,17 @@ focus_record_mode_root_term =
           Debug.crash "from Models.ModelUtils.focus_record_mode_root_term")
      (\update_func mode -> case mode of
         ModeRootTerm record -> ModeRootTerm <| update_func record
+        other               -> other)))
+
+focus_record_mode_rule : Focus Model RecordModeRule
+focus_record_mode_rule =
+  (mode_ => (Focus.create
+     (\mode -> case mode of
+        ModeRule record -> record
+        _                  ->
+          Debug.crash "from Models.ModelUtils.focus_record_mode_rule")
+     (\update_func mode -> case mode of
+        ModeRule record -> ModeRule <| update_func record
         other               -> other)))
 
 focus_record_mode_theorem : Focus Model RecordModeTheorem

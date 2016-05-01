@@ -54,16 +54,33 @@ type alias AutoComplete =
                           }
   }
 
-
 -- Mode ------------------------------------------------------------------------
 
 type Mode
   = ModeNothing
   | ModeMenu
   | ModePackagePane
+  | ModeGrammar RecordModeGrammar
   | ModeRootTerm RecordModeRootTerm
+  | ModeRule RecordModeRule
   | ModeTheorem RecordModeTheorem
   -- TODO: add more mode
+
+-- ModeGrammar -----------------------------------------------------------------
+
+type alias RecordModeGrammar =
+  CursorTree
+    { node_path              : NodePath
+    , micro_mode             : MicroModeGrammar
+    }
+
+type MicroModeGrammar
+  = MicroModeGrammarNavigate
+  | MicroModeGrammarSetMetaVarRegex AutoComplete
+  | MicroModeGrammarSetLiteralRegex AutoComplete
+  | MicroModeGrammarNavigateChoice
+  | MicroModeGrammarSetChoiceFormat AutoComplete
+  | MicroModeGrammarSetChoiceGrammar AutoComplete
 
 -- ModeRootTerm ----------------------------------------------------------------
 
@@ -73,6 +90,7 @@ type alias RecordModeRootTerm =
     , root_term_focus        : Focus Model RootTerm
     , micro_mode             : MicroModeRootTerm
     , editability            : EditabilityRootTerm
+    , is_reducible           : Bool
     , can_create_fresh_vars  : Bool
     , get_existing_variables : Model -> Dict VarName GrammarName
     , on_quit_callback       : Command -- what to do after exit root_term mode
@@ -88,12 +106,24 @@ type EditabilityRootTerm
   | EditabilityRootTermUpToTerm
   | EditabilityRootTermUpToGrammar
 
+-- ModeRule --------------------------------------------------------------------
+
+type alias RecordModeRule =
+  CursorTree
+    { node_path              : NodePath
+    , micro_mode             : MicroModeRule
+    }
+
+type MicroModeRule
+  = MicroModeRuleNavigate
+  -- TODO: add more micro mode
+
 -- ModeTheorem -----------------------------------------------------------------
 
 type alias RecordModeTheorem =
   CursorTree
-    { node_path        : NodePath
-    , micro_mode       : MicroModeTheorem
+    { node_path              : NodePath
+    , micro_mode             : MicroModeTheorem
     }
 
 type MicroModeTheorem

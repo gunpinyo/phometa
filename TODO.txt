@@ -1,19 +1,20 @@
-- change var_regex to meta_var_regex, variable_regex, and literal_regex and pattern matching mechanism
+- implement ModeRule
 
-- remove allow_subst in rule
+- implement ModeGrammar
 
-- change has_locked in Grammar to has_completed and enforce it (including Rule)
+- implement module importation
 
-- change the way ModeRootTerm work, i.e. allow constructor and variables in auto complete popup
+- implement Traditional Theorem tree view
 
 - implement undo feature i.e. command that can roll back `Model` to previous state
 
 - make is_folded ui works
 
-- implement reduction
-
 - complete package pane
 
 - try to find a third party package that can save file
 
-- change popup to message, as we will introduce log-message
+-- Feature not to forget to write on report ------------------------------------
+
+support unicode in auto_complete
+jump to parent, i_th child, and reduction

@@ -131,6 +131,16 @@ focus_node node_path =
 
 -- Grammar ---------------------------------------------------------------------
 
+init_grammar : Grammar
+init_grammar =
+  { comment = Nothing
+  , is_folded = False
+  , has_locked = False
+  , metavar_regex = Nothing
+  , literal_regex = Nothing
+  , choices = []
+  }
+
 -- get all of name of grammar in this module (including imported grammars)
 -- exclude any grammar that hasn't been locked
 -- TODO: support imported grammar
@@ -295,6 +305,17 @@ debug_show_root_term show_grammar root_term =
 
 -- Rule ------------------------------------------------------------------------
 
+init_rule : Rule
+init_rule =
+  { comment = Nothing
+  , is_folded = False
+  , has_locked = False
+  , allow_reduction = False
+  , parameters = []
+  , conclusion = init_root_term
+  , premises = []
+  }
+
 -- get all of name of rules in this module (including imported rules)
 -- exclude any rule that hasn't been locked
 -- TODO: support imported rules
@@ -322,6 +343,24 @@ focus_rule node_path =
         (\update_func node -> case node of
             NodeRule rule -> NodeRule (update_func rule)
             other -> other)))
+
+get_rule_variables : NodePath -> Model -> Dict VarName GrammarName
+get_rule_variables node_path model =
+  let rule = Focus.get (focus_rule node_path) model
+      parameters_dict = rule.parameters
+        |> List.map (\record -> (record.var_name, record.grammar))
+        |> Dict.fromList
+      conclusion_dict = get_root_term_variables rule.conclusion
+      premises_dicts = rule.premises |> List.map
+        (\premise -> case premise of
+          PremiseDirect pattern -> get_root_term_variables pattern
+          PremiseCascade records -> records
+            |> List.map (\record -> record.arguments
+                           |> List.map get_root_term_variables
+                           |> List.foldl Dict.union
+                                (get_root_term_variables record.pattern))
+            |> List.foldl Dict.union Dict.empty)
+   in List.foldl Dict.union parameters_dict (conclusion_dict :: premises_dicts)
 
 apply_rule : RuleName -> RootTerm -> Arguments -> ModulePath -> Model ->
                Maybe (List RootTerm, PatternMatchingInfo)
@@ -483,13 +522,13 @@ focus_theorem_rule_argument index =
            other -> other))
    in proof_ => arguments_focus => list_focus_elem index
 
-get_theorem_variables_from_model : NodePath -> Model -> Dict VarName GrammarName
-get_theorem_variables_from_model node_path model =
+get_theorem_variables : NodePath -> Model -> Dict VarName GrammarName
+get_theorem_variables node_path model =
   let theorem = Focus.get (focus_theorem node_path) model
-   in get_theorem_variables theorem
+   in get_theorem_variables_aux theorem
 
-get_theorem_variables : Theorem -> Dict VarName GrammarName
-get_theorem_variables theorem =
+get_theorem_variables_aux : Theorem -> Dict VarName GrammarName
+get_theorem_variables_aux theorem =
   let goal_dict = get_root_term_variables theorem.goal
       proof_dict = case theorem.proof of
         ProofTodo -> Dict.empty
@@ -502,7 +541,8 @@ get_theorem_variables theorem =
                 (\argument -> Dict.union (get_root_term_variables argument))
                 Dict.empty arguments
               sub_theorems_dict = List.foldl
-                (\sub_theorem -> Dict.union (get_theorem_variables sub_theorem))
+                (\sub_theorem -> Dict.union
+                                   (get_theorem_variables_aux sub_theorem))
                 Dict.empty sub_theorems
            in Dict.union arguments_dict sub_theorems_dict
         ProofByLemma _ _ -> Dict.empty

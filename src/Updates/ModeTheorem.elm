@@ -26,7 +26,7 @@ import Models.RepoUtils exposing (has_root_term_completed,
                                   has_theorem_completed,
                                   multiple_root_substitute,
                                   pattern_matchable, pattern_match,
-                                  get_theorem_variables_from_model,
+                                  get_theorem_variables,
                                   root_term_undefined_grammar,
                                   get_term_todo_cursor_paths)
 import Models.Message exposing (Message(..))
@@ -45,6 +45,39 @@ import Updates.KeymapUtils exposing (empty_keymap,
 import Updates.Cursor exposing (cmd_click_block)
 import Updates.ModeRootTerm exposing (embed_css_root_term,
                                       cmd_enter_mode_root_term)
+
+keymap_mode_theorem : RecordModeTheorem -> Model -> Keymap
+keymap_mode_theorem record model =
+  merge_keymaps
+    (build_keymap_cond (not <| has_mode_theorem_locked model)
+      [(model.config.spacial_key_prefix ++ "r",
+        "reset whole theorem", KbCmd cmd_reset_top_theorem)
+      ,(model.config.spacial_key_prefix ++ "t",
+        "reset current proof", KbCmd cmd_reset_current_proof)])
+    (case record.micro_mode of
+      MicroModeTheoremNavigate ->
+        build_keymap_cond
+          ((not <| has_mode_theorem_locked model) &&
+            (let top_theorem = Focus.get (focus_theorem record.node_path) model
+              in has_theorem_completed top_theorem))
+          [(model.config.spacial_key_prefix ++ "l",
+            "lock as lemma", KbCmd <| cmd_lock_as_lemma)]
+      MicroModeTheoremSelectRule auto_complete ->
+        let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
+            choices = get_usable_rule_names cur_sub_theorem.goal.grammar
+                        record.node_path.module_path model
+              |> List.map (\rule_name ->
+                   (css_inline_str_embed "rule-block" rule_name,
+                    cmd_set_rule rule_name))
+         in keymap_auto_complete choices True Nothing focus_auto_complete model
+      MicroModeTheoremSelectLemma auto_complete ->
+        let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
+            choices = get_lemma_names cur_sub_theorem.goal
+                        record.node_path.module_path model
+              |> List.map (\theorem_name ->
+                   (css_inline_str_embed "theorem-block" theorem_name,
+                    cmd_set_lemma theorem_name))
+         in keymap_auto_complete choices True Nothing focus_auto_complete model)
 
 cmd_enter_mode_theorem : RecordModeTheorem -> Command
 cmd_enter_mode_theorem record =
@@ -83,8 +116,9 @@ auto_focus_next_todo cursor_info record remaining_path theorem_focus model =
                   , sub_cursor_path = []
                   , micro_mode = MicroModeRootTermSetGrammar init_auto_complete
                   , editability = EditabilityRootTermUpToGrammar
+                  , is_reducible = True
                   , can_create_fresh_vars = True
-                  , get_existing_variables = get_theorem_variables_from_model
+                  , get_existing_variables = get_theorem_variables
                                                record.node_path
                   , on_quit_callback = cmd_enter_mode_theorem record
                                          >> cmd_theorem_auto_focus_next_todo
@@ -130,10 +164,11 @@ auto_focus_next_todo cursor_info record remaining_path theorem_focus model =
                        |> .term
                        |> get_term_todo_cursor_paths
                        |> list_get_elem 0
+                   , is_reducible = True
                    , micro_mode = MicroModeRootTermTodo init_auto_complete
                    , editability = EditabilityRootTermUpToTerm
                    , can_create_fresh_vars = False
-                   , get_existing_variables = get_theorem_variables_from_model
+                   , get_existing_variables = get_theorem_variables
                                                 record.node_path
                    , on_quit_callback = cmd_enter_mode_theorem record
                                           >> cmd_execute_current_rule
@@ -177,39 +212,6 @@ cmd_select_lemma index record model =
                           <| cursor_tree_go_to_sub_elem index record)
     |> Focus.set mode_ (ModeTheorem record)
     |> cmd_set_micro_mode (MicroModeTheoremSelectLemma init_auto_complete)
-
-keymap_mode_theorem : RecordModeTheorem -> Model -> Keymap
-keymap_mode_theorem record model =
-  merge_keymaps
-    (build_keymap_cond (not <| has_mode_theorem_locked model)
-      [(model.config.spacial_key_prefix ++ "r",
-        "reset whole theorem", KbCmd cmd_reset_top_theorem)
-      ,(model.config.spacial_key_prefix ++ "t",
-        "reset current proof", KbCmd cmd_reset_current_proof)])
-    (case record.micro_mode of
-      MicroModeTheoremNavigate ->
-        build_keymap_cond
-          ((not <| has_mode_theorem_locked model) &&
-            (let top_theorem = Focus.get (focus_theorem record.node_path) model
-              in has_theorem_completed top_theorem))
-          [(model.config.spacial_key_prefix ++ "l",
-            "lock as lemma", KbCmd <| cmd_lock_as_lemma)]
-      MicroModeTheoremSelectRule auto_complete ->
-        let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
-            choices = get_usable_rule_names cur_sub_theorem.goal.grammar
-                        record.node_path.module_path model
-              |> List.map (\rule_name ->
-                   (css_inline_str_embed "rule-block" rule_name,
-                    cmd_set_rule rule_name))
-         in keymap_auto_complete choices True Nothing focus_auto_complete model
-      MicroModeTheoremSelectLemma auto_complete ->
-        let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
-            choices = get_lemma_names cur_sub_theorem.goal
-                        record.node_path.module_path model
-              |> List.map (\theorem_name ->
-                   (css_inline_str_embed "theorem-block" theorem_name,
-                    cmd_set_lemma theorem_name))
-         in keymap_auto_complete choices True Nothing focus_auto_complete model)
 
 has_mode_theorem_locked : Model -> Bool
 has_mode_theorem_locked model =

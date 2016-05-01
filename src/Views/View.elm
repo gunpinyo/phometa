@@ -18,7 +18,8 @@ show_view : View
 show_view model =
   fullbleed
     <| flex_div [] [class "window"]
-    <| [ import_css "style.css"
+    <| [ import_css "http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css"
+       , import_css "style.css"
        , show_window model
        , import_javascript "naive.js"]
 

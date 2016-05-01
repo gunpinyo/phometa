@@ -19,9 +19,15 @@ import Updates.CommonCmd exposing (cmd_nothing)
 empty_keymap : Keymap
 empty_keymap = build_keymap []
 
--- if there a collision, second one wins
 merge_keymaps : Keymap -> Keymap -> Keymap
-merge_keymaps = flip Dict.union
+merge_keymaps fst_keymap snd_keymap =
+  let result = Dict.union snd_keymap fst_keymap -- a collision, second one wins
+   in case (Dict.get [] fst_keymap, Dict.get [] snd_keymap) of
+        (Just ((fst_key, fst_val), _), Just ((snd_key, snd_val), _)) ->
+          Dict.insert [] ((snd_key ++ "\n" ++ fst_key,
+                           snd_val ++ "\n" ++ fst_val), KbCmd cmd_nothing)
+                         result
+        _  -> result
 
 merge_keymaps_list : List Keymap -> Keymap
 merge_keymaps_list list = List.foldl merge_keymaps empty_keymap list
@@ -32,10 +38,20 @@ get_key_binding keystroke keymap =
 
 build_keymap : List (RawKeystroke, KeyDescription, KeyBinding) -> Keymap
 build_keymap list =
-  let tuple_to_dict_elem (raw_keystroke, key_binding_name, key_binding) =
+  let tuple_to_dict_elem_func (raw_keystroke, key_binding_name, key_binding) =
         (to_keystroke raw_keystroke,
            ((raw_keystroke, key_binding_name), key_binding))
-   in Dict.fromList <| List.map tuple_to_dict_elem list
+      (info_items, actual_items) = list |> List.map tuple_to_dict_elem_func
+                                        |> List.partition (fst >> List.isEmpty)
+      info_item_func (_, ((key, val), _)) maybe_acc = case maybe_acc of
+         Nothing -> Just ([], ((key, val), KbCmd cmd_nothing))
+         Just (_, ((acc_key, acc_val), _)) ->
+           Just ([], ((acc_key ++ "\n" ++ key, acc_val ++ "\n" ++ val)
+                     , KbCmd cmd_nothing))
+      info_item' = case List.foldl info_item_func Nothing info_items of
+                     Nothing -> []
+                     Just item -> [item]
+   in Dict.fromList (info_item' ++ actual_items)
 
 build_keymap_cond : Bool -> List (RawKeystroke, KeyDescription, KeyBinding)
                       -> Keymap
@@ -54,9 +70,9 @@ update_auto_complete filters auto_complete_focus model =
                                                      }) model
 
 keymap_auto_complete : List (CssInlineStr, Command) -> Bool ->
-                         Maybe (String -> Command) ->
+                         Maybe ((String -> Command), String) ->
                          Focus Model AutoComplete -> Model -> Keymap
-keymap_auto_complete original_choices is_visible maybe_on_hit_return
+keymap_auto_complete original_choices is_visible maybe_for_hit_return
                        auto_complete_focus model =
   let auto_complete = Focus.get auto_complete_focus model
       in_unicode_state = auto_complete.unicode_state /= Nothing
@@ -97,14 +113,16 @@ keymap_auto_complete original_choices is_visible maybe_on_hit_return
       toggle_items = if not is_visible then []
         else if in_unicode_state then
           [ ("Escape", "quit searching unicode", KbCmd quit_unicode_cmd)
-          , ("Return", filters_css, KbCmd cmd_nothing)]
+          , ("Preview", filters_css, KbCmd cmd_nothing) ]
         else
-          [ (key_prefix ++ "Space", "search unicode",
+          ( key_prefix ++ "Space", "search unicode",
             KbCmd <| Focus.set unicode_focus
                   <| Just {filters = "", counter = 0})
-          , ("Return", filters_css, KbCmd <| case maybe_on_hit_return of
-               Nothing -> cmd_nothing
-               Just on_hit_return -> on_hit_return filters)]
+          :: ("(Input)", filters_css, KbCmd cmd_nothing)
+          :: (case maybe_for_hit_return of
+                Nothing -> []
+                Just (on_hit_return, hit_return_desc) ->
+                  [("Return", hit_return_desc, KbCmd <| on_hit_return filters)])
    in if List.isEmpty choices then build_keymap toggle_items else let
       number_of_pages = (List.length choices // 9)
                           + if List.length choices % 9 == 0 then 0 else 1
@@ -120,7 +138,7 @@ keymap_auto_complete original_choices is_visible maybe_on_hit_return
                               current_choices
       auto_items = case current_choices of
         [(choice_str, choice_command)] ->
-          if in_unicode_state || maybe_on_hit_return == Nothing
+          if in_unicode_state || maybe_for_hit_return == Nothing
             then [("Return", choice_str, KbCmd choice_command)] else []
         _ -> []
       jump_page_cmd displacement =

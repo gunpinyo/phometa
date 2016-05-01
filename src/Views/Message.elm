@@ -10,7 +10,7 @@ import Models.Message exposing (Message(..))
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.Message exposing (cmd_remove_message)
-import Views.Utils exposing (show_todo_keyword_block)
+import Views.Utils exposing (show_todo_keyword_block, show_close_button)
 
 show_messages_pane : View
 show_messages_pane model =
@@ -24,11 +24,7 @@ show_messages_pane model =
                MessageDebug css_inline      -> ("DEBUG", css_inline)
          in tr [] [ td [] [show_todo_keyword_block keyword]
                   , td [] (css_inline_str_compile msg_css_inline)
-                  , td [] [div [classList [("button-block", True)
-                                          ,("block-clickable", True)],
-                                on_click address
-                                 (ActionCommand <| cmd_remove_message index)]
-                           [text "✖"]]]
+                  , td [] [show_close_button <| cmd_remove_message index]]
       table' = table [style [("width", "100%")]]
         <| List.indexedMap msg_tr_func model.message_list
    in flex_div [] [class "pane"] [table']

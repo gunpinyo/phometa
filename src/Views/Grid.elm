@@ -1,7 +1,7 @@
 module Views.Grid where
 
 import Html exposing (Html, div)
-import Html.Attributes exposing (classList)
+import Html.Attributes exposing (classList, style)
 
 import Tools.Flex exposing (flex_div, flex_split)
 import Tools.HtmlExtra exposing (debug_to_html, on_click)
@@ -75,7 +75,7 @@ show_grid_pane pane_cursor grid model =
                       node_path theorem has_locked model
            in -- if it is not `GridHome` use div inside flex_div to detach flex
               -- since its elements doesn't depend on monitor size anymore
-              div [] [node_content]
+              div [style [("width", "100%")]] [node_content]
       attrs  = [ classList [("pane", True), ("pane-on-cursor", has_cursor)]
                , on_click address
                    (ActionCommand <| cmd_change_pane_cursor pane_cursor) ]

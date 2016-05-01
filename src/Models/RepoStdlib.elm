@@ -7,6 +7,7 @@ import Focus
 
 import Tools.OrderedDict exposing (ordered_dict_from_list)
 import Tools.StripedList exposing (striped_list_introduce)
+import Tools.RegexExtra exposing (safe_regex)
 import Models.Focus exposing (dict_)
 import Models.RepoModel exposing (..)
 import Models.RepoUtils exposing (..)
@@ -25,11 +26,12 @@ stdlib_package =
       ("Propositional Logic", PackageElemMod {
         comment = Nothing,
         nodes = ordered_dict_from_list [
+          ("Grammar-1", NodeGrammar init_grammar),
           ("Prop", NodeGrammar {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
-            metavar_regex = Just (regex "^[A-Z][a-zA-Z]*([1-9][0-9]*|'*)$"),
+            metavar_regex = safe_regex "[A-Z][a-zA-Z]*([1-9][0-9]*|'*)",
             literal_regex = Nothing,
             choices = [
               striped_list_introduce ["⊤"] [],
@@ -47,14 +49,14 @@ stdlib_package =
             is_folded = False,
             has_locked = True,
             metavar_regex = Nothing,
-            literal_regex = Just (regex "^[a-z]+([1-9][0-9]*|'*)$"),
+            literal_regex = safe_regex "[a-z]+([1-9][0-9]*|'*)",
             choices = []
           }),
           ("Context", NodeGrammar {
             comment = Nothing,
             is_folded = False,
             has_locked = True,
-            metavar_regex = Just (regex "^[ΓΔ]([1-9][0-9]*|'*)$"),
+            metavar_regex = safe_regex "[ΓΔ]([1-9][0-9]*|'*)",
             literal_regex = Nothing,
             choices = [
               striped_list_introduce ["ε"] [],
@@ -71,6 +73,7 @@ stdlib_package =
               striped_list_introduce ["", "⊢", ""] ["Context", "Prop"]
             ]
           }),
+          ("rule-1", NodeRule init_rule),
           ("hypothesis-base", NodeRule {
             comment = Nothing,
             is_folded = False,
