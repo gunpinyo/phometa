@@ -2,6 +2,7 @@ module Views.Grammar where
 
 import Focus exposing ((=>))
 import Html exposing (Html, text, div, hr)
+import Html.Attributes exposing (class)
 import String
 
 import Tools.RegexExtra exposing (regex_to_string)
@@ -119,7 +120,7 @@ show_grammar cursor_info node_path grammar model =
               _ -> literal_unlocked_inactive)
       add_choice_inactive = [show_button "Add Choice"
                               (cmd_enter_micro_mode_add_choice record)]
-      choices_header_htmls = (text " ") ::
+      choices_header_html = div [class "button-panel"] ((text " ") ::
         if grammar.has_locked then [] else
           case get_record_mode_grammar node_path model of
             Nothing      -> add_choice_inactive
@@ -130,7 +131,7 @@ show_grammar cursor_info node_path grammar model =
                     (cursor_info_go_to_sub_elem 2 cursor_info)
                     "number of sub-terms" cmd_nothing
                     focus_auto_complete model]
-                _ -> add_choice_inactive
+                _ -> add_choice_inactive)
       choices_aux = case get_record_mode_grammar node_path model of
         Nothing -> Nothing
         Just record' -> case record'.micro_mode of
@@ -190,7 +191,7 @@ show_grammar cursor_info node_path grammar model =
                                              >> cmd_swap_choice choice_index])
             ) grammar.choices
    in show_indented_clickable_block cursor_info (cmd_enter_mode_grammar record)
-        [ div [] (header_htmls ++ choices_header_htmls ++ header_buttons)
+        [ div [] (header_htmls ++ header_buttons ++ [choices_header_html])
         , hr [] []
         , metavar_regex_html
         , literal_regex_html

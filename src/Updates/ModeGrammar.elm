@@ -12,28 +12,20 @@ import Tools.CssExtra exposing (css_inline_str_embed)
 import Tools.StripedList exposing (striped_list_get_even_element,
                                    striped_list_get_odd_element,
                                    striped_list_introduce)
-import Models.Focus exposing (mode_, micro_mode_, reversed_ref_path_,
-                              node_name_, sub_cursor_path_, choices_,
+import Models.Focus exposing (mode_, micro_mode_, sub_cursor_path_, choices_,
                               metavar_regex_, literal_regex_, filters_,
                               has_locked_)
 import Models.Cursor exposing (IntCursorPath, CursorInfo,
-                               cursor_info_is_here,
                                get_cursor_info_from_cursor_tree,
-                               cursor_info_go_to_sub_elem,
-                               cursor_tree_go_to_sub_elem)
-import Models.RepoModel exposing (Grammar, Term(..), RuleName)
+                               cursor_info_go_to_sub_elem)
+import Models.RepoModel exposing (Grammar)
 import Models.RepoUtils exposing (focus_grammar, init_grammar,
                                   init_grammar_choice,
-                                  has_root_term_completed,
                                   get_usable_grammar_names,
-                                  get_usable_rule_names, focus_rule, apply_rule,
-                                  has_root_term_completed,
-                                  root_term_undefined_grammar,
-                                  get_term_todo_cursor_paths)
+                                  root_term_undefined_grammar)
 import Models.Message exposing (Message(..))
 import Models.Model exposing (Model, Command, KeyBinding(..), Keymap, Command,
                               AutoComplete, Mode(..),
-                              EditabilityRootTerm(..), MicroModeRootTerm(..),
                               RecordModeGrammar, MicroModeGrammar(..))
 import Models.ModelUtils exposing (focus_record_mode_grammar,
                                    init_auto_complete)

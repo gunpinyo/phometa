@@ -18,7 +18,8 @@ show_view : View
 show_view model =
   fullbleed
     <| flex_div [] [class "window"]
-    <| [ import_css "http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css"
+    <| [ import_css ("http://cdnjs.cloudflare.com/ajax/libs/font-awesome/"
+                   ++"4.4.0/css/font-awesome.min.css")
        , import_css "style.css"
        , show_window model
        , import_javascript "naive.js"]
@@ -37,9 +38,12 @@ show_window model =
                    , ("align-items", "stretch")
                    , ("width", "-moz-max-content")
                    , ("width", "-webkit-max-content")
+                   , ("width", "100%")
                    ] []
             [ flex_div [ ("flex", "0 auto")] [] [show_messages_pane model]
-            , flex_grow 1 grids_pane ]
+            , flex_div [ ("flex-grow", "1")
+                       , ("flex-basis", "0px")
+                       , ("width", "100%")] [] [grids_pane] ]
       cfg        = model.config
    in if cfg.show_package_pane && cfg.show_keymap_pane then
         flex_split "row" [] [] [

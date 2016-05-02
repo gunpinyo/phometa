@@ -60,6 +60,12 @@ $inline-padding: 5px;
     padding-right: 0px;
 }
 
+.root-term-block {
+    @extend .inline-block;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
 .block-spacial {
     margin: 0px;
     padding-top: 1px;
@@ -218,7 +224,7 @@ th, td {
     font-family: monospace;
     font-size: 100%;
     color: Black;
-    background-color: #8888AA;
+    background-color: #666666;
 }
 
 .pane {

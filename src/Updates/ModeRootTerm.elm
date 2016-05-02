@@ -51,10 +51,12 @@ embed_css_grammar_choice grammar_choice =
         |> striped_list_eliminate fmt_func gmr_func
         |> List.filterMap identity
         |> String.concat
+        |> css_inline_str_embed "root-term-block"
 
 embed_css_root_term : ModulePath -> Model -> RootTerm -> CssInlineStr
 embed_css_root_term module_path model root_term =
-  embed_css_term module_path model root_term.term root_term.grammar
+  css_inline_str_embed "root-term-block" <|
+    embed_css_term module_path model root_term.term root_term.grammar
 
 embed_css_term : ModulePath -> Model -> Term -> GrammarName -> CssInlineStr
 embed_css_term module_path model term grammar_name =
@@ -89,11 +91,13 @@ keymap_mode_root_term record model =
             List.map (\grammar_name ->
               (css_inline_str_embed "grammar-block" grammar_name,
                cmd_set_grammar grammar_name))
-       in merge_keymaps
-            (keymap_auto_complete choices True Nothing
-              focus_auto_complete model)
-            (build_keymap
-              [("⭡", "quit root term", KbCmd record.on_quit_callback)])
+       in if record.editability /= EditabilityRootTermUpToGrammar
+          then empty_keymap
+          else merge_keymaps
+                 (keymap_auto_complete choices True Nothing
+                    focus_auto_complete model)
+                 (build_keymap
+                    [("⭡", "quit root term", KbCmd record.on_quit_callback)])
     MicroModeRootTermTodo auto_complete ->
       let (grammar_name, grammar) = get_grammar_at_sub_term model
           grammar_choice_choices = grammar.choices |>
@@ -112,19 +116,22 @@ keymap_mode_root_term record model =
                          cmd_set_var_at_sub_term True var_name)
                  else
                    Nothing)
-       in merge_keymaps (keymap_after_set_grammar record model)
-            (keymap_auto_complete (grammar_choice_choices ++ variable_choices)
-               True (Just <| (cmd_set_var_at_sub_term True,
-                             "create metavar or literal"))
-               focus_auto_complete model)
+       in if record.editability == EditabilityRootTermReadOnly
+          then empty_keymap
+          else
+            merge_keymaps (keymap_after_set_grammar record model)
+              (keymap_auto_complete (grammar_choice_choices ++ variable_choices)
+                 True (Just <| (cmd_set_var_at_sub_term True,
+                               "create metavar or literal"))
+                 focus_auto_complete model)
     MicroModeRootTermNavigate auto_complete ->
       let sub_term_focus = (record.root_term_focus =>
                                  (focus_sub_term record.sub_cursor_path))
           cur_root_sub_term =
             { grammar = fst (get_grammar_at_sub_term model)
             , term = Focus.get sub_term_focus model}
-          reduction_choices = get_usable_rule_names cur_root_sub_term.grammar
-                                record.module_path model
+          reduction_choices = get_usable_rule_names
+                 (Just cur_root_sub_term.grammar) record.module_path model False
             |> (\rule_names -> if record.is_reducible then rule_names else [])
             |> List.map (\rule_name -> (apply_reduction rule_name
                  cur_root_sub_term record.module_path model, rule_name))

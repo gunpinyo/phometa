@@ -154,8 +154,8 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                           "Proof By Lemma" cmd_nothing focus_auto_complete model
                       else
                         show_button "Proof By Lemma" on_click_cmd
-                rule_exists = not <| List.isEmpty <|
-                  get_usable_rule_names theorem.goal.grammar module_path model
+                rule_exists = not <| List.isEmpty <| get_usable_rule_names
+                  (Just theorem.goal.grammar) module_path model False
                 lemma_exists = not <| List.isEmpty <|
                   get_lemma_names theorem.goal module_path model
                 possibly_rule_lemma_htmls =

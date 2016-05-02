@@ -330,20 +330,25 @@ init_rule =
   }
 
 -- get all of name of rules in this module (including imported rules)
--- exclude any rule that hasn't been locked
+-- exclude any rule that hasn't been locked unless `are_unlocked_rule_included`
+-- if `maybe_grammar_name` has some thing
+--  then return only rule_names that have conclusion corresponded to the grammar
 -- TODO: support imported rules
-get_usable_rule_names : GrammarName -> ModulePath -> Model -> List RuleName
-get_usable_rule_names grammar_name module_path model =
+get_usable_rule_names : Maybe GrammarName -> ModulePath -> Model ->
+                          Bool -> List RuleName
+get_usable_rule_names maybe_grammar_name module_path model
+                          are_unlocked_rule_included =
   case get_module module_path model of
     Nothing -> []
-    Just module' -> ordered_dict_to_list module'.nodes
-                      |> List.filterMap (\ (node_name, node) ->
-                           case node of
-                             NodeRule rule ->
-                               if rule.has_locked &&
-                                  rule.conclusion.grammar == grammar_name
-                                 then Just node_name else Nothing
-                             _           -> Nothing)
+    Just module' -> ordered_dict_to_list module'.nodes |>
+      List.filterMap (\ (node_name, node) ->
+        case node of
+          NodeRule rule ->
+            if (rule.has_locked || are_unlocked_rule_included)
+                && (maybe_grammar_name == Nothing ||
+                    maybe_grammar_name == Just rule.conclusion.grammar)
+              then Just node_name else Nothing
+          _           -> Nothing)
 
 -- TODO: support imported rules
 focus_rule : NodePath -> Focus Model Rule
@@ -379,7 +384,7 @@ apply_rule : RuleName -> RootTerm -> Arguments -> ModulePath -> Model ->
                Maybe (List RootTerm, PatternMatchingInfo)
 apply_rule rule_name target arguments module_path model =
   if not <| List.member rule_name
-         <| get_usable_rule_names target.grammar module_path model then
+     <| get_usable_rule_names (Just target.grammar) module_path model False then
     Nothing
   else
     let rule = Focus.get (focus_rule { module_path = module_path
@@ -451,7 +456,7 @@ get_updating_subst_list old_pm_info new_pm_info =
 apply_reduction : RuleName -> RootTerm -> ModulePath -> Model -> Maybe RootTerm
 apply_reduction rule_name target module_path model =
   if not <| List.member rule_name
-         <| get_usable_rule_names target.grammar module_path model
+         <| get_usable_rule_names (Just target.grammar) module_path model False
     then Nothing else
   let rule = Focus.get (focus_rule { module_path = module_path
                                    , node_name = rule_name

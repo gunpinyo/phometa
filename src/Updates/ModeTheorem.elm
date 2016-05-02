@@ -60,8 +60,8 @@ keymap_mode_theorem record model =
       MicroModeTheoremNavigate -> empty_keymap
       MicroModeTheoremSelectRule auto_complete ->
         let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
-            choices = get_usable_rule_names cur_sub_theorem.goal.grammar
-                        record.node_path.module_path model
+            choices = get_usable_rule_names (Just cur_sub_theorem.goal.grammar)
+                        record.node_path.module_path model False
               |> List.map (\rule_name ->
                    (css_inline_str_embed "rule-block" rule_name,
                     cmd_set_rule rule_name))
@@ -133,7 +133,8 @@ auto_focus_next_todo cursor_info record remaining_path theorem_focus model =
              in Just <| cmd_enter_mode_root_term goal_record
           else
             let rule_exists = not <| List.isEmpty <|
-                  get_usable_rule_names theorem.goal.grammar module_path model
+                  get_usable_rule_names (Just theorem.goal.grammar)
+                    module_path model False
                 lemma_exists = not <| List.isEmpty <|
                   get_lemma_names theorem.goal module_path model
              in if rule_exists then

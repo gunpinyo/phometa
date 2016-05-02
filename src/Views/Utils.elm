@@ -51,6 +51,12 @@ show_button string command =
     , on_click address (ActionCommand command) ]
     [ text string ]
 
+show_float_right_button : String -> Command -> Html
+show_float_right_button string command =
+  div [ class "button-panel" ]
+      [ text " "
+      , show_button string command ]
+
 show_icon_button : String -> Command -> Html
 show_icon_button string command =
   div [ class "button-panel" ]

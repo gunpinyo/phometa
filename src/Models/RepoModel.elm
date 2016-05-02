@@ -138,12 +138,14 @@ type alias Rule =
 
 type Premise
   = PremiseDirect RootTerm
-  | PremiseCascade (List { rule_name : RuleName
-                         , pattern : RootTerm
-                         , arguments : Arguments
-                         , allow_unification : Bool
-                         })
+  | PremiseCascade (List PremiseCascadeRecord)
 
+type alias PremiseCascadeRecord =
+  { rule_name : RuleName
+  , pattern : RootTerm
+  , arguments : Arguments
+  , allow_unification : Bool
+  }
 
 -- Theorem ---------------------------------------------------------------------
 

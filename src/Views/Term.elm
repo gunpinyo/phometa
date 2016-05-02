@@ -22,13 +22,14 @@ import Models.RepoUtils exposing (root_term_undefined_grammar, get_grammar,
                                   grammar_allow_variable, get_variable_css)
 import Models.Model exposing (Model, Command,
                               RecordModeRootTerm, MicroModeRootTerm(..),
-                              EditabilityRootTerm)
+                              EditabilityRootTerm(..))
 import Models.ModelUtils exposing (init_auto_complete)
 import Models.ViewState exposing (View)
 import Updates.CommonCmd exposing (cmd_nothing)
 import Updates.ModeRootTerm exposing (cmd_enter_mode_root_term,
                                       focus_auto_complete)
-import Views.Utils exposing (show_underlined_clickable_block,
+import Views.Utils exposing (show_todo_keyword_block,
+                             show_underlined_clickable_block,
                              show_clickable_block,
                              show_auto_complete_filter,
                              show_button)
@@ -42,13 +43,15 @@ show_root_term raw_record root_term model =
              (MicroModeRootTermSetGrammar init_auto_complete)
       on_click_cmd = cmd_enter_mode_root_term record
    in if root_term.grammar == root_term_undefined_grammar then
-        if cursor_info_is_here cursor_info then
+        if record.editability /= EditabilityRootTermUpToGrammar then
+          show_todo_keyword_block "GRAMMAR UNDEFINED"
+        else if cursor_info_is_here cursor_info then
           show_auto_complete_filter "button-block" cursor_info "Choose Grammar"
             cmd_nothing focus_auto_complete model
         else
           show_button "Choose Grammar" (cmd_enter_mode_root_term record)
-      else
-        show_term cursor_info record root_term.grammar root_term.term model
+      else div [class "root-term-block"]
+        [show_term cursor_info record root_term.grammar root_term.term model]
 
 
 show_term : CursorInfo -> RecordModeRootTerm -> GrammarName -> Term -> View
@@ -57,7 +60,9 @@ show_term cursor_info record grammar_name term model =
     TermTodo ->
       let record' = Focus.set micro_mode_
                       (MicroModeRootTermTodo init_auto_complete) record
-       in if cursor_info_is_here cursor_info then
+       in if record.editability == EditabilityRootTermReadOnly then
+            show_todo_keyword_block "UNFINISHED TERM"
+          else if cursor_info_is_here cursor_info then
             show_auto_complete_filter "term-todo-block" cursor_info grammar_name
               cmd_nothing focus_auto_complete model
           else

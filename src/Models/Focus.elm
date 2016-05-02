@@ -49,3 +49,7 @@ allow_reduction_ = create .allow_reduction (\u r -> {r|allow_reduction=u r.allow
 metavar_regex_ = create .metavar_regex (\u r -> {r|metavar_regex=u r.metavar_regex})
 literal_regex_ = create .literal_regex (\u r -> {r|literal_regex=u r.literal_regex})
 choices_ = create .choices (\u r -> {r|choices=u r.choices})
+parameters_ = create .parameters (\u r -> {r|parameters=u r.parameters})
+premises_ = create .premises (\u r -> {r|premises=u r.premises})
+pattern_ = create .pattern (\u r -> {r|pattern=u r.pattern})
+arguments_ = create .arguments (\u r -> {r|arguments=u r.arguments})
