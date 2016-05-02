@@ -27,6 +27,7 @@ stdlib_package =
         comment = Nothing,
         nodes = ordered_dict_from_list [
           ("Grammar-1", NodeGrammar init_grammar),
+          ("Grammar-2", NodeGrammar init_grammar),
           ("Prop", NodeGrammar {
             comment = Nothing,
             is_folded = False,

@@ -9,6 +9,7 @@ import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Focus exposing (mode_, unicode_state_)
 import Models.Config exposing (init_config)
 import Models.Cursor exposing (init_pane_cursor)
+import Models.RepoModel exposing (NodePath)
 import Models.RepoUtils exposing (check_package)
 import Models.RepoStdlib exposing (init_package_with_stdlib)
 import Models.Grid exposing (init_grids)
@@ -71,6 +72,13 @@ focus_record_mode_grammar =
      (\update_func mode -> case mode of
         ModeGrammar record -> ModeGrammar <| update_func record
         other               -> other)))
+
+get_record_mode_grammar : NodePath -> Model -> Maybe RecordModeGrammar
+get_record_mode_grammar node_path model  =
+  case model.mode of
+    ModeGrammar record -> if node_path == record.node_path
+                            then Just record else Nothing
+    _                  -> Nothing
 
 focus_record_mode_root_term : Focus Model RecordModeRootTerm
 focus_record_mode_root_term =

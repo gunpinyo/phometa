@@ -69,7 +69,7 @@ type Mode
 -- ModeGrammar -----------------------------------------------------------------
 
 type alias RecordModeGrammar =
-  CursorTree
+  CursorTree -- but we don't need sub_cursor_path here
     { node_path              : NodePath
     , micro_mode             : MicroModeGrammar
     }
@@ -78,9 +78,9 @@ type MicroModeGrammar
   = MicroModeGrammarNavigate
   | MicroModeGrammarSetMetaVarRegex AutoComplete
   | MicroModeGrammarSetLiteralRegex AutoComplete
-  | MicroModeGrammarNavigateChoice
-  | MicroModeGrammarSetChoiceFormat AutoComplete
-  | MicroModeGrammarSetChoiceGrammar AutoComplete
+  | MicroModeGrammarAddChoice AutoComplete
+  | MicroModeGrammarSetChoiceFormat AutoComplete Int Int
+  | MicroModeGrammarSetChoiceGrammar AutoComplete Int Int
 
 -- ModeRootTerm ----------------------------------------------------------------
 

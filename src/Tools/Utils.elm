@@ -1,7 +1,6 @@
 module Tools.Utils where
 
 import Debug
-import Set exposing (Set)
 
 import Focus exposing (Focus)
 
@@ -13,6 +12,11 @@ list_get_elem index list =
   case list |> List.drop index |> List.head of
     Nothing   -> Debug.crash "from Tools.Utils.list_get_elem"
     Just elem -> elem
+
+list_safe_get_elem : Int -> List a -> Maybe a
+list_safe_get_elem index list =
+  if index < 0 then Nothing else
+    list |> List.drop index |> List.head
 
 list_update_elem : Int -> (a -> a) -> List a -> List a
 list_update_elem index update_func list =
@@ -55,6 +59,16 @@ list_remove n xs =
 
 list_rotate : Int -> List a -> List a
 list_rotate n xs = (List.drop n xs) ++ (List.take n xs)
+
+list_swap : Int -> List a -> List a
+list_swap n list =
+  let length = List.length list
+      fst_index = n % length
+      snd_index = (n + 1) % length
+      fst_item = list_get_elem fst_index list
+      snd_item = list_get_elem snd_index list
+   in list |> Focus.set (list_focus_elem fst_index) snd_item
+           |> Focus.set (list_focus_elem snd_index) fst_item
 
 parity_pair_extract : Int -> (a, a) -> a
 parity_pair_extract parity =

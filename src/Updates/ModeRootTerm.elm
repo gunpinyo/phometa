@@ -41,6 +41,17 @@ import Updates.KeymapUtils exposing (empty_keymap,
                                      keymap_auto_complete)
 import Updates.Cursor exposing (cmd_click_block)
 
+embed_css_grammar_choice : GrammarChoice -> CssInlineStr
+embed_css_grammar_choice grammar_choice =
+  let fmt_func format = if format == "" then Nothing else
+        Just (css_inline_str_embed "ind-format-block" format)
+      gmr_func grammar_name =
+        Just (css_inline_str_embed "grammar-block" grammar_name)
+   in grammar_choice
+        |> striped_list_eliminate fmt_func gmr_func
+        |> List.filterMap identity
+        |> String.concat
+
 embed_css_root_term : ModulePath -> Model -> RootTerm -> CssInlineStr
 embed_css_root_term module_path model root_term =
   embed_css_term module_path model root_term.term root_term.grammar
@@ -74,7 +85,7 @@ keymap_mode_root_term : RecordModeRootTerm -> Model -> Keymap
 keymap_mode_root_term record model =
   case record.micro_mode of
     MicroModeRootTermSetGrammar auto_complete ->
-      let choices = get_usable_grammar_names record.module_path model |>
+      let choices = get_usable_grammar_names record.module_path model False |>
             List.map (\grammar_name ->
               (css_inline_str_embed "grammar-block" grammar_name,
                cmd_set_grammar grammar_name))
@@ -87,11 +98,7 @@ keymap_mode_root_term record model =
       let (grammar_name, grammar) = get_grammar_at_sub_term model
           grammar_choice_choices = grammar.choices |>
             List.map (\grammar_choice ->
-              let description = String.concat <|
-                    striped_list_eliminate
-                      (css_inline_str_embed "ind-format-block")
-                      (css_inline_str_embed "grammar-block")
-                      grammar_choice
+              let description = embed_css_grammar_choice grammar_choice
                in (description, cmd_set_sub_term (init_term_ind grammar_choice)
                                   >> cmd_jump_to_next_todo 0
                                   >> cmd_quit_if_has_no_todo))

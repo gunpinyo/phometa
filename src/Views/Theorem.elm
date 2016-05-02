@@ -52,18 +52,14 @@ show_theorem cursor_info node_path theorem has_locked model =
                , micro_mode       = MicroModeTheoremNavigate
                }
       header = [ div []
-                   ([ show_keyword_block
-                       (if has_locked then "Lemma" else "Theorem ")
-                   , show_text_block "theorem-block" node_path.node_name ]
-                   ++ if has_locked then [] else
-                        [div [style [("float", "right")]]
-                             ((if not <| has_theorem_completed theorem then []
-                                else [show_lock_button <|
-                                       cmd_enter_mode_theorem record
-                                         >> cmd_lock_as_lemma])
-                              ++ [show_reset_button <|
-                                   cmd_enter_mode_theorem record
-                                     >> cmd_reset_top_theorem])])
+                 ([ show_keyword_block
+                      (if has_locked then "Lemma" else "Theorem ")
+                  , show_text_block "theorem-block" node_path.node_name ]
+                  ++ if has_locked then [] else
+                      [ show_lock_button <| cmd_enter_mode_theorem record
+                                              >> cmd_lock_as_lemma
+                      , show_reset_button <| cmd_enter_mode_theorem record
+                                              >> cmd_reset_top_theorem])
                , hr [] []]
       body = show_sub_theorem cursor_info
                record theorem theorem_focus has_locked model
@@ -149,7 +145,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                         show_auto_complete_filter "button-block" sub_cursor_info
                           "Proof By Rule" cmd_nothing focus_auto_complete model
                       else
-                        show_button on_click_cmd [text "Proof By Rule"]
+                        show_button "Proof By Rule" on_click_cmd
                 lemma_html =
                   let sub_cursor_info = cursor_info_go_to_sub_elem 2 cursor_info
                       on_click_cmd = cmd_select_lemma 2 record
@@ -157,7 +153,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                         show_auto_complete_filter "button-block" sub_cursor_info
                           "Proof By Lemma" cmd_nothing focus_auto_complete model
                       else
-                        show_button on_click_cmd [text "Proof By Lemma"]
+                        show_button "Proof By Lemma" on_click_cmd
                 rule_exists = not <| List.isEmpty <|
                   get_usable_rule_names theorem.goal.grammar module_path model
                 lemma_exists = not <| List.isEmpty <|

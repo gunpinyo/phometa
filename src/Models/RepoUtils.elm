@@ -11,7 +11,8 @@ import Focus exposing (Focus, (=>))
 import Tools.Utils exposing (list_get_elem, list_focus_elem,
                              list_remove_duplication)
 import Tools.SanityCheck exposing (CheckResult, valid)
-import Tools.StripedList exposing (striped_list_get_even_element,
+import Tools.StripedList exposing (striped_list_introduce,
+                                   striped_list_get_even_element,
                                    striped_list_get_odd_element,
                                    stripe_two_list_together)
 import Tools.OrderedDict exposing (ordered_dict_to_list)
@@ -141,19 +142,26 @@ init_grammar =
   , choices = []
   }
 
+init_grammar_choice : Int -> GrammarChoice
+init_grammar_choice number_of_sub_terms =
+  striped_list_introduce
+    (List.repeat (number_of_sub_terms + 1) "")
+    (List.repeat number_of_sub_terms root_term_undefined_grammar)
+
 -- get all of name of grammar in this module (including imported grammars)
 -- exclude any grammar that hasn't been locked
 -- TODO: support imported grammar
-get_usable_grammar_names : ModulePath -> Model -> List GrammarName
-get_usable_grammar_names module_path model =
+get_usable_grammar_names : ModulePath -> Model -> Bool -> List GrammarName
+get_usable_grammar_names module_path model are_unlocked_grammars_included =
   case get_module module_path model of
     Nothing -> []
     Just module' -> ordered_dict_to_list module'.nodes
                       |> List.filterMap (\ (node_name, node) ->
                            case node of
                              NodeGrammar grammar ->
-                               if grammar.has_locked then Just node_name
-                                                     else Nothing
+                               if grammar.has_locked ||
+                                   are_unlocked_grammars_included
+                                 then Just node_name else Nothing
                              _             -> Nothing)
 
 -- TODO: support imported grammars

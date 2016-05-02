@@ -71,8 +71,8 @@ show_rule cursor_info node_path rule model =
                                   else []
         else
           [ show_keyword_block "reduction "
-          , show_button (cmd_toggle_allow_reduction record)
-              [text <| if rule.allow_reduction then "Enabled" else "Disabled"]
+          , show_button (if rule.allow_reduction then "Enabled" else "Disabled")
+              (cmd_toggle_allow_reduction record)
           ]
    in show_indented_clickable_block cursor_info (cmd_enter_mode_rule record) <|
         [ header_html, hr [] []] ++

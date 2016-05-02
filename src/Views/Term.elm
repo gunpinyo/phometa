@@ -46,8 +46,7 @@ show_root_term raw_record root_term model =
           show_auto_complete_filter "button-block" cursor_info "Choose Grammar"
             cmd_nothing focus_auto_complete model
         else
-          show_button (cmd_enter_mode_root_term record)
-            [Html.text "Choose Grammar"]
+          show_button "Choose Grammar" (cmd_enter_mode_root_term record)
       else
         show_term cursor_info record root_term.grammar root_term.term model
 

@@ -53,15 +53,11 @@ keymap_mode_theorem record model =
       [(model.config.spacial_key_prefix ++ "r",
         "reset whole theorem", KbCmd cmd_reset_top_theorem)
       ,(model.config.spacial_key_prefix ++ "t",
-        "reset current proof", KbCmd cmd_reset_current_proof)])
+        "reset current proof", KbCmd cmd_reset_current_proof)
+      ,(model.config.spacial_key_prefix ++ "l",
+        "lock as lemma", KbCmd cmd_lock_as_lemma)])
     (case record.micro_mode of
-      MicroModeTheoremNavigate ->
-        build_keymap_cond
-          ((not <| has_mode_theorem_locked model) &&
-            (let top_theorem = Focus.get (focus_theorem record.node_path) model
-              in has_theorem_completed top_theorem))
-          [(model.config.spacial_key_prefix ++ "l",
-            "lock as lemma", KbCmd <| cmd_lock_as_lemma)]
+      MicroModeTheoremNavigate -> empty_keymap
       MicroModeTheoremSelectRule auto_complete ->
         let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
             choices = get_usable_rule_names cur_sub_theorem.goal.grammar
@@ -222,8 +218,18 @@ has_mode_theorem_locked model =
 cmd_lock_as_lemma : Command
 cmd_lock_as_lemma model =
   let record = Focus.get focus_record_mode_theorem model
+      top_theorem = Focus.get (focus_theorem record.node_path) model
       has_locked_focus = focus_theorem_has_locked record.node_path
-   in Focus.set has_locked_focus True model
+      theorem_inline = css_inline_str_embed "theorem-block"
+                         record.node_path.node_name
+      suc_msg = theorem_inline ++" has been converted to a lemma"
+      err_msg = theorem_inline ++
+                  " hasn't been finished, hence, cannot be converted to a lemma"
+   in if has_theorem_completed top_theorem then
+        model |> Focus.set has_locked_focus True
+              |> cmd_send_message (MessageSuccess suc_msg)
+      else
+        cmd_send_message (MessageException err_msg) model
 
 cmd_set_rule : RuleName -> Command
 cmd_set_rule rule_name model =

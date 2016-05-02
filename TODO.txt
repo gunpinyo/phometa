@@ -1,7 +1,5 @@
 - implement ModeRule
 
-- implement ModeGrammar
-
 - implement module importation
 
 - implement Traditional Theorem tree view

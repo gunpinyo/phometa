@@ -44,17 +44,17 @@ show_clickable_block class_name cursor_info command htmls =
         on_click address (ActionCommand command)]
       htmls
 
-show_button : Command -> List Html -> Html
-show_button command htmls =
+show_button : String -> Command -> Html
+show_button string command =
   button
     [ Html.Attributes.type' "button"
     , on_click address (ActionCommand command) ]
-    htmls
+    [ text string ]
 
 show_icon_button : String -> Command -> Html
 show_icon_button string command =
   div [ class "button-panel" ]
-      [ text "    "
+      [ text " "
       , button [ Html.Attributes.type' "button"
                , on_click address (ActionCommand command) ]
           [ i [ classList [ ("fa", True)
@@ -71,6 +71,8 @@ show_reset_button = show_icon_button "fa-undo"
 show_lock_button : Command -> Html
 show_lock_button = show_icon_button "fa-lock"
 
+show_swap_button : Command -> Html
+show_swap_button = show_icon_button "fa-arrows-v"
 
 show_auto_complete_filter : CssClass -> CursorInfo -> String -> Command ->
                               Focus Model AutoComplete -> View
