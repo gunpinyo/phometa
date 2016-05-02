@@ -22,6 +22,11 @@ import Models.Cursor exposing (IntCursorPath)
 import Models.RepoModel exposing (..)
 import Models.Model exposing (Model)
 
+-- Common ----------------------------------------------------------------------
+
+init_comment : Comment
+init_comment = (CommentModeHide, "")
+
 -- Package ---------------------------------------------------------------------
 
 init_package : Package
@@ -134,7 +139,7 @@ focus_node node_path =
 
 init_grammar : Grammar
 init_grammar =
-  { comment = Nothing
+  { comment = init_comment
   , is_folded = False
   , has_locked = False
   , metavar_regex = Nothing
@@ -315,7 +320,7 @@ debug_show_root_term show_grammar root_term =
 
 init_rule : Rule
 init_rule =
-  { comment = Nothing
+  { comment = init_comment
   , is_folded = False
   , has_locked = False
   , allow_reduction = False
@@ -467,7 +472,7 @@ apply_reduction rule_name target module_path model =
 
 init_theorem : Theorem
 init_theorem =
-  { comment = Nothing
+  { comment = init_comment
   , is_folded = False
   , goal = init_root_term
   , proof = ProofTodo

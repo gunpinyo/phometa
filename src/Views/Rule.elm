@@ -15,11 +15,14 @@ import Models.ModelUtils exposing (init_auto_complete)
 import Models.ViewState exposing (View)
 import Updates.CommonCmd exposing (cmd_nothing)
 import Updates.ModeRule exposing (cmd_enter_mode_rule,
+                                  cmd_enter_micro_mode_navigate,
+                                  cmd_reset_rule, cmd_lock_rule,
                                   cmd_toggle_allow_reduction)
 import Views.Utils exposing (show_indented_clickable_block,
                              show_clickable_block, show_text_block,
                              show_keyword_block, show_todo_keyword_block,
-                             show_button)
+                             show_button, show_lock_button, show_swap_button,
+                             show_reset_button)
 import Views.Term exposing (show_root_term)
 
 show_rule : CursorInfo -> NodePath -> Rule -> View
@@ -30,9 +33,14 @@ show_rule cursor_info node_path rule model =
                , micro_mode       = MicroModeRuleNavigate
                }
       rule_focus = focus_rule node_path
-      header_html = div []
+      header_htmls =
         [ show_keyword_block <| if rule.has_locked then "Rule" else "Draft Rule"
         , show_text_block "rule-block" node_path.node_name ]
+      header_buttons = if rule.has_locked then [] else
+        [ show_lock_button <| cmd_enter_micro_mode_navigate record
+                                >> cmd_lock_rule
+        , show_reset_button <| cmd_enter_micro_mode_navigate record
+                                 >> cmd_reset_rule ]
       premises_htmls = [Html.text "TODO"]
       conclusion_html = div []
         [ show_keyword_block "conclusion "
@@ -75,7 +83,8 @@ show_rule cursor_info node_path rule model =
               (cmd_toggle_allow_reduction record)
           ]
    in show_indented_clickable_block cursor_info (cmd_enter_mode_rule record) <|
-        [ header_html, hr [] []] ++
+        [ div [] (header_htmls ++ header_buttons)
+        , hr [] []] ++
         premises_htmls ++
         [ conclusion_html
         , parameters_html

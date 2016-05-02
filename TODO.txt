@@ -2,6 +2,8 @@
 
 - implement module importation
 
+- implement comment embeded by latex or html
+
 - implement Traditional Theorem tree view
 
 - implement undo feature i.e. command that can roll back `Model` to previous state

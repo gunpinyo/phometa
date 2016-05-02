@@ -24,12 +24,12 @@ stdlib_package : Package
 stdlib_package =
   { dict = Dict.fromList [
       ("Propositional Logic", PackageElemMod {
-        comment = Nothing,
+        comment = init_comment,
         nodes = ordered_dict_from_list [
           ("Grammar-1", NodeGrammar init_grammar),
           ("Grammar-2", NodeGrammar init_grammar),
           ("Prop", NodeGrammar {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             metavar_regex = safe_regex "[A-Z][a-zA-Z]*([1-9][0-9]*|'*)",
@@ -46,7 +46,7 @@ stdlib_package =
             ]
           }),
           ("Atom", NodeGrammar {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             metavar_regex = Nothing,
@@ -54,7 +54,7 @@ stdlib_package =
             choices = []
           }),
           ("Context", NodeGrammar {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             metavar_regex = safe_regex "[ΓΔ]([1-9][0-9]*|'*)",
@@ -65,7 +65,7 @@ stdlib_package =
             ]
           }),
           ("Judgement", NodeGrammar {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             metavar_regex = Nothing,
@@ -76,7 +76,7 @@ stdlib_package =
           }),
           ("rule-1", NodeRule init_rule),
           ("hypothesis-base", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -92,7 +92,7 @@ stdlib_package =
             premises = []
           }),
           ("hypothesis", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -130,7 +130,7 @@ stdlib_package =
               ] ]
           }),
           ("top-intro", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -143,7 +143,7 @@ stdlib_package =
             premises = []
           }),
           ("bottom-elim", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -161,7 +161,7 @@ stdlib_package =
                 }]
           }),
           ("and-intro", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -187,7 +187,7 @@ stdlib_package =
                 }]
           }),
           ("and-elim-left", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -208,7 +208,7 @@ stdlib_package =
                 }]
           }),
           ("and-elim-right", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -229,7 +229,7 @@ stdlib_package =
                 }]
           }),
           ("or-intro-left", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -251,7 +251,7 @@ stdlib_package =
                 }]
           }),
           ("or-intro-right", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -273,7 +273,7 @@ stdlib_package =
                 }]
           }),
           ("or-elim", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -304,7 +304,7 @@ stdlib_package =
             ]
           }),
           ("not-intro", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -324,7 +324,7 @@ stdlib_package =
             ]
           }),
           ("not-elim", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -348,7 +348,7 @@ stdlib_package =
             ]
           }),
           ("double-negation", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -368,7 +368,7 @@ stdlib_package =
             ]
           }),
           ("proof-by-contradiction", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -389,7 +389,7 @@ stdlib_package =
             ]
           }),
           ("imply-intro", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -408,7 +408,7 @@ stdlib_package =
             ]
           }),
           ("imply-elim", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -432,7 +432,7 @@ stdlib_package =
             ]
           }),
           ("iff-intro", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -456,7 +456,7 @@ stdlib_package =
             ]
           }),
           ("iff-elim-forward", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -480,7 +480,7 @@ stdlib_package =
             ]
           }),
           ("iff-elim-backward", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -504,7 +504,7 @@ stdlib_package =
             ]
           }),
           ("prop-intro", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = False,
@@ -522,7 +522,7 @@ stdlib_package =
             ]
           }),
           ("context-commutative", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = True,
@@ -543,7 +543,7 @@ stdlib_package =
             ]
           }),
           ("context-idempotent-1", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = True,
@@ -563,7 +563,7 @@ stdlib_package =
             ]
           }),
           ("context-idempotent-2", NodeRule {
-            comment = Nothing,
+            comment = init_comment,
             is_folded = False,
             has_locked = True,
             allow_reduction = True,
@@ -590,10 +590,10 @@ stdlib_package =
         is_folded = False
       }) -- ,
       --( "Simply type lambda calculus", PackageElemMod {
-      --   comment = Nothing,
+      --   comment = init_comment,
       --   nodes = ordered_dict_from_list [
       --     ("Term", NodeGrammar {
-      --       comment = Nothing,
+      --       comment = init_comment,
       --       is_folded = False,
       --       var_regex = Just "[M-Z]([1-9][0-9]*|'*)",
       --       choices = [
@@ -603,13 +603,13 @@ stdlib_package =
       --       ]
       --     }),
       --     ("Variable", NodeGrammar {
-      --       comment = Nothing,
+      --       comment = init_comment,
       --       is_folded = False,
       --       var_regex = Just "[a-z]([1-9][0-9]*|'*)",
       --       choices = []
       --     }),
       --     ("Type", NodeGrammar {
-      --       comment = Nothing,
+      --       comment = init_comment,
       --       is_folded = False,
       --       var_regex = Just "[A-L]([1-9][0-9]*|'*)",
       --       choices = [
@@ -617,7 +617,7 @@ stdlib_package =
       --       ]
       --     }),
       --     ("Judgement", NodeGrammar {
-      --       comment = Nothing,
+      --       comment = init_comment,
       --       is_folded = False,
       --       var_regex = Nothing,
       --       choices = [
@@ -625,7 +625,7 @@ stdlib_package =
       --       ]
       --     }),
       --     ("Context", NodeGrammar {
-      --       comment = Nothing,
+      --       comment = init_comment,
       --       is_folded = False,
       --       var_regex = Just "[ΓΔ]([1-9][0-9]*|'*)",
       --       choices = [
@@ -634,7 +634,7 @@ stdlib_package =
       --       ]
       --     }),
       --     ("Hypothetical Judgement", NodeGrammar {
-      --       comment = Nothing,
+      --       comment = init_comment,
       --       is_folded = False,
       --       var_regex = Nothing,
       --       choices = [

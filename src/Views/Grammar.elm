@@ -29,14 +29,15 @@ import Updates.ModeGrammar exposing (cmd_enter_mode_grammar,
                                      cmd_disable_metavar,
                                      cmd_enter_micro_mode_literal,
                                      cmd_disable_literal,
-                                     cmd_lock_grammar,
+                                     cmd_reset_grammar, cmd_lock_grammar,
                                      cmd_swap_choice, cmd_delete_choice,
                                      focus_auto_complete)
 import Views.Utils exposing (show_indented_clickable_block,
                              show_clickable_block, show_text_block,
                              show_keyword_block, show_todo_keyword_block,
                              show_close_button, show_auto_complete_filter,
-                             show_button, show_lock_button, show_swap_button)
+                             show_button, show_lock_button, show_swap_button,
+                             show_reset_button)
 
 show_grammar : CursorInfo -> NodePath -> Grammar -> View
 show_grammar cursor_info node_path grammar model =
@@ -49,9 +50,11 @@ show_grammar cursor_info node_path grammar model =
         [ show_keyword_block <|
             if grammar.has_locked then "Grammar" else "Draft Grammar"
         , show_text_block "grammar-block" node_path.node_name ]
-      lock_button =  if grammar.has_locked then [] else
-             [show_lock_button <| cmd_enter_micro_mode_navigate record
-                                    >> cmd_lock_grammar]
+      header_buttons = if grammar.has_locked then [] else
+        [ show_lock_button <| cmd_enter_micro_mode_navigate record
+                                >> cmd_lock_grammar
+        , show_reset_button <| cmd_enter_micro_mode_navigate record
+                                 >> cmd_reset_grammar ]
       metavar_regex_header =  [ show_keyword_block "metavar_regex", text " "]
       metavar_unlocked_inactive = metavar_regex_header ++
         case grammar.metavar_regex of
@@ -187,7 +190,7 @@ show_grammar cursor_info node_path grammar model =
                                              >> cmd_swap_choice choice_index])
             ) grammar.choices
    in show_indented_clickable_block cursor_info (cmd_enter_mode_grammar record)
-        [ div [] (header_htmls ++ choices_header_htmls ++ lock_button)
+        [ div [] (header_htmls ++ choices_header_htmls ++ header_buttons)
         , hr [] []
         , metavar_regex_html
         , literal_regex_html

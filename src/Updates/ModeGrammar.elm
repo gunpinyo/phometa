@@ -22,7 +22,8 @@ import Models.Cursor exposing (IntCursorPath, CursorInfo,
                                cursor_info_go_to_sub_elem,
                                cursor_tree_go_to_sub_elem)
 import Models.RepoModel exposing (Grammar, Term(..), RuleName)
-import Models.RepoUtils exposing (focus_grammar, init_grammar_choice,
+import Models.RepoUtils exposing (focus_grammar, init_grammar,
+                                  init_grammar_choice,
                                   has_root_term_completed,
                                   get_usable_grammar_names,
                                   get_usable_rule_names, focus_rule, apply_rule,
@@ -85,8 +86,8 @@ cmd_enter_mode_grammar record =
 cmd_enter_micro_mode_navigate : RecordModeGrammar -> Command
 cmd_enter_micro_mode_navigate record =
   let record' = record
-        |> Focus.set sub_cursor_path_ []
         |> Focus.set micro_mode_ MicroModeGrammarNavigate
+        |> Focus.set sub_cursor_path_ []
    in cmd_enter_mode_grammar record'
 
 cmd_enter_micro_mode_metavar : RecordModeGrammar -> Command
@@ -103,14 +104,9 @@ cmd_enter_micro_mode_metavar record model =
    in cmd_enter_mode_grammar record' model
 
 cmd_disable_metavar : RecordModeGrammar -> Command
-cmd_disable_metavar record model =
-  let grammar_focus = focus_grammar record.node_path
-      record' = record
-        |> Focus.set micro_mode_ MicroModeGrammarNavigate
-        |> Focus.set sub_cursor_path_ [0]
-   in model
-        |> cmd_enter_mode_grammar record'
-        |> Focus.set (grammar_focus => metavar_regex_) Nothing
+cmd_disable_metavar record =
+  Focus.set (focus_grammar record.node_path => metavar_regex_) Nothing
+    >> cmd_enter_micro_mode_navigate record
 
 cmd_enter_micro_mode_literal : RecordModeGrammar -> Command
 cmd_enter_micro_mode_literal record model =
@@ -126,14 +122,9 @@ cmd_enter_micro_mode_literal record model =
    in cmd_enter_mode_grammar record' model
 
 cmd_disable_literal : RecordModeGrammar -> Command
-cmd_disable_literal record model =
-  let grammar_focus = focus_grammar record.node_path
-      record' = record
-        |> Focus.set micro_mode_ MicroModeGrammarNavigate
-        |> Focus.set sub_cursor_path_ [1]
-   in model
-        |> cmd_enter_mode_grammar record'
-        |> Focus.set (grammar_focus => literal_regex_) Nothing
+cmd_disable_literal record =
+  Focus.set (focus_grammar record.node_path => literal_regex_) Nothing
+    >> cmd_enter_micro_mode_navigate record
 
 cmd_set_maybe_regex : Focus Grammar (Maybe Regex) ->
                           RecordModeGrammar -> String -> Command
@@ -142,6 +133,7 @@ cmd_set_maybe_regex focus record regex_pattern =
     Nothing -> (cmd_send_message <| MessageException
                   <| css_inline_str_embed "regex-block" regex_pattern
                   ++ " is not a valid regex pattern")
+                 >> cmd_enter_micro_mode_navigate record
     Just regex -> Focus.set
                     (focus_grammar record.node_path => focus) (Just regex)
                    >> cmd_enter_micro_mode_navigate record
@@ -225,6 +217,13 @@ cmd_enter_micro_mode_grammar choice_index sub_index record model =
         |> Focus.set sub_cursor_path_ [3, choice_index, 2 * sub_index + 1]
    in cmd_enter_mode_grammar record' model
 
+cmd_reset_grammar : Command
+cmd_reset_grammar model =
+  let record = Focus.get focus_record_mode_grammar model
+   in model
+        |> Focus.set (focus_grammar record.node_path) init_grammar
+        |> cmd_enter_micro_mode_navigate record
+
 cmd_lock_grammar : Command
 cmd_lock_grammar model =
   let record = Focus.get focus_record_mode_grammar model
@@ -266,24 +265,30 @@ cmd_lock_grammar model =
                 " been successfully locked "
            in List.foldl fold_func model required_grammars
                 |> cmd_send_message (MessageSuccess suc_msg)
+                |> cmd_enter_micro_mode_navigate record
         Err invalid_grammar ->
           let err_msg = "some sub-grammars of " ++
                 (css_inline_str_embed "grammar-block" invalid_grammar) ++
                 " hasn't been initialised, hence, cannot lock " ++
                 (css_inline_str_embed "grammar-block" cur_grammar_name)
            in cmd_send_message (MessageException err_msg) model
+                |> cmd_enter_micro_mode_navigate record
 
 cmd_swap_choice : Int -> Command
 cmd_swap_choice choice_index model =
   let record = Focus.get focus_record_mode_grammar model
-   in Focus.update (focus_grammar record.node_path => choices_)
-        (list_swap choice_index) model
+   in model
+        |> Focus.update (focus_grammar record.node_path => choices_)
+             (list_swap choice_index)
+        |> cmd_enter_micro_mode_navigate record
 
 cmd_delete_choice : Int -> Command
 cmd_delete_choice choice_index model =
   let record = Focus.get focus_record_mode_grammar model
-   in Focus.update (focus_grammar record.node_path => choices_)
-        (list_remove choice_index) model
+   in model
+        |> Focus.update (focus_grammar record.node_path => choices_)
+             (list_remove choice_index)
+        |> cmd_enter_micro_mode_navigate record
 
 focus_auto_complete : Focus Model AutoComplete
 focus_auto_complete =

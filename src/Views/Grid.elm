@@ -9,9 +9,16 @@ import Models.Cursor exposing (PaneCursor(..), init_cursor_info)
 import Models.Grid exposing (Grids(..), Grid(..))
 import Models.RepoModel exposing (Node(..))
 import Models.RepoUtils exposing (get_node)
+import Models.Model exposing (MicroModeGrammar(..),
+                              MicroModeRule(..),
+                              MicroModeTheorem(..))
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.Cursor exposing (cmd_change_pane_cursor)
+import Updates.CommonCmd exposing (cmd_nothing)
+import Updates.ModeGrammar exposing (cmd_enter_mode_grammar)
+import Updates.ModeRule exposing (cmd_enter_mode_rule)
+import Updates.ModeTheorem exposing (cmd_enter_mode_theorem)
 import Views.Home exposing (show_home)
 import Views.Grammar exposing (show_grammar)
 import Views.Rule exposing (show_rule)
@@ -54,29 +61,44 @@ show_grid_pane pane_cursor grid model =
   let has_cursor = model.pane_cursor == pane_cursor
       cursor_func int_cursor_path = init_cursor_info has_cursor
                                       int_cursor_path pane_cursor
-      content = case grid of
+      (content, on_click_cmd) = case grid of
         GridHome int_cursor_path ->
-          show_home (cursor_func int_cursor_path) model
+          (show_home (cursor_func int_cursor_path) model, cmd_nothing)
         GridModule module_path int_cursor_path ->
           -- TODO: finish this
-          div [] [debug_to_html (module_path, int_cursor_path)]
+          (div [] [debug_to_html (module_path, int_cursor_path)], cmd_nothing)
         GridNode node_path int_cursor_path ->
-          let node_content =
+          let cursor_info = cursor_func int_cursor_path
+              (node_content, on_click_cmd') =
                 case get_node node_path model of
-                  Nothing -> show_home (cursor_func int_cursor_path) model
+                  Nothing -> ( show_home (cursor_func int_cursor_path) model
+                             , cmd_nothing )
                   Just (NodeGrammar grammar) ->
-                    show_grammar (cursor_func int_cursor_path)
-                      node_path grammar model
+                    (show_grammar cursor_info node_path grammar model
+                    , cmd_enter_mode_grammar
+                        { node_path        = node_path
+                        , top_cursor_info  = cursor_info
+                        , sub_cursor_path  = []
+                        , micro_mode       = MicroModeGrammarNavigate })
                   Just (NodeRule rule) ->
-                    show_rule (cursor_func int_cursor_path)
-                      node_path rule model
+                    (show_rule cursor_info node_path rule model
+                    , cmd_enter_mode_rule
+                        { node_path        = node_path
+                        , top_cursor_info  = cursor_info
+                        , sub_cursor_path  = []
+                        , micro_mode       = MicroModeRuleNavigate })
                   Just (NodeTheorem theorem has_locked) ->
-                    show_theorem (cursor_func int_cursor_path)
-                      node_path theorem has_locked model
+                    (show_theorem cursor_info node_path theorem has_locked model
+                    , cmd_enter_mode_theorem
+                        { node_path        = node_path
+                        , top_cursor_info  = cursor_info
+                        , sub_cursor_path  = []
+                        , micro_mode       = MicroModeTheoremNavigate })
            in -- if it is not `GridHome` use div inside flex_div to detach flex
-              -- since its elements doesn't depend on monitor size anymore
-              div [style [("width", "100%")]] [node_content]
+              -- since its elements doesn't depend on monitor height anymore
+              (div [style [("width", "100%")]] [node_content], on_click_cmd')
       attrs  = [ classList [("pane", True), ("pane-on-cursor", has_cursor)]
                , on_click address
-                   (ActionCommand <| cmd_change_pane_cursor pane_cursor) ]
+                   (ActionCommand <| cmd_change_pane_cursor pane_cursor
+                                       >> on_click_cmd) ]
    in flex_div [] attrs [content]

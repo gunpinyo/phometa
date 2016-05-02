@@ -13,7 +13,12 @@ type alias ContainerName = String
 
 type alias ContainerPath = List ContainerName
 
-type alias Comment = Maybe String
+type alias Comment = (CommentMode, String)
+
+type CommentMode
+  = CommentModeHide
+  | CommentModeEdit
+  | CommentModeView
 
 type alias Format = String
 
@@ -68,7 +73,7 @@ type alias NodePath =
 
 type alias NodeBase a =
   { a |
-    comment   : Maybe Comment
+    comment   : Comment
   , is_folded : Bool
   }
 
