@@ -9,6 +9,7 @@ import Updates.KeymapUtils exposing (empty_keymap, merge_keymaps,
 import Updates.ModeMenu exposing (keymap_mode_menu, cmd_enter_mode_menu)
 import Updates.ModeGrammar exposing (keymap_mode_grammar)
 import Updates.ModeRootTerm exposing (keymap_mode_root_term)
+import Updates.ModeRule exposing (keymap_mode_rule)
 import Updates.ModeTheorem exposing (keymap_mode_theorem)
 
 cmd_assign_root_keymap : Command
@@ -31,7 +32,8 @@ keymap_mode model =
   case model.mode of
     ModeNothing -> empty_keymap
     ModeMenu -> keymap_mode_menu model
+    ModePackagePane -> empty_keymap
     ModeGrammar record -> keymap_mode_grammar record model
     ModeRootTerm record -> keymap_mode_root_term record model
+    ModeRule record -> keymap_mode_rule record model
     ModeTheorem record -> keymap_mode_theorem record model
-    _           -> empty_keymap -- TODO: finish this

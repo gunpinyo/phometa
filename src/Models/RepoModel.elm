@@ -123,15 +123,7 @@ type alias Rule =
     { has_locked  : Bool
     , allow_reduction : Bool  -- check `Models.RepoUtils.apply_reduction`
                               --   for usage of this field
-    , parameters : Parameters -- TODO: when implement rule input method user
-                              --       cannot put parameters directly in fact,
-                              --       parameters will be generated when lock
-                              --       the rule (locking is the way to state
-                              --       that the rule is completed, it can now be
-                              --       used inside a theorem and cannot be
-                              --       modified afterword) parameters are all
-                              --       variables appeared in premises but not
-                              --       appear in conclusion
+    , parameters : Parameters
     , conclusion : RootTerm
     , premises : List Premise
     }

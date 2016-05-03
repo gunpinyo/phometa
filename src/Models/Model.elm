@@ -93,6 +93,7 @@ type alias RecordModeRootTerm =
     , is_reducible           : Bool
     , can_create_fresh_vars  : Bool
     , get_existing_variables : Model -> Dict VarName GrammarName
+    , on_modify_callback     : Command -- what to do after something change
     , on_quit_callback       : Command -- what to do after exit root_term mode
     }
 
@@ -116,7 +117,7 @@ type alias RecordModeRule =
 
 type MicroModeRule
   = MicroModeRuleNavigate
-  -- TODO: add more micro mode
+  | MicroModeRuleSelectCascadeRule AutoComplete Int
 
 -- ModeTheorem -----------------------------------------------------------------
 

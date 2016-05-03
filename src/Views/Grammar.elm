@@ -37,7 +37,8 @@ import Views.Utils exposing (show_indented_clickable_block,
                              show_clickable_block, show_text_block,
                              show_keyword_block, show_todo_keyword_block,
                              show_close_button, show_auto_complete_filter,
-                             show_button, show_lock_button, show_swap_button,
+                             show_html_button, show_button,
+                             show_lock_button, show_swap_button,
                              show_reset_button)
 
 show_grammar : CursorInfo -> NodePath -> Grammar -> View
@@ -62,7 +63,7 @@ show_grammar cursor_info node_path grammar model =
           Nothing -> [show_button "Disabled"
                         (cmd_enter_micro_mode_metavar record)]
           Just regex ->
-            [ show_clickable_block
+            [ show_html_button
                 "regex-block"
                 (cursor_info_go_to_sub_elem 0 cursor_info)
                 (cmd_enter_micro_mode_metavar record)
@@ -93,7 +94,7 @@ show_grammar cursor_info node_path grammar model =
           Nothing -> [show_button "Disabled"
                         (cmd_enter_micro_mode_literal record)]
           Just regex ->
-            [ show_clickable_block
+            [ show_html_button
                 "regex-block"
                 (cursor_info_go_to_sub_elem 0 cursor_info)
                 (cmd_enter_micro_mode_literal record)
@@ -163,7 +164,7 @@ show_grammar cursor_info node_path grammar model =
                         else if fmt_string == "" then
                           show_button "Format" (cmd_enter_micro_mode_format
                             choice_index fmt_index record)
-                        else show_clickable_block "ind-format-block"
+                        else show_html_button "ind-format-block"
                           (cursor_info_func (2 * fmt_index))
                           (cmd_enter_micro_mode_format choice_index
                              fmt_index record) [text fmt_string])
@@ -177,7 +178,7 @@ show_grammar cursor_info node_path grammar model =
                         else if gmr_string == root_term_undefined_grammar then
                           show_button "Grammar" (cmd_enter_micro_mode_grammar
                             choice_index gmr_index record)
-                        else show_clickable_block "grammar-block"
+                        else show_html_button "grammar-block"
                             (cursor_info_func (2 * gmr_index + 1))
                             (cmd_enter_micro_mode_grammar choice_index
                                gmr_index record) [text gmr_string])

@@ -38,11 +38,31 @@ show_todo_keyword_block = show_text_block "todo-keyword-block"
 show_clickable_block : CssClass -> CursorInfo -> Command -> List Html -> Html
 show_clickable_block class_name cursor_info command htmls =
   div [ classList [
-        (class_name, True),
-        ("block-clickable", True),
-        ("block-on-cursor", cursor_info_is_here cursor_info)],
-        on_click address (ActionCommand command)]
+          (class_name, True),
+          ("block-clickable", True),
+          ("block-on-cursor", cursor_info_is_here cursor_info)],
+      on_click address (ActionCommand command)]
       htmls
+
+show_html_button : CssClass -> CursorInfo -> Command -> List Html -> Html
+show_html_button class_name cursor_info command htmls =
+  div [class "modifiable-block"]
+    [show_clickable_block class_name cursor_info command htmls]
+  -- button [ classList [
+  --             (class_name, True),
+  --             ("block-clickable", True),
+  --             ("block-on-cursor", cursor_info_is_here cursor_info)],
+  --        Html.Attributes.type' "button",
+  --        on_click address (ActionCommand command)]
+  --        htmls
+  -- button
+  --   [ Html.Attributes.type' "button"
+  --   , on_click address (ActionCommand command) ]
+  --   [ div [ classList [
+  --             (class_name, True),
+  --             ("block-clickable", True),
+  --             ("block-on-cursor", cursor_info_is_here cursor_info)]]
+  --       htmls]
 
 show_button : String -> Command -> Html
 show_button string command =

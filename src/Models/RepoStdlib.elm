@@ -75,6 +75,7 @@ stdlib_package =
             ]
           }),
           ("rule-1", NodeRule init_rule),
+          ("rule-2", NodeRule init_rule),
           ("hypothesis-base", NodeRule {
             comment = init_comment,
             is_folded = False,
@@ -125,7 +126,7 @@ stdlib_package =
                         [ TermVar "Γ", TermVar "A" ]
                     }
                 , arguments = []
-                , allow_unification = False
+                , allow_unification = True
                 }
               ] ]
           }),

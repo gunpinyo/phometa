@@ -231,6 +231,17 @@ init_root_term =
   , term = TermTodo
   }
 
+init_root_term_alt : ModulePath -> Model -> GrammarName -> RootTerm
+init_root_term_alt module_path model grammar_name =
+  { grammar = grammar_name
+  , term = if grammar_name == root_term_undefined_grammar then TermTodo else
+           auto_manipulate_term
+             (Focus.get (focus_grammar { module_path = module_path
+                                       , node_name = grammar_name
+                                       }) model)
+             TermTodo module_path model
+  }
+
 focus_sub_term : IntCursorPath -> Focus RootTerm Term
 focus_sub_term from_root_cursor_path =
   let err_msg = "from Models.RepoUtils.focus_sub_term"
@@ -302,6 +313,26 @@ get_sub_root_terms grammar_choice sub_terms =
        })
     (striped_list_get_odd_element grammar_choice)
     sub_terms
+
+-- if found something that can be done automatically for term, put it here
+auto_manipulate_term : Grammar -> Term -> ModulePath -> Model -> Term
+auto_manipulate_term grammar term module_path model =
+  case term of
+    TermTodo ->
+      if not (grammar_allow_variable grammar) &&
+         List.length grammar.choices == 1
+        then (init_term_ind <| list_get_elem 0 grammar.choices) else term
+    TermVar _ -> term
+    TermInd grammar_choice sub_terms ->
+      List.map2 (,) (striped_list_get_odd_element grammar_choice) sub_terms
+        |> List.map (\ (sub_grammar_name, sub_term) ->
+             case get_grammar { module_path = module_path
+                              , node_name = sub_grammar_name
+                              } model of
+               Nothing          -> sub_term
+               Just sub_grammar ->
+                 auto_manipulate_term sub_grammar sub_term module_path model)
+        |> TermInd grammar_choice
 
 debug_show_root_term : Bool -> RootTerm -> String
 debug_show_root_term show_grammar root_term =

@@ -85,6 +85,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
         , is_reducible = theorem.proof == ProofTodo
         , can_create_fresh_vars = is_setting_main_goal
         , get_existing_variables = get_theorem_variables record.node_path
+        , on_modify_callback = cmd_nothing
         , on_quit_callback = cmd_enter_mode_theorem record
                                >> cmd_theorem_auto_focus_next_todo
         }
@@ -118,6 +119,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                   , can_create_fresh_vars = False
                   , get_existing_variables = get_theorem_variables
                                                record.node_path
+                  , on_modify_callback = cmd_nothing
                   , on_quit_callback = cmd_enter_mode_theorem record
                                          >> cmd_execute_current_rule
                   } argument model

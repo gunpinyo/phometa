@@ -40,7 +40,7 @@ import Updates.Cursor exposing (cmd_click_block)
 keymap_mode_grammar : RecordModeGrammar -> Model -> Keymap
 keymap_mode_grammar record model =
   let grammar = Focus.get (focus_grammar record.node_path) model
-      micro_mode_keymap = case record.micro_mode of
+   in case record.micro_mode of
         MicroModeGrammarNavigate -> empty_keymap
         MicroModeGrammarSetMetaVarRegex auto_complete ->
           keymap_auto_complete [] True
@@ -68,7 +68,6 @@ keymap_mode_grammar record model =
                    record.node_path.module_path model True)
            in keymap_auto_complete choices True Nothing
                 focus_auto_complete model
-   in micro_mode_keymap
 
 cmd_enter_mode_grammar : RecordModeGrammar -> Command
 cmd_enter_mode_grammar record =

@@ -50,8 +50,12 @@ show_root_term raw_record root_term model =
             cmd_nothing focus_auto_complete model
         else
           show_button "Choose Grammar" (cmd_enter_mode_root_term record)
-      else div [class "root-term-block"]
-        [show_term cursor_info record root_term.grammar root_term.term model]
+      else
+        let body = [show_term cursor_info record
+                     root_term.grammar root_term.term model]
+            css_class = if record.editability == EditabilityRootTermReadOnly
+                        then "root-term-block" else "modifiable-root-term-block"
+         in div [class css_class] body
 
 
 show_term : CursorInfo -> RecordModeRootTerm -> GrammarName -> Term -> View

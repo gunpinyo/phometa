@@ -23,6 +23,7 @@ import Models.RepoUtils exposing (init_root_term, root_term_undefined_grammar,
                                   focus_grammar, grammar_allow_variable,
                                   focus_sub_term, get_term_todo_cursor_paths,
                                   init_term_ind, get_sub_root_terms,
+                                  auto_manipulate_term,
                                   get_usable_rule_names, apply_reduction)
 import Models.Cursor exposing (IntCursorPath, get_cursor_info_from_cursor_tree,
                                cursor_tree_go_to_sub_elem)
@@ -43,13 +44,16 @@ import Updates.Cursor exposing (cmd_click_block)
 
 embed_css_grammar_choice : GrammarChoice -> CssInlineStr
 embed_css_grammar_choice grammar_choice =
-  let fmt_func format = if format == "" then Nothing else
-        Just (css_inline_str_embed "ind-format-block" format)
+  let fmt_func format = if format == "" then " " else
+        css_inline_str_embed "ind-format-block" format
       gmr_func grammar_name =
-        Just (css_inline_str_embed "grammar-block" grammar_name)
+        css_inline_str_embed "grammar-block" grammar_name
+      gmr_length = List.length <| striped_list_get_odd_element grammar_choice
    in grammar_choice
         |> striped_list_eliminate fmt_func gmr_func
-        |> List.filterMap identity
+        |> List.indexedMap (\index css_inline ->
+             if (index == 0 || index == 2 * gmr_length) && css_inline == " "
+               then "" else css_inline)
         |> String.concat
         |> css_inline_str_embed "root-term-block"
 
@@ -139,7 +143,8 @@ keymap_mode_root_term record model =
                  (\root_term -> (root_term, rule_name)) maybe_root_term)
             |> List.map (\ (root_term, rule_name) ->
                  ( css_inline_str_embed "rule-block" rule_name
-                 , Focus.set sub_term_focus root_term.term ))
+                 , Focus.set sub_term_focus root_term.term
+                     >> record.on_modify_callback))
           children_choices = case cur_root_sub_term.term of
             TermTodo -> []   -- impossible for Todo to be navigate mode
             TermVar _ -> []  -- doesn't have any children
@@ -258,6 +263,7 @@ cmd_set_sub_term term model =
              (focus_sub_term record.sub_cursor_path))
              (auto_manipulate_term (snd <| get_grammar_at_sub_term model)
                 term record.module_path model)
+        |> record.on_modify_callback
         |> cmd_jump_to_next_todo 0
 
 cmd_jump_to_parent_term : Command
@@ -311,6 +317,7 @@ cmd_reset_root_term model =
            in model
                 |> cmd_enter_mode_root_term record'
                 |> cmd_set_sub_term TermTodo
+                |> record.on_modify_callback
         EditabilityRootTermUpToGrammar ->
           let model' = Focus.set record.root_term_focus init_root_term model
               record' = record
@@ -318,6 +325,7 @@ cmd_reset_root_term model =
                 |> Focus.set micro_mode_
                      (MicroModeRootTermSetGrammar init_auto_complete)
            in cmd_enter_mode_root_term record' model'
+                |> record.on_modify_callback
 
 cmd_quit_if_has_no_todo : Command
 cmd_quit_if_has_no_todo model =
@@ -352,26 +360,6 @@ get_grammar_at_sub_term' module_path model grammar_name term cursor_path =
                 (list_get_elem cursor_index sub_terms)
                 cursor_path'
             _                                -> Debug.crash err_msg
-
--- if found something that can be done automatically for term, put it here
-auto_manipulate_term : Grammar -> Term -> ModulePath -> Model -> Term
-auto_manipulate_term grammar term module_path model =
-  case term of
-    TermTodo ->
-      if not (grammar_allow_variable grammar) &&
-         List.length grammar.choices == 1
-        then (init_term_ind <| list_get_elem 0 grammar.choices) else term
-    TermVar _ -> term
-    TermInd grammar_choice sub_terms ->
-      List.map2 (,) (striped_list_get_odd_element grammar_choice) sub_terms
-        |> List.map (\ (sub_grammar_name, sub_term) ->
-             case get_grammar { module_path = module_path
-                              , node_name = sub_grammar_name
-                              } model of
-               Nothing          -> sub_term
-               Just sub_grammar ->
-                 auto_manipulate_term sub_grammar sub_term module_path model)
-        |> TermInd grammar_choice
 
 focus_auto_complete : Focus Model AutoComplete
 focus_auto_complete =

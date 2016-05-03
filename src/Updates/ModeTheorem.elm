@@ -116,6 +116,7 @@ auto_focus_next_todo cursor_info record remaining_path theorem_focus model =
                   , can_create_fresh_vars = True
                   , get_existing_variables = get_theorem_variables
                                                record.node_path
+                  , on_modify_callback = cmd_nothing
                   , on_quit_callback = cmd_enter_mode_theorem record
                                          >> cmd_theorem_auto_focus_next_todo
                   }
@@ -167,6 +168,7 @@ auto_focus_next_todo cursor_info record remaining_path theorem_focus model =
                    , can_create_fresh_vars = False
                    , get_existing_variables = get_theorem_variables
                                                 record.node_path
+                   , on_modify_callback = cmd_nothing
                    , on_quit_callback = cmd_enter_mode_theorem record
                                           >> cmd_execute_current_rule
                    })
