@@ -1,16 +1,15 @@
 module Models.Model where
 
 import Dict exposing (Dict)
-import Task exposing (Task)
 
 import Focus exposing (Focus)
 
 import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
-import Tools.SanityCheck exposing (CheckResult, sequentially_check)
 import Models.Config exposing (Config)
 import Models.Cursor exposing (IntCursorPath, PaneCursor,
                                CursorInfo, CursorTree)
-import Models.RepoModel exposing (VarName, Package, ModulePath, NodePath,
+import Models.RepoModel exposing (VarName, Package, PackagePath,
+                                  ModulePath, NodePath,
                                   GrammarName, Grammar, RootTerm)
 import Models.Grid exposing (Grids)
 import Models.Message exposing (MessageList)
@@ -59,12 +58,28 @@ type alias AutoComplete =
 type Mode
   = ModeNothing
   | ModeMenu
-  | ModePackagePane
+  | ModeRepo RecordModeRepo
   | ModeGrammar RecordModeGrammar
   | ModeRootTerm RecordModeRootTerm
   | ModeRule RecordModeRule
   | ModeTheorem RecordModeTheorem
-  -- TODO: add more mode
+
+-- ModeRepo --------------------------------------------------------------
+
+type RecordModeRepo =
+  CursorTree
+    { micro_mode             : MicroModeRepo
+    }
+
+type MicroModeRepo
+  = MicroModeRepoNavigate
+  | MicroModeRepoMenuPackage PackagePath
+  | MicroModeRepoAddPackage AutoComplete PackagePath
+  | MicroModeRepoAddModule AutoComplete PackagePath
+  | MicroModeRepoMenuModule ModulePath
+  | MicroModeRepoAddGrammar AutoComplete ModulePath
+  | MicroModeRepoAddRule AutoComplete ModulePath
+  | MicroModeRepoAddTheorem AutoComplete ModulePath
 
 -- ModeGrammar -----------------------------------------------------------------
 

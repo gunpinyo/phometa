@@ -14,7 +14,7 @@ import Models.RepoModel exposing (PackageName, PackagePath, Package,
                                   ModulePath, Node(..))
 import Models.ViewState exposing (View)
 import Models.Action exposing (Action(..), address)
-import Updates.Repository exposing (cmd_select_node, cmd_package_fold_unfold,
+import Updates.ModeRepo exposing (cmd_select_node, cmd_package_fold_unfold,
                                     cmd_module_fold_unfold)
 import Views.Utils exposing (show_clickable_block)
 

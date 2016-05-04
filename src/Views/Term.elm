@@ -91,9 +91,13 @@ show_term cursor_info record grammar_name term model =
                    (cursor_info_go_to_sub_elem index cursor_info)
                    (cursor_tree_go_to_sub_elem index record)
                    sub_grammar sub_term model)
-          format_htmls = striped_list_get_even_element grammar_choice
-            |> List.map (\format ->
-                 if format == "" then (Html.text "")
+          raw_formats = striped_list_get_even_element grammar_choice
+          format_htmls = raw_formats
+            |> List.indexedMap (\index format ->
+                 if format == ""
+                   then (Html.text <| if index == 0 ||
+                                         index == List.length raw_formats - 1
+                                        then "" else " ")
                    else div [class "ind-format-block"] [Html.text format])
           htmls = stripe_two_list_together format_htmls sub_blocks
        in show_underlined_clickable_block cursor_info

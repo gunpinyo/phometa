@@ -38,8 +38,8 @@ type alias PackageName = ContainerName
 type alias PackagePath = List PackageName
 
 type alias Package =
-  { dict      : Dict ContainerName PackageElem
-  , is_folded : Bool
+  { is_folded : Bool
+  , dict      : Dict ContainerName PackageElem
   }
 
 type PackageElem
@@ -56,11 +56,22 @@ type alias ModulePath =
   }
 
 type alias Module =
-  { -- imports  : List Import
-    comment   : Comment
-  , nodes     : OrderedDict NodeName Node
+  { comment   : Comment
   , is_folded : Bool
+  , imports   : List ImportModule
+  , nodes     : OrderedDict NodeName Node
   }
+
+type alias ImportModule =
+  { module_path     : ModulePath
+  , show_by_default : Bool
+  , imports         : List ImportNode
+  }
+
+type ImportNode
+  = ImportNodeShow NodeName
+  | ImportNodeHide NodeName
+  | ImportNodeRename NodeName NodeName
 
 -- Node ------------------------------------------------------------------------
 

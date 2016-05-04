@@ -1,4 +1,4 @@
-module Updates.Repository where
+module Updates.ModeRepo where
 
 import Focus exposing ((=>))
 
@@ -6,9 +6,14 @@ import Models.Focus exposing (pane_cursor_, grids_, is_folded_)
 import Models.Cursor exposing (PaneCursor(..))
 import Models.RepoModel exposing (PackagePath, ModulePath, NodePath)
 import Models.RepoUtils exposing (focus_package, focus_module)
+import Models.Model exposing (Model, Keymap, RecordModeRepo)
 import Models.Grid exposing (Grid(..), focus_grid)
 import Models.Model exposing (Command)
 import Updates.CommonCmd exposing (cmd_reset_mode)
+import Updates.KeymapUtils exposing (empty_keymap)
+
+keymap_mode_repo : RecordModeRepo -> Model -> Keymap
+keymap_mode_repo record model = empty_keymap -- TODO:
 
 cmd_select_node : NodePath -> Command
 cmd_select_node node_path model =

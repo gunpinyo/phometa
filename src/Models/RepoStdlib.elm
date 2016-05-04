@@ -22,9 +22,12 @@ init_package_with_stdlib =
 
 stdlib_package : Package
 stdlib_package =
-  { dict = Dict.fromList [
+  { is_folded = False,
+    dict = Dict.fromList [
       ("Propositional Logic", PackageElemMod {
         comment = init_comment,
+        is_folded = True,
+        imports = [],
         nodes = ordered_dict_from_list [
           ("Grammar-1", NodeGrammar init_grammar),
           ("Grammar-2", NodeGrammar init_grammar),
@@ -587,65 +590,81 @@ stdlib_package =
           ("theorem-1", NodeTheorem init_theorem False),
           -- TODO: remove this from stdlib
           ("theorem-2", NodeTheorem init_theorem False)
-        ],
-        is_folded = False
-      }) -- ,
-      --( "Simply type lambda calculus", PackageElemMod {
-      --   comment = init_comment,
-      --   nodes = ordered_dict_from_list [
-      --     ("Term", NodeGrammar {
-      --       comment = init_comment,
-      --       is_folded = False,
-      --       var_regex = Just "[M-Z]([1-9][0-9]*|'*)",
-      --       choices = [
-      --         striped_list_introduce ["", ""] ["Variable"],
-      --         striped_list_introduce ["λ", ":", ".", ""] ["Variable", "Type", "Term"],
-      --         striped_list_introduce ["", "", ""] ["Term", "Term"]
-      --       ]
-      --     }),
-      --     ("Variable", NodeGrammar {
-      --       comment = init_comment,
-      --       is_folded = False,
-      --       var_regex = Just "[a-z]([1-9][0-9]*|'*)",
-      --       choices = []
-      --     }),
-      --     ("Type", NodeGrammar {
-      --       comment = init_comment,
-      --       is_folded = False,
-      --       var_regex = Just "[A-L]([1-9][0-9]*|'*)",
-      --       choices = [
-      --         striped_list_introduce ["", "→", ""] ["Type", "Type"]
-      --       ]
-      --     }),
-      --     ("Judgement", NodeGrammar {
-      --       comment = init_comment,
-      --       is_folded = False,
-      --       var_regex = Nothing,
-      --       choices = [
-      --         striped_list_introduce ["", ":", ""] ["Term", "Type"]
-      --       ]
-      --     }),
-      --     ("Context", NodeGrammar {
-      --       comment = init_comment,
-      --       is_folded = False,
-      --       var_regex = Just "[ΓΔ]([1-9][0-9]*|'*)",
-      --       choices = [
-      --         striped_list_introduce ["ε"] [],
-      --         striped_list_introduce ["", ",", ""] ["Context", "Judgement"]
-      --       ]
-      --     }),
-      --     ("Hypothetical Judgement", NodeGrammar {
-      --       comment = init_comment,
-      --       is_folded = False,
-      --       var_regex = Nothing,
-      --       choices = [
-      --         striped_list_introduce ["", "⊢", ""] ["Context", "Term"]
-      --       ]
-      --     }),
-      --     -- TODO: remove this from stdlib
-      --     ("theorem-a", NodeTheorem init_theorem)
-      --   ],
-      --   is_folded = False
-      -- })
-    ]
-  , is_folded = False }
+        ]
+      }) ,
+
+      ( "Simply typed lambda calculus", PackageElemMod {
+        comment = init_comment,
+        is_folded = False,
+        imports = [],
+        nodes = ordered_dict_from_list [
+          ("Term", NodeGrammar {
+            comment = init_comment,
+            is_folded = False,
+            has_locked = True,
+            metavar_regex = safe_regex "[M-Z]([1-9][0-9]*|'*)",
+            literal_regex = Nothing,
+            choices = [
+              striped_list_introduce ["", ""] ["Variable"],
+              striped_list_introduce ["λ", ":", ".", ""] ["Variable", "Type", "Term"],
+              striped_list_introduce ["", "", ""] ["Term", "Term"]
+            ]
+          }),
+          ("Variable", NodeGrammar {
+            comment = init_comment,
+            is_folded = False,
+            has_locked = True,
+            metavar_regex = Nothing,
+            literal_regex = safe_regex "[a-z]([1-9][0-9]*|'*)",
+            choices = []
+          }),
+          ("Type", NodeGrammar {
+            comment = init_comment,
+            is_folded = False,
+            has_locked = True,
+            metavar_regex = safe_regex "[A-L]([1-9][0-9]*|'*)",
+            literal_regex = Nothing,
+            choices = [
+              striped_list_introduce ["", "→", ""] ["Type", "Type"]
+            ]
+          }),
+          ("Judgement", NodeGrammar {
+            comment = init_comment,
+            is_folded = False,
+            has_locked = True,
+            metavar_regex = Nothing,
+            literal_regex = Nothing,
+            choices = [
+              striped_list_introduce ["", ":", ""] ["Term", "Type"]
+            ]
+          }),
+          ("Context", NodeGrammar {
+            comment = init_comment,
+            is_folded = False,
+            has_locked = True,
+            metavar_regex = safe_regex "[ΓΔ]([1-9][0-9]*|'*)",
+            literal_regex = Nothing,
+            choices = [
+              striped_list_introduce ["ε"] [],
+              striped_list_introduce ["", ",", ""] ["Context", "Judgement"]
+            ]
+          }),
+          ("Hypothetical Judgement", NodeGrammar {
+            comment = init_comment,
+            is_folded = False,
+            has_locked = True,
+            metavar_regex = Nothing,
+            literal_regex = Nothing,
+            choices = [
+              striped_list_introduce ["", "⊢", ""] ["Context", "Term"]
+            ]
+          }),
+          -- TODO: remove this from stdlib
+          ("theorem-a", NodeTheorem init_theorem False),
+          ("theorem-b", NodeTheorem init_theorem False),
+          ("theorem-c", NodeTheorem init_theorem False),
+          ("theorem-d", NodeTheorem init_theorem False),
+          ("theorem-e", NodeTheorem init_theorem False)
+        ]
+      })
+    ]}
