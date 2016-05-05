@@ -231,6 +231,22 @@ input {
     @include color-with-bg(#004488);
 }
 
+/* package */
+.package-block {
+    @extend .inline-block;
+    font-weight: bold;
+    text-decoration: underline;
+    color: #0000BB;
+}
+
+/* module */
+.module-block {
+    @extend .inline-block;
+    font-weight: bold;
+    text-decoration: underline;
+    color: #BB00BB;
+}
+
 /* -------------------------------------------------------------------------- */
 
 div {
@@ -271,18 +287,6 @@ th, td {
 
 .pane-on-cursor {
     background: #EEE0C2;
-}
-
-.package-package-td {
-    font-weight: bold;
-    text-decoration: underline;
-    color: #0000BB;
-}
-
-.package-module-td {
-    font-weight: bold;
-    text-decoration: underline;
-    color: #BB00BB;
 }
 
 .package-node-text {

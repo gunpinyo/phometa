@@ -13,7 +13,7 @@ import Models.Cursor exposing (CursorInfo, cursor_info_go_to_sub_elem,
 import Models.RepoModel exposing (NodePath, Node(..), Theorem, Proof(..))
 import Models.RepoUtils exposing (get_variable_css,
                                   focus_rule, get_usable_rule_names,
-                                  focus_theorem, get_lemma_names,
+                                  focus_theorem, get_usable_theorem_names,
                                   has_root_term_completed,
                                   focus_theorem_rule_argument,
                                   has_theorem_completed,
@@ -158,8 +158,8 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                         show_button "Proof By Lemma" on_click_cmd
                 rule_exists = not <| List.isEmpty <| get_usable_rule_names
                   (Just theorem.goal.grammar) module_path model False
-                lemma_exists = not <| List.isEmpty <|
-                  get_lemma_names theorem.goal module_path model
+                lemma_exists = not <| List.isEmpty <| get_usable_theorem_names
+                  (Just theorem.goal) module_path model False
                 possibly_rule_lemma_htmls =
                   if rule_exists && lemma_exists then
                     [ rule_html

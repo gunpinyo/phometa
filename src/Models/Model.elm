@@ -9,7 +9,7 @@ import Models.Config exposing (Config)
 import Models.Cursor exposing (IntCursorPath, PaneCursor,
                                CursorInfo, CursorTree)
 import Models.RepoModel exposing (VarName, Package, PackagePath,
-                                  ModulePath, NodePath,
+                                  ModulePath, NodePath, NodeType,
                                   GrammarName, Grammar, RootTerm)
 import Models.Grid exposing (Grids)
 import Models.Message exposing (MessageList)
@@ -66,20 +66,13 @@ type Mode
 
 -- ModeRepo --------------------------------------------------------------
 
-type RecordModeRepo =
-  CursorTree
-    { micro_mode             : MicroModeRepo
-    }
+type alias RecordModeRepo =
+  { micro_mode               : MicroModeRepo }
 
 type MicroModeRepo
   = MicroModeRepoNavigate
-  | MicroModeRepoMenuPackage PackagePath
-  | MicroModeRepoAddPackage AutoComplete PackagePath
-  | MicroModeRepoAddModule AutoComplete PackagePath
-  | MicroModeRepoMenuModule ModulePath
-  | MicroModeRepoAddGrammar AutoComplete ModulePath
-  | MicroModeRepoAddRule AutoComplete ModulePath
-  | MicroModeRepoAddTheorem AutoComplete ModulePath
+  | MicroModeRepoAddPkgMod AutoComplete PackagePath Bool --Bool,is_adding_module
+  | MicroModeRepoAddNode AutoComplete ModulePath NodeType
 
 -- ModeGrammar -----------------------------------------------------------------
 

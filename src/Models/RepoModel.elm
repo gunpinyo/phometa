@@ -88,6 +88,11 @@ type alias NodeBase a =
   , is_folded : Bool
   }
 
+type NodeType
+  = NodeTypeGrammar
+  | NodeTypeRule
+  | NodeTypeTheorem
+
 type Node
   = NodeGrammar Grammar -- TODO: implement this
   | NodeRule Rule -- TODO: implement this

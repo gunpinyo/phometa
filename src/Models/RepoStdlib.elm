@@ -593,7 +593,7 @@ stdlib_package =
         ]
       }) ,
 
-      ( "Simply typed lambda calculus", PackageElemMod {
+      ( "Typed Lambda Calculus", PackageElemMod {
         comment = init_comment,
         is_folded = False,
         imports = [],

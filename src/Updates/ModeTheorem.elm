@@ -20,7 +20,7 @@ import Models.RepoUtils exposing (has_root_term_completed,
                                   get_usable_rule_names, focus_rule, apply_rule,
                                   has_root_term_completed,
                                   focus_theorem_rule_argument,
-                                  init_theorem, get_lemma_names,
+                                  init_theorem, get_usable_theorem_names,
                                   focus_theorem_rule_argument,
                                   focus_theorem, focus_theorem_has_locked,
                                   has_theorem_completed,
@@ -68,8 +68,8 @@ keymap_mode_theorem record model =
          in keymap_auto_complete choices True Nothing focus_auto_complete model
       MicroModeTheoremSelectLemma auto_complete ->
         let cur_sub_theorem = Focus.get (focus_current_sub_theorem model) model
-            choices = get_lemma_names cur_sub_theorem.goal
-                        record.node_path.module_path model
+            choices = get_usable_theorem_names (Just cur_sub_theorem.goal)
+                        record.node_path.module_path model False
               |> List.map (\theorem_name ->
                    (css_inline_str_embed "theorem-block" theorem_name,
                     cmd_set_lemma theorem_name))
@@ -136,8 +136,8 @@ auto_focus_next_todo cursor_info record remaining_path theorem_focus model =
             let rule_exists = not <| List.isEmpty <|
                   get_usable_rule_names (Just theorem.goal.grammar)
                     module_path model False
-                lemma_exists = not <| List.isEmpty <|
-                  get_lemma_names theorem.goal module_path model
+                lemma_exists = not <| List.isEmpty <| get_usable_theorem_names
+                    (Just theorem.goal) module_path model False
              in if rule_exists then
                   Just <| cmd_select_rule 1 record
                 else if lemma_exists then

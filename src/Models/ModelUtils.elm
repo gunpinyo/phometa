@@ -62,6 +62,17 @@ focus_auto_complete_unicode =
 init_mode : Mode
 init_mode = ModeNothing
 
+focus_record_mode_repo : Focus Model RecordModeRepo
+focus_record_mode_repo =
+  (mode_ => (Focus.create
+     (\mode -> case mode of
+        ModeRepo record -> record
+        _                  ->
+          Debug.crash "from Models.ModelUtils.focus_record_mode_repo")
+     (\update_func mode -> case mode of
+        ModeRepo record -> ModeRepo <| update_func record
+        other               -> other)))
+
 focus_record_mode_grammar : Focus Model RecordModeGrammar
 focus_record_mode_grammar =
   (mode_ => (Focus.create

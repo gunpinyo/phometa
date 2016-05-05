@@ -15,7 +15,7 @@ import Tools.StripedList exposing (striped_list_introduce,
                                    striped_list_get_even_element,
                                    striped_list_get_odd_element,
                                    stripe_two_list_together)
-import Tools.OrderedDict exposing (ordered_dict_to_list)
+import Tools.OrderedDict exposing (ordered_dict_empty, ordered_dict_to_list)
 import Models.Focus exposing (root_package_, dict_, nodes_,
                               term_, proof_, pattern_variables_)
 import Models.Cursor exposing (IntCursorPath)
@@ -79,6 +79,14 @@ focus_package package_path =
     (update_package package_path)
 
 -- Module ----------------------------------------------------------------------
+
+init_module : Module
+init_module =
+  { comment   = init_comment
+  , is_folded = False
+  , imports   = []
+  , nodes     = ordered_dict_empty
+  }
 
 get_module : ModulePath -> Model -> Maybe Module
 get_module module_path model =
@@ -516,18 +524,24 @@ init_theorem =
 
 -- get all of name of rules in this module (including imported theorems)
 -- TODO: support imported theorems
-get_lemma_names : RootTerm -> ModulePath -> Model -> List TheoremName
-get_lemma_names goal module_path model =
+get_usable_theorem_names : Maybe RootTerm -> ModulePath -> Model ->
+                             Bool -> List TheoremName
+get_usable_theorem_names maybe_goal module_path model
+                             are_unlocked_theorem_included =
   case get_module module_path model of
     Nothing -> []
     Just module' -> ordered_dict_to_list module'.nodes |>
       List.filterMap (\ (node_name, node) ->
         case node of
           NodeTheorem theorem has_locked ->
-            if not has_locked then Nothing else
-            if pattern_matchable module_path model theorem.goal goal
-              then Just node_name else Nothing
-          _                   -> Nothing)
+            if has_locked || are_unlocked_theorem_included then
+              case maybe_goal of
+                Nothing -> Just node_name
+                Just goal ->
+                  if pattern_matchable module_path model theorem.goal goal
+                    then Just node_name else Nothing
+            else Nothing
+          _                              -> Nothing)
 
 -- TODO: support imported theorems
 focus_theorem : NodePath -> Focus Model Theorem

@@ -37,6 +37,7 @@ top_cursor_info_ = create .top_cursorr_info (\u r -> {r|top_cursorr_info=u r.top
 sub_cursor_path_ = create .sub_cursor_path (\u r -> {r|sub_cursor_path=u r.sub_cursor_path})
 node_name_ = create .node_name (\u r -> {r|node_name=u r.node_name})
 proof_ = create .proof (\u r -> {r|proof=u r.proof})
+order_ = create .order (\u r -> {r|order=u r.order})
 has_locked_ = create .has_locked (\u r -> {r|has_locked=u r.has_locked})
 pattern_variables_ = create .pattern_variables (\u r -> {r|pattern_variables=u r.pattern_variables})
 substitution_list_ = create .substitution_list (\u r -> {r|substitution_list=u r.substitution_list})
