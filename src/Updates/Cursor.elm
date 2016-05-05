@@ -54,5 +54,5 @@ cmd_reform_grids row col model =
                 (2, 1) -> Grids2x1 g1 g2
                 (3, 1) -> Grids3x1 g1 g2 g3
                 (2, 2) -> Grids2x2 g1 g2 g3 g4
-                _      -> Grids1x1 g1          -- if error, fail safe to Grids1x1
+                _      -> Grids1x1 g1         -- if error, fail safe to Grids1x1
    in Focus.set grids_ grids model

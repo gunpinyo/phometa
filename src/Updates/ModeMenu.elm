@@ -11,7 +11,8 @@ import Updates.KeymapUtils exposing (build_keymap, merge_keymaps)
 
 cmd_enter_mode_menu : Command
 cmd_enter_mode_menu model =
-  Focus.set mode_ ModeMenu model
+  model |> cmd_reset_mode
+        |> Focus.set mode_ ModeMenu
 
 keymap_mode_menu : Model -> Keymap
 keymap_mode_menu model =

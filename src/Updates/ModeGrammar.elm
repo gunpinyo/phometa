@@ -139,13 +139,16 @@ cmd_enter_micro_mode_add_choice record model =
 cmd_add_choice : RecordModeGrammar -> String -> Command
 cmd_add_choice record raw_int =
   case String.toInt raw_int of
-    Ok int -> if int < 0 then (cmd_send_message <| MessageException
+    Ok int -> if int < 0 then
+                (cmd_send_message <| MessageException
                                  "number of sub-terms cannot be negative")
+                  >> cmd_enter_micro_mode_navigate record
               else
                 Focus.update (focus_grammar record.node_path => choices_)
                     (\choices -> choices ++ [init_grammar_choice int])
-                  >> cmd_enter_micro_mode_navigate record -- TODO
-    Err msg_str -> cmd_send_message <| MessageException msg_str
+                  >> cmd_enter_micro_mode_navigate record
+    Err msg_str -> (cmd_send_message <| MessageException msg_str)
+                      >> cmd_enter_micro_mode_navigate record
 
 cmd_enter_micro_mode_format : Int -> Int -> RecordModeGrammar -> Command
 cmd_enter_micro_mode_format choice_index sub_index record model =
