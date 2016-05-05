@@ -73,9 +73,13 @@ embed_css_term module_path model term grammar_name =
       let sub_grammars = striped_list_get_odd_element grammar_choice
           sub_term_inlines = List.map2 (embed_css_term module_path model)
                                sub_terms sub_grammars
-          format_inlines = striped_list_get_even_element grammar_choice
-            |> List.map (\format ->
-                 if format == "" then "" else
+          raw_formats = striped_list_get_even_element grammar_choice
+          format_inlines = raw_formats
+            |> List.indexedMap (\index format ->
+                 if format == "" then
+                   (if index == 0 || index == List.length raw_formats - 1
+                      then "" else " ")
+                 else
                    css_inline_str_embed "ind-format-block" format)
        in stripe_two_list_together format_inlines sub_term_inlines
             |> String.concat

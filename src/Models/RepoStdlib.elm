@@ -29,8 +29,6 @@ stdlib_package =
         is_folded = True,
         imports = [],
         nodes = ordered_dict_from_list [
-          ("Grammar-1", NodeGrammar init_grammar),
-          ("Grammar-2", NodeGrammar init_grammar),
           ("Prop", NodeGrammar {
             comment = init_comment,
             is_folded = False,
@@ -77,8 +75,6 @@ stdlib_package =
               striped_list_introduce ["", "⊢", ""] ["Context", "Prop"]
             ]
           }),
-          ("rule-1", NodeRule init_rule),
-          ("rule-2", NodeRule init_rule),
           ("hypothesis-base", NodeRule {
             comment = init_comment,
             is_folded = False,
@@ -585,11 +581,7 @@ stdlib_package =
                           TermVar "Γ", TermVar "A"]
                 }
             ]
-          }),
-          -- TODO: remove this from stdlib
-          ("theorem-1", NodeTheorem init_theorem False),
-          -- TODO: remove this from stdlib
-          ("theorem-2", NodeTheorem init_theorem False)
+          })
         ]
       }) ,
 
@@ -656,15 +648,33 @@ stdlib_package =
             metavar_regex = Nothing,
             literal_regex = Nothing,
             choices = [
-              striped_list_introduce ["", "⊢", ""] ["Context", "Term"]
+              striped_list_introduce ["", "⊢", ""] ["Context", "Judgement"]
             ]
           }),
-          -- TODO: remove this from stdlib
-          ("theorem-a", NodeTheorem init_theorem False),
-          ("theorem-b", NodeTheorem init_theorem False),
-          ("theorem-c", NodeTheorem init_theorem False),
-          ("theorem-d", NodeTheorem init_theorem False),
-          ("theorem-e", NodeTheorem init_theorem False)
+          ("arrow-elim", NodeRule {
+            comment = init_comment,
+            is_folded = False,
+            has_locked = True,
+            allow_reduction = False,
+            parameters = [{grammar = "Type", var_name = "A"}],
+            conclusion = { grammar = "Hypothetical Judgement"
+                         , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Judgement"])
+                                  [TermVar "Γ", TermInd (striped_list_introduce ["", ":", ""] ["Term", "Type"])
+                                    [TermInd (striped_list_introduce ["", "", ""] ["Term", "Term"]) [TermVar "M", TermVar "N"], TermVar "B"]]
+                         },
+            premises = [PremiseDirect
+                         { grammar = "Hypothetical Judgement"
+                         , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Judgement"])
+                                  [TermVar "Γ", TermInd (striped_list_introduce ["", ":", ""] ["Term", "Type"])
+                                    [TermVar "M", TermInd (striped_list_introduce ["", "→", ""] ["Type", "Type"]) [TermVar "A", TermVar "B"]]]
+                         }
+                       ,PremiseDirect
+                         { grammar = "Hypothetical Judgement"
+                         , term = TermInd (striped_list_introduce ["", "⊢", ""] ["Context", "Judgement"])
+                                  [TermVar "Γ", TermInd (striped_list_introduce ["", ":", ""] ["Term", "Type"])
+                                    [TermVar "N", TermVar "A"]]
+                         }]
+          })
         ]
       })
     ]}

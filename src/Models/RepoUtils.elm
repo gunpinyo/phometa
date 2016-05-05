@@ -327,9 +327,10 @@ auto_manipulate_term : Grammar -> Term -> ModulePath -> Model -> Term
 auto_manipulate_term grammar term module_path model =
   case term of
     TermTodo ->
-      if not (grammar_allow_variable grammar) &&
-         List.length grammar.choices == 1
-        then (init_term_ind <| list_get_elem 0 grammar.choices) else term
+      if not(grammar_allow_variable grammar) && List.length grammar.choices == 1
+        then let new_term = init_term_ind <| list_get_elem 0 grammar.choices
+              in auto_manipulate_term grammar new_term module_path model
+        else term
     TermVar _ -> term
     TermInd grammar_choice sub_terms ->
       List.map2 (,) (striped_list_get_odd_element grammar_choice) sub_terms
