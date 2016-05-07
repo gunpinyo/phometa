@@ -59,12 +59,14 @@ type Mode
   = ModeNothing
   | ModeMenu
   | ModeRepo RecordModeRepo
+  | ModeModule RecordModeModule
+  | ModeComment RecordModeComment
   | ModeGrammar RecordModeGrammar
   | ModeRootTerm RecordModeRootTerm
   | ModeRule RecordModeRule
   | ModeTheorem RecordModeTheorem
 
--- ModeRepo --------------------------------------------------------------
+-- ModeRepo --------------------------------------------------------------------
 
 type alias RecordModeRepo =
   { micro_mode               : MicroModeRepo }
@@ -72,7 +74,30 @@ type alias RecordModeRepo =
 type MicroModeRepo
   = MicroModeRepoNavigate
   | MicroModeRepoAddPkgMod AutoComplete PackagePath Bool --Bool,is_adding_module
-  | MicroModeRepoAddNode AutoComplete ModulePath NodeType
+
+-- ModeModule ------------------------------------------------------------------
+
+type alias RecordModeModule =
+  CursorTree -- but we don't need sub_cursor_path here
+    { module_path              : ModulePath
+    , micro_mode               : MicroModeModule
+    }
+
+type MicroModeModule
+  = MicroModeModuleNavigate
+  | MicroModeModuleAddNode AutoComplete Int NodeType
+
+-- ModeComment -----------------------------------------------------------------
+
+type alias RecordModeComment =
+  CursorTree -- but we don't need sub_cursor_path here
+    { node_path              : NodePath
+    , micro_mode             : MicroModeComment
+    }
+
+type MicroModeComment
+  = MicroModeCommentNavigate
+  | MicroModeCommentEditing
 
 -- ModeGrammar -----------------------------------------------------------------
 

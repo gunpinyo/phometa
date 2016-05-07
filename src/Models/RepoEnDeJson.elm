@@ -2,7 +2,6 @@ module Models.RepoEnDeJson where
 
 import Dict exposing (Dict)
 import Json.Encode exposing (Value)
-import Json.Decode
 import Regex exposing (Regex)
 
 import Tools.OrderedDict exposing (OrderedDict)
@@ -19,13 +18,25 @@ encode_repository model =
 
 -- Utils -----------------------------------------------------------------------
 
+en_str       : String -> Value
 en_str       = Json.Encode.string
+
+en_int       : Int -> Value
 en_int       = Json.Encode.int
+
+en_bool      : Bool -> Value
 en_bool      = Json.Encode.bool
+
+en_list      : (a -> Value) -> List a -> Value
 en_list func = List.map func >> Json.Encode.list
+
+en_obj       : List (String, Value) -> Value
 en_obj       = Json.Encode.object
+
+en_null      : Value
 en_null      = Json.Encode.null
 
+en_TODO : Value
 en_TODO = Json.Encode.null -- for value that needed to be done in the future
 
 en_bnf0 : String -> Value
@@ -63,11 +74,10 @@ en_maybe_regex maybe_regex = case maybe_regex of
 
 -- Common ----------------------------------------------------------------------
 
-en_comment : Comment -> Value
-en_comment comment = en_TODO -- TODO:
-
+en_format : Format -> Value
 en_format = en_str
 
+en_var_name : VarName -> Value
 en_var_name = en_str
 
 en_parameters : Parameters -> Value
@@ -82,6 +92,7 @@ en_arguments arguments = en_list en_root_term arguments
 
 -- Package ---------------------------------------------------------------------
 
+en_package_name : PackageName -> Value
 en_package_name = en_str
 
 en_package_path : PackagePath -> Value
@@ -100,6 +111,7 @@ en_package_elem package_elem = case package_elem of
 
 -- Module ----------------------------------------------------------------------
 
+en_module_name : ModuleName -> Value
 en_module_name = en_str
 
 en_module_path : ModulePath -> Value
@@ -110,8 +122,7 @@ en_module_path module_path = en_obj
 
 en_module : Module -> Value
 en_module module' = en_obj
-  [ ("comment", en_comment module'.comment)
-  , ("is_folded", en_bool module'.is_folded)
+  [ ("is_folded", en_bool module'.is_folded)
   , ("imports", en_list en_import_module module'.imports)
   , ("nodes", en_ordered_dict en_node module'.nodes)
   ]
@@ -121,6 +132,7 @@ en_import_module import_module = en_TODO -- TODO:
 
 -- Node ------------------------------------------------------------------------
 
+en_node_name : NodeName -> Value
 en_node_name = en_str
 
 en_node_path : NodePath -> Value
@@ -131,6 +143,7 @@ en_node_path node_path = en_obj
 
 en_node : Node -> Value
 en_node node = case node of
+  NodeComment comment -> en_bnf1 "NodeComment" (en_str comment)
   NodeGrammar grammar -> en_bnf1 "NodeGrammar" (en_grammar grammar)
   NodeRule rule       -> en_bnf1 "NodeRule" (en_rule rule)
   NodeTheorem theorem has_locked -> en_bnf2 "NodeTheorem"
@@ -138,18 +151,19 @@ en_node node = case node of
 
 en_node_type : NodeType -> Value
 en_node_type node_type = case node_type of
+  NodeTypeComment -> en_str "NodeTypeComment"
   NodeTypeGrammar -> en_str "NodeTypeGrammar"
   NodeTypeRule    -> en_str "NodeTypeRule"
   NodeTypeTheorem -> en_str "NodeTypeTheorem"
 
 -- Grammar ---------------------------------------------------------------------
 
+en_grammar_name : GrammarName -> Value
 en_grammar_name = en_str
 
 en_grammar : Grammar -> Value
 en_grammar grammar = en_obj
-  [ ("comment", en_comment grammar.comment)
-  , ("is_folded", en_bool grammar.is_folded)
+  [ ("is_folded", en_bool grammar.is_folded)
   , ("has_locked",  en_bool grammar.has_locked)
   , ("metavar_regex", en_maybe_regex grammar.metavar_regex)
   , ("literal_regex", en_maybe_regex grammar.literal_regex)
@@ -183,12 +197,12 @@ en_var_type var_type = case var_type of
 
 -- Rule ------------------------------------------------------------------------
 
+en_rule_name : RuleName -> Value
 en_rule_name = en_str
 
 en_rule : Rule -> Value
 en_rule rule = en_obj
-  [ ("comment", en_comment rule.comment)
-  , ("is_folded", en_bool rule.is_folded)
+  [ ("is_folded", en_bool rule.is_folded)
   , ("has_locked",  en_bool rule.has_locked)
   , ("allow_reduction", en_bool rule.allow_reduction)
   , ("parameters", en_parameters rule.parameters)
@@ -212,12 +226,12 @@ en_premise_cascade_record record = en_obj
 
 -- Theorem ---------------------------------------------------------------------
 
+en_theorem_name : TheoremName -> Value
 en_theorem_name = en_str
 
 en_theorem : Theorem -> Value
 en_theorem theorem = en_obj
-  [ ("comment", en_comment theorem.comment)
-  , ("is_folded", en_bool theorem.is_folded)
+  [ ("is_folded", en_bool theorem.is_folded)
   , ("goal", en_root_term theorem.goal)
   , ("proof", en_proof theorem.proof)
   ]

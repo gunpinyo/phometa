@@ -8,6 +8,7 @@ import Updates.KeymapUtils exposing (empty_keymap, merge_keymaps,
                                      build_keymap, build_keymap_cond)
 import Updates.ModeMenu exposing (keymap_mode_menu, cmd_enter_mode_menu)
 import Updates.ModeRepo exposing (keymap_mode_repo)
+import Updates.ModeModule exposing (keymap_mode_module)
 import Updates.ModeGrammar exposing (keymap_mode_grammar)
 import Updates.ModeRootTerm exposing (keymap_mode_root_term)
 import Updates.ModeRule exposing (keymap_mode_rule)
@@ -34,6 +35,8 @@ keymap_mode model =
     ModeNothing -> empty_keymap
     ModeMenu -> keymap_mode_menu model
     ModeRepo record -> keymap_mode_repo record model
+    ModeModule record -> keymap_mode_module record model
+    ModeComment record -> empty_keymap
     ModeGrammar record -> keymap_mode_grammar record model
     ModeRootTerm record -> keymap_mode_root_term record model
     ModeRule record -> keymap_mode_rule record model

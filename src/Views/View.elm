@@ -22,6 +22,8 @@ show_view model =
                    ++"4.4.0/css/font-awesome.min.css")
        , import_css "style.css"
        , show_window model
+       , import_javascript ("https://ajax.googleapis.com/ajax/libs/jquery/"
+                           ++ "1.12.2/jquery.min.js")
        , import_javascript "naive.js"]
 
 show_window : View
@@ -30,20 +32,17 @@ show_window model =
       keymap_pane  = show_keymap_pane model
       grids_pane = show_grids_pane model
       massages_grids_pane =
-        if List.isEmpty model.message_list then
-          grids_pane
-        else
-          flex_div [ ("flex-direction", "column")
-                   , ("justify-content", "flex_start")
-                   , ("align-items", "stretch")
-                   , ("width", "-moz-max-content")
-                   , ("width", "-webkit-max-content")
-                   , ("width", "100%")
-                   ] []
-            [ flex_div [ ("flex", "0 auto")] [] [show_messages_pane model]
-            , flex_div [ ("flex-grow", "1")
-                       , ("flex-basis", "0px")
-                       , ("width", "100%")] [] [grids_pane] ]
+        flex_div [ ("flex-direction", "column")
+                 , ("justify-content", "flex_start")
+                 , ("align-items", "stretch")
+                 , ("width", "-moz-max-content")
+                 , ("width", "-webkit-max-content")
+                 , ("width", "100%")
+                 ] []
+          [ flex_div [ ("flex", "0 auto")] [] [show_messages_pane model]
+          , flex_div [ ("flex-grow", "1")
+                     , ("flex-basis", "0px")
+                     , ("width", "100%")] [] [grids_pane] ]
       cfg        = model.config
    in if cfg.show_package_pane && cfg.show_keymap_pane then
         flex_split "row" [] [] [

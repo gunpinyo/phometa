@@ -18,11 +18,9 @@ import Models.Action exposing (Action(..), address)
 import Updates.CommonCmd exposing (cmd_nothing)
 import Updates.ModeRepo exposing (cmd_enter_micro_mode_navigate,
                                   cmd_enter_micro_mode_add_pkgmod,
-                                  cmd_enter_micro_mode_add_node,
-                                  cmd_select_node,
+                                  cmd_select_node, cmd_select_module,
                                   cmd_package_fold_unfold,
                                   cmd_module_fold_unfold,
-                                  cmd_swap_node,
                                   focus_auto_complete)
 import Views.Utils exposing (show_clickable_block, show_button,
                              show_auto_complete_filter, show_keyword_block)
@@ -68,18 +66,21 @@ show_package package_name package_path package model =
                   cmd_nothing focus_auto_complete model]
             _ -> input_panel_inactive
           _ -> input_panel_inactive
-   in table [class "package-package-table"] (header :: input_panel ++ detail)
+   in table [class "package-module-table"] (header :: input_panel ++ detail)
 
 show_module : ModuleName -> ModulePath -> Module -> View
 show_module module_name module_path module' model =
   let header = tr [] [ td [on_click address <| ActionCommand <|
                              cmd_module_fold_unfold module_path]
                           [text <| if module'.is_folded then "▶" else "▼" ]
-                     , td [class "module-block"]
+                     , td [class "module-block"
+                          ,on_click address <| ActionCommand <|
+                             cmd_select_module module_path]
                           [text module_name]]
       dummy_cursor_info = init_cursor_info False [] PaneCursorPackage
       func index (node_name, node) =
         let css_class = case node of
+                          NodeComment _ -> "comment-block"
                           NodeGrammar _ -> "grammar-block"
                           NodeRule _ -> "rule-block"
                           NodeTheorem _ _ -> "theorem-block"
@@ -90,29 +91,11 @@ show_module module_name module_path module' model =
               css_class dummy_cursor_info   -- since cursor will be changed
               (cmd_select_node node_path)   -- immediately by `cmd_select_node`
               [text node_name]
-            swap_button = show_clickable_block "inline-block" dummy_cursor_info
-              (cmd_swap_node module_path index) [text "⬮"]
-         in [swap_button, html]
+            -- swap_button = show_clickable_block "inline-block" dummy_cursor_info
+            --   (cmd_swap_node module_path index) [text "⬮"]
+         in [html]
       detail = if module'.is_folded || Dict.isEmpty module'.nodes.dict then []
                  else ordered_dict_to_list module'.nodes
                         |> List.indexedMap func
                         |> List.map (\list -> tr [] [ td [] [], td [] list])
-      input_panel_inactive =
-          (List.map2 (\node_type placeholder -> show_button placeholder <|
-                        cmd_enter_micro_mode_add_node module_path node_type)
-                     [NodeTypeGrammar, NodeTypeRule, NodeTypeTheorem]
-                     ["Grammar", "Rule", "Theorem"])
-      input_panel = if module'.is_folded then [] else
-        (\list -> [tr [] [ td [] [], td [] list]]) <|
-        case model.mode of
-          ModeRepo record -> case record.micro_mode of
-            MicroModeRepoAddNode auto_complete module_path' node_type ->
-              if module_path /= module_path' then input_panel_inactive else
-              [ show_auto_complete_filter "button-block" dummy_cursor_info
-                  (case node_type of NodeTypeGrammar -> "Add Grammar"
-                                     NodeTypeRule    -> "Add Rule"
-                                     NodeTypeTheorem -> "Add Theorem")
-                  cmd_nothing focus_auto_complete model]
-            _ -> input_panel_inactive
-          _ -> input_panel_inactive
-   in table [class "package-module-table"] (header :: input_panel ++ detail)
+   in table [class "package-module-table"] (header :: detail)

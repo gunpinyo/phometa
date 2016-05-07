@@ -27,4 +27,5 @@ show_messages_pane model =
                   , td [] [show_close_button <| cmd_remove_message index]]
       table' = table [style [("width", "100%")]]
         <| List.indexedMap msg_tr_func model.message_list
-   in flex_div [] [class "pane"] [table']
+   in if List.isEmpty model.message_list then flex_div [] [] [] else
+       flex_div [] [class "pane"] [table']

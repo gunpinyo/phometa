@@ -13,13 +13,6 @@ type alias ContainerName = String
 
 type alias ContainerPath = List ContainerName
 
-type alias Comment = (CommentMode, String)
-
-type CommentMode
-  = CommentModeHide
-  | CommentModeEdit
-  | CommentModeView
-
 type alias Format = String
 
 type alias VarName = String
@@ -56,8 +49,7 @@ type alias ModulePath =
   }
 
 type alias Module =
-  { comment   : Comment
-  , is_folded : Bool
+  { is_folded : Bool
   , imports   : List ImportModule
   , nodes     : OrderedDict NodeName Node
   }
@@ -84,17 +76,18 @@ type alias NodePath =
 
 type alias NodeBase a =
   { a |
-    comment   : Comment
-  , is_folded : Bool
+    is_folded : Bool
   }
 
 type Node
-  = NodeGrammar Grammar -- TODO: implement this
-  | NodeRule Rule -- TODO: implement this
+  = NodeComment String
+  | NodeGrammar Grammar
+  | NodeRule Rule
   | NodeTheorem Theorem Bool -- Bool = has_locked
 
 type NodeType
-  = NodeTypeGrammar
+  = NodeTypeComment
+  | NodeTypeGrammar
   | NodeTypeRule
   | NodeTypeTheorem
 

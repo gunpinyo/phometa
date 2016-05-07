@@ -73,6 +73,17 @@ focus_record_mode_repo =
         ModeRepo record -> ModeRepo <| update_func record
         other               -> other)))
 
+focus_record_mode_module : Focus Model RecordModeModule
+focus_record_mode_module =
+  (mode_ => (Focus.create
+     (\mode -> case mode of
+        ModeModule record -> record
+        _                  ->
+          Debug.crash "from Models.ModelUtils.focus_record_mode_module")
+     (\update_func mode -> case mode of
+        ModeModule record -> ModeModule <| update_func record
+        other               -> other)))
+
 focus_record_mode_grammar : Focus Model RecordModeGrammar
 focus_record_mode_grammar =
   (mode_ => (Focus.create

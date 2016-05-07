@@ -22,11 +22,6 @@ import Models.Cursor exposing (IntCursorPath)
 import Models.RepoModel exposing (..)
 import Models.Model exposing (Model)
 
--- Common ----------------------------------------------------------------------
-
-init_comment : Comment
-init_comment = (CommentModeHide, "")
-
 -- Package ---------------------------------------------------------------------
 
 init_package : Package
@@ -82,8 +77,7 @@ focus_package package_path =
 
 init_module : Module
 init_module =
-  { comment   = init_comment
-  , is_folded = False
+  { is_folded = False
   , imports   = []
   , nodes     = ordered_dict_empty
   }
@@ -143,12 +137,23 @@ focus_node node_path =
                  Just node -> node)
     (update_node node_path)
 
+-- Comment ---------------------------------------------------------------------
+
+get_comment_names : ModulePath -> Model -> List NodeName
+get_comment_names module_path model =
+  case get_module module_path model of
+    Nothing -> []
+    Just module' -> ordered_dict_to_list module'.nodes
+                      |> List.filterMap (\ (node_name, node) ->
+                           case node of
+                             NodeComment comment -> Just node_name
+                             _                   -> Nothing)
+
 -- Grammar ---------------------------------------------------------------------
 
 init_grammar : Grammar
 init_grammar =
-  { comment = init_comment
-  , is_folded = False
+  { is_folded = False
   , has_locked = False
   , metavar_regex = Nothing
   , literal_regex = Nothing
@@ -360,8 +365,7 @@ debug_show_root_term show_grammar root_term =
 
 init_rule : Rule
 init_rule =
-  { comment = init_comment
-  , is_folded = False
+  { is_folded = False
   , has_locked = False
   , allow_reduction = False
   , parameters = []
@@ -517,8 +521,7 @@ apply_reduction rule_name target module_path model =
 
 init_theorem : Theorem
 init_theorem =
-  { comment = init_comment
-  , is_folded = False
+  { is_folded = False
   , goal = init_root_term
   , proof = ProofTodo
   }

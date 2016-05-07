@@ -9,17 +9,23 @@ import Models.Cursor exposing (PaneCursor(..), init_cursor_info)
 import Models.Grid exposing (Grids(..), Grid(..))
 import Models.RepoModel exposing (Node(..))
 import Models.RepoUtils exposing (get_node)
-import Models.Model exposing (MicroModeGrammar(..),
+import Models.Model exposing (MicroModeModule(..),
+                              MicroModeComment(..),
+                              MicroModeGrammar(..),
                               MicroModeRule(..),
                               MicroModeTheorem(..))
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.Cursor exposing (cmd_change_pane_cursor)
 import Updates.CommonCmd exposing (cmd_nothing)
+import Updates.ModeModule exposing (cmd_enter_mode_module)
+import Updates.ModeComment exposing (cmd_enter_mode_comment)
 import Updates.ModeGrammar exposing (cmd_enter_mode_grammar)
 import Updates.ModeRule exposing (cmd_enter_mode_rule)
 import Updates.ModeTheorem exposing (cmd_enter_mode_theorem)
 import Views.Home exposing (show_home)
+import Views.Module exposing (show_module)
+import Views.Comment exposing (show_comment)
 import Views.Grammar exposing (show_grammar)
 import Views.Rule exposing (show_rule)
 import Views.Theorem exposing (show_theorem)
@@ -65,14 +71,26 @@ show_grid_pane pane_cursor grid model =
         GridHome int_cursor_path ->
           (show_home (cursor_func int_cursor_path) model, cmd_nothing)
         GridModule module_path int_cursor_path ->
-          -- TODO: finish this
-          (div [] [debug_to_html (module_path, int_cursor_path)], cmd_nothing)
+          let cursor_info = cursor_func int_cursor_path
+              module_content = show_module cursor_info module_path model
+              on_click_cmd' = cmd_enter_mode_module
+                                { module_path      = module_path
+                                , top_cursor_info  = cursor_info
+                                , sub_cursor_path  = []
+                                , micro_mode       = MicroModeModuleNavigate }
+           in (div [style [("width", "100%")]] [module_content], on_click_cmd')
         GridNode node_path int_cursor_path ->
           let cursor_info = cursor_func int_cursor_path
               (node_content, on_click_cmd') =
                 case get_node node_path model of
-                  Nothing -> ( show_home (cursor_func int_cursor_path) model
-                             , cmd_nothing )
+                  Nothing -> ( show_home cursor_info model, cmd_nothing )
+                  Just (NodeComment comment) ->
+                    (show_comment cursor_info node_path comment model
+                    , cmd_enter_mode_comment
+                        { node_path        = node_path
+                        , top_cursor_info  = cursor_info
+                        , sub_cursor_path  = []
+                        , micro_mode       = MicroModeCommentNavigate })
                   Just (NodeGrammar grammar) ->
                     (show_grammar cursor_info node_path grammar model
                     , cmd_enter_mode_grammar

@@ -184,6 +184,19 @@ input {
     @include color-with-bg(#EE8888);
 }
 
+/* module intersperse panel */
+.module-intersperse-panel {
+    background-color: #AAAAAA;
+    margin: 3px;
+    margin-bottom: 5px;
+}
+
+/* comment */
+.comment-block {
+    @extend .inline-block;
+    @include color-with-bg(#000000);
+}
+
 /* grammar */
 .grammar-block {
     @extend .inline-block;
