@@ -4,9 +4,12 @@ import Html exposing (Html, div, text, h1, h3, hr, a, textarea)
 import Html.Attributes exposing (href, rows, cols, style)
 
 import Tools.Flex exposing (flex_div, flex_split)
+import Tools.HtmlExtra exposing (on_typing_to_input_field)
 import Models.Cursor exposing (CursorInfo)
 import Models.RepoEnDeJson exposing (encode_repository)
+import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
+import Updates.CommonCmd exposing (cmd_load_repository)
 
 show_home : CursorInfo -> View
 show_home cursor_info model =
@@ -24,5 +27,7 @@ show_home cursor_info model =
     , div [] [ hr [] []
              , text "Load / Save repository by paste-to / copy-from this box"
              ]
-    , div [] [ textarea [style [("margin-top", "10px")], rows 10, cols 50]
-                        [text (encode_repository model)]]]
+    , div [] [ textarea [ style [("margin-top", "10px")], rows 10, cols 50
+                        , on_typing_to_input_field address (\string ->
+                            ActionCommand <| cmd_load_repository string)]
+                        [ text (encode_repository model.root_package)]]]

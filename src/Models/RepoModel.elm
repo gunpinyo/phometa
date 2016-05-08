@@ -74,11 +74,6 @@ type alias NodePath =
   , node_name   : NodeName
   }
 
-type alias NodeBase a =
-  { a |
-    is_folded : Bool
-  }
-
 type Node
   = NodeComment String
   | NodeGrammar Grammar
@@ -96,12 +91,12 @@ type NodeType
 type alias GrammarName = String
 
 type alias Grammar =
-  NodeBase
-    { has_locked  : Bool
-    , metavar_regex : Maybe Regex
-    , literal_regex : Maybe Regex
-    , choices     : List GrammarChoice
-    }
+  { is_folded     : Bool
+  , has_locked    : Bool
+  , metavar_regex : Maybe Regex
+  , literal_regex : Maybe Regex
+  , choices       : List GrammarChoice
+  }
 
 type alias GrammarChoice = StripedList Format GrammarName
 
@@ -128,14 +123,14 @@ type VarType
 type alias RuleName = String
 
 type alias Rule =
-  NodeBase
-    { has_locked  : Bool
-    , allow_reduction : Bool  -- check `Models.RepoUtils.apply_reduction`
-                              --   for usage of this field
-    , parameters : Parameters
-    , conclusion : RootTerm
-    , premises : List Premise
-    }
+  { is_folded       : Bool
+  , has_locked      : Bool
+  , allow_reduction : Bool  -- check `Models.RepoUtils.apply_reduction`
+                            --   for usage of this field
+  , parameters      : Parameters
+  , conclusion      : RootTerm
+  , premises        : List Premise
+  }
 
 type Premise
   = PremiseDirect RootTerm
@@ -153,10 +148,10 @@ type alias PremiseCascadeRecord =
 type alias TheoremName = String
 
 type alias Theorem =
-  NodeBase
-    { goal : RootTerm
-    , proof : Proof
-    }
+  { is_folded : Bool
+  , goal      : RootTerm
+  , proof     : Proof
+  }
 
 type Proof
   = ProofTodo

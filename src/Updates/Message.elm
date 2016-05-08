@@ -9,7 +9,8 @@ import Models.Model exposing (Command)
 
 cmd_send_message : Message -> Command
 cmd_send_message message model =
-  Focus.update message_list_ ((::) message) model
+  Focus.update message_list_
+    ((::) message >> List.take model.config.maximum_messages) model
 
 cmd_remove_message : Int -> Command
 cmd_remove_message index model =
