@@ -3,12 +3,11 @@ module Models.Action where
 import Signal exposing (Mailbox, Address)
 
 import Tools.KeyboardExtra exposing (Keystroke)
-import Models.Model exposing (Command, PreTask)
+import Models.Model exposing (Command)
 
 type Action
   = ActionNothing
   | ActionCommand Command
-  | ActionPreTask PreTask
   | ActionKeystroke Keystroke
 
 -- event of mouse and result of `Task` will enter phomata thought mailbox

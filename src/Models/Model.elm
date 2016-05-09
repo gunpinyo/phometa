@@ -1,60 +1,166 @@
 module Models.Model where
 
 import Dict exposing (Dict)
-import Task exposing (Task)
 
-import Tools.KeyboardExtra exposing (Keystroke)
-import Tools.SanityCheck exposing (CheckResult, sequentially_check)
-import Models.Config exposing (GlobalConfig, init_global_config)
-import Models.PkgMod exposing (Package, init_package, check_package)
-import Models.Mode exposing (MajorMode, init_major_mode)
-import Models.Popup exposing (PopupList, init_popup_list)
+import Focus exposing (Focus)
+
+import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke)
+import Models.Config exposing (Config)
+import Models.Cursor exposing (IntCursorPath, PaneCursor,
+                               CursorInfo, CursorTree)
+import Models.RepoModel exposing (VarName, Package, PackagePath,
+                                  ModulePath, NodePath, NodeType,
+                                  GrammarName, Grammar, RootTerm)
+import Models.Grid exposing (Grids)
+import Models.Message exposing (MessageList)
+import Models.Environment exposing (Environment)
 
 -- the entire state of program will be store here
 -- has constrain, see `check_model`
 type alias Model =
-  { global_config : GlobalConfig
-  , root_package  : Package
-  , root_keymap   : Keymap
-  , major_mode    : MajorMode
-  , popup_list    : PopupList
+  { config       : Config
+  , root_package : Package
+  , root_keymap  : Keymap
+  , grids        : Grids
+  , pane_cursor  : PaneCursor
+  , mode         : Mode
+  , message_list : MessageList
+  , environment  : Environment
   }
+
+-- Keymap ----------------------------------------------------------------------
 
 -- there is a circular dependency here
 -- `Model` --> `Keymap` --> `KeyBinding` ---> `Command` ---> `Model`
---                                       '--> `PreTask` --'
 -- so need to define the rest of circular stuff here
 type alias Command =  Model -> Model
 
--- it is a task that need to know current state of model prior to its execution
--- The type of error on a task is forced to be `()`
--- so if we put task that doesn't have error type as `()` it will not compile
--- and we will know that we forget to inject error handler
-type alias PreTask = Model -> Task () ()
-
 type KeyBinding
-  = KeyBindingCommand String Command
-  | KeyBindingPreTask String PreTask
-  | KeyBindingPrefix String Keymap    -- similar to prefix key bindings in emacs
+  = KbCmd Command
+  | KbPrefix Keymap    -- similar to prefix key bindings in emacs
 
-type alias Keymap = Dict Keystroke KeyBinding
+type alias KeyDescription = String
 
-init_model : Model
-init_model =
-  { global_config = init_global_config
-  , root_package  = init_package
-  , root_keymap   = init_keymap
-  , major_mode    = init_major_mode
-  , popup_list    = init_popup_list
+type alias Keymap = Dict Keystroke ((RawKeystroke, KeyDescription), KeyBinding)
+
+type alias Counter = Int
+
+type alias AutoComplete =
+  { filters : String
+  , counter : Counter
+  , unicode_state : Maybe { filters : String
+                          , counter : Counter
+                          }
   }
 
--- we can set initial keymap to be empty since immediately after
--- the first action triggered, the actual default keymap will be used instead
-init_keymap : Keymap
-init_keymap = Dict.empty
+-- Mode ------------------------------------------------------------------------
 
-check_model : Model -> CheckResult
-check_model model =
-  sequentially_check [
-    \ () -> check_package model.root_package ]
-    -- TODO: finish this
+type Mode
+  = ModeNothing
+  | ModeMenu
+  | ModeRepo RecordModeRepo
+  | ModeModule RecordModeModule
+  | ModeComment RecordModeComment
+  | ModeGrammar RecordModeGrammar
+  | ModeRootTerm RecordModeRootTerm
+  | ModeRule RecordModeRule
+  | ModeTheorem RecordModeTheorem
+
+-- ModeRepo --------------------------------------------------------------------
+
+type alias RecordModeRepo =
+  { micro_mode               : MicroModeRepo }
+
+type MicroModeRepo
+  = MicroModeRepoNavigate
+  | MicroModeRepoAddPkgMod AutoComplete PackagePath Bool --Bool,is_adding_module
+
+-- ModeModule ------------------------------------------------------------------
+
+type alias RecordModeModule =
+  CursorTree -- but we don't need sub_cursor_path here
+    { module_path              : ModulePath
+    , micro_mode               : MicroModeModule
+    }
+
+type MicroModeModule
+  = MicroModeModuleNavigate
+  | MicroModeModuleAddNode AutoComplete Int NodeType
+
+-- ModeComment -----------------------------------------------------------------
+
+type alias RecordModeComment =
+  CursorTree -- but we don't need sub_cursor_path here
+    { node_path              : NodePath
+    , micro_mode             : MicroModeComment
+    }
+
+type MicroModeComment
+  = MicroModeCommentNavigate
+  | MicroModeCommentEditing
+
+-- ModeGrammar -----------------------------------------------------------------
+
+type alias RecordModeGrammar =
+  CursorTree -- but we don't need sub_cursor_path here
+    { node_path              : NodePath
+    , micro_mode             : MicroModeGrammar
+    }
+
+type MicroModeGrammar
+  = MicroModeGrammarNavigate
+  | MicroModeGrammarSetMetaVarRegex AutoComplete
+  | MicroModeGrammarSetLiteralRegex AutoComplete
+  | MicroModeGrammarAddChoice AutoComplete
+  | MicroModeGrammarSetChoiceFormat AutoComplete Int Int
+  | MicroModeGrammarSetChoiceGrammar AutoComplete Int Int
+
+-- ModeRootTerm ----------------------------------------------------------------
+
+type alias RecordModeRootTerm =
+  CursorTree
+    { module_path            : ModulePath
+    , root_term_focus        : Focus Model RootTerm
+    , micro_mode             : MicroModeRootTerm
+    , editability            : EditabilityRootTerm
+    , is_reducible           : Bool
+    , can_create_fresh_vars  : Bool
+    , get_existing_variables : Model -> Dict VarName GrammarName
+    , on_modify_callback     : Command -- what to do after something change
+    , on_quit_callback       : Command -- what to do after exit root_term mode
+    }
+
+type MicroModeRootTerm
+  = MicroModeRootTermSetGrammar AutoComplete
+  | MicroModeRootTermTodo AutoComplete
+  | MicroModeRootTermNavigate AutoComplete
+
+type EditabilityRootTerm
+  = EditabilityRootTermReadOnly
+  | EditabilityRootTermUpToTerm
+  | EditabilityRootTermUpToGrammar
+
+-- ModeRule --------------------------------------------------------------------
+
+type alias RecordModeRule =
+  CursorTree
+    { node_path              : NodePath
+    , micro_mode             : MicroModeRule
+    }
+
+type MicroModeRule
+  = MicroModeRuleNavigate
+  | MicroModeRuleSelectCascadeRule AutoComplete Int
+
+-- ModeTheorem -----------------------------------------------------------------
+
+type alias RecordModeTheorem =
+  CursorTree
+    { node_path              : NodePath
+    , micro_mode             : MicroModeTheorem
+    }
+
+type MicroModeTheorem
+  = MicroModeTheoremNavigate
+  | MicroModeTheoremSelectRule AutoComplete
+  | MicroModeTheoremSelectLemma AutoComplete

@@ -10,12 +10,14 @@ import ElmTest exposing (Test, suite, consoleRunner)
 
 -- order alphabetically (exceptional to our convention on README.md)
 import Tests.Tools.KeyboardExtra
+import Tests.Tools.OrderedDict
 import Tests.Tools.Utils
 
 tests : Test
 tests =
   suite "Tests" [
     Tests.Tools.KeyboardExtra.tests,
+    Tests.Tools.OrderedDict.tests,
     Tests.Tools.Utils.tests]
     -- TODO: write more tests
 

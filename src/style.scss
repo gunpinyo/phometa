@@ -1,0 +1,329 @@
+$inline-padding: 5px;
+
+.block {
+    margin: 0px;
+    padding: 2px $inline-padding 1px $inline-padding;
+}
+
+.inline-block {
+    @extend .block;
+    border-radius: 0px;
+    display: inline-block;
+    vertical-align: baseline;
+}
+
+.indented-block {
+    margin-left: 4px;
+    margin-right: 1px;
+    margin-top: 1px;
+    margin-bottom: 7px;
+    padding: 5px;
+    border: 2px solid transparent;
+    border-left-color: #888888;
+    border-left-width: 3px;
+    border-right-width: 3px;
+}
+
+/* this has no hover */
+.inactive-indented-block {
+    margin: 0;
+    margin-left: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: 2px solid transparent;
+    border-left-color: #888888;
+    border-left-width: 3px;
+    border-right-width: 3px;
+}
+
+.indented-block:hover {
+    @extend .indented-block;
+    border: 2px solid #888888;
+    border-left-width: 3px;
+    border-right-width: 3px;
+}
+
+.indented-block-on-cursor {
+    @extend .indented-block;
+    border: 2px solid black !important;
+    border-left-width: 3px !important;
+    border-right-width: 3px !important;
+}
+
+.indented-block-on-cursor:hover {
+    @extend .indented-block;
+    border: 2px solid #888888 !important;
+    border-left-color: black !important;
+    border-left-width: 3px !important;
+    border-right-color: black !important;
+    border-right-width: 3px !important;
+}
+
+.underlined-block {
+    display: inline-block;
+    margin: 0px;
+    padding: 0px;
+    border-bottom: 2px solid #888888;
+}
+
+.underlined-child-block {
+    @extend .inline-block;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.root-term-block {
+    @extend .inline-block;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    background: #EEEEEE;
+}
+
+.modifiable-block {
+    @extend .inline-block;
+    /* For browsers that do not support gradients */
+    background: #CCCCCC;
+    /* For Safari 5.1 to 6.0 */
+    background: -webkit-linear-gradient(#BBBBBB, #DDDDDD);
+    /* For Opera 11.1 to 12.0 */
+    background: -o-linear-gradient(#BBBBBB, #DDDDDD);
+    /* For Firefox 3.6 to 15 */
+    background: -moz-linear-gradient(#BBBBBB, #DDDDDD);
+    /* Standard syntax */
+    background: linear-gradient(#BBBBBB, #DDDDDD);
+}
+
+.modifiable-root-term-block {
+    @extend .root-term-block;
+    @extend .modifiable-block;
+}
+
+.block-spacial {
+    margin: 0px;
+    padding-top: 1px;
+}
+
+.block-clickable:hover {
+    @extend .block-spacial;
+    border: 0px solid #AAAAAA;
+    border-top-width: 1px;
+
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
+}
+
+.block-on-cursor {
+    @extend .block-spacial;
+    border: 0px solid black !important;
+    border-top-width: 1px !important;
+}
+
+input {
+    border: 0px solid black !important;
+}
+
+@mixin color-with-bg($color) {
+    color: $color;
+    background-color: $color * 0.3 + white * 0.7;
+}
+
+
+/* newly defined string */
+.newly-defined-block {
+    @extend .inline-block;
+    @include color-with-bg(#330055)
+}
+
+/* keyword */
+.keyword-block {
+    @extend .inline-block;
+    margin-top: 5px;
+    margin-bottom: 4px;
+    color: #880000;
+    font-weight: bold;
+}
+
+/* todo keyword */
+.todo-keyword-block {
+    @extend .keyword-block;
+    @include color-with-bg(#880000);
+}
+
+/* regex */
+.regex-block {
+    @extend .inline-block;
+    @include color-with-bg(#4444EE);
+}
+
+/* button */
+.button-panel {
+    float: right;
+    margin-top: 3px
+}
+
+.button-block {
+    @extend .inline-block;
+    color: #000000;
+    background-color: #DDDDDD;
+}
+
+/* icon */
+.icon-block {
+    @extend .inline-block;
+    @include color-with-bg(#880000);
+    vertical-align:middle;
+    font-weight: bold;
+}
+
+/* auto complete unicode state */
+.auto-complete-unicode-block {
+    @include color-with-bg(#EE8888);
+}
+
+/* module intersperse panel */
+.module-intersperse-panel {
+    background-color: #AAAAAA;
+    margin: 3px;
+    margin-bottom: 5px;
+}
+
+/* comment */
+.comment-block {
+    @extend .inline-block;
+    @include color-with-bg(#000000);
+}
+
+/* grammar */
+.grammar-block {
+    @extend .inline-block;
+    @include color-with-bg(#004400);
+    font-weight: bold;
+}
+
+/* format for inductive grammar */
+.ind-format-block {
+    @extend .inline-block;
+    color: #FF0088;
+    font-weight: bold;
+}
+
+/* place to choose term */
+.term-todo-block {
+    @extend .inline-block;
+    @include color-with-bg(#008800)
+}
+
+/* variable */
+.metavar-block {
+    @extend .inline-block;
+    @include color-with-bg(#0000FF);
+    font-weight: bold;
+}
+.literal-block {
+    @extend .inline-block;
+    @include color-with-bg(#4444FF);
+}
+.unknown-var-block {
+    @extend .inline-block;
+    @include color-with-bg(#0000FF);
+}
+
+/* rule */
+.rule-block {
+    @extend .inline-block;
+    @include color-with-bg(#005500);
+}
+
+/* theorem */
+.theorem-block {
+    @extend .inline-block;
+    @include color-with-bg(#004488);
+}
+
+/* package */
+.package-block {
+    @extend .inline-block;
+    font-weight: bold;
+    text-decoration: underline;
+    color: #0000BB;
+}
+
+/* module */
+.module-block {
+    @extend .inline-block;
+    font-weight: bold;
+    text-decoration: underline;
+    color: #BB00BB;
+}
+
+/* -------------------------------------------------------------------------- */
+
+div {
+    white-space: pre;
+}
+
+th, td {
+    padding: 5px;
+}
+
+/* hr { */
+/*   -moz-border-bottom-colors: none; */
+/*   -moz-border-image: none; */
+/*   -moz-border-left-colors: none; */
+/*   -moz-border-right-colors: none; */
+/*   -moz-border-top-colors: none; */
+/*   border-color: #EEEEEE -moz-use-text-color #FFFFFF; */
+/*   border-style: solid none; */
+/*   border-width: 1px 0; */
+/*   color: gray; */
+/*   margin: 7px 0; */
+/* } */
+
+.window {
+    font-family: monospace;
+    font-size: 100%;
+    color: Black;
+    background-color: #666666;
+}
+
+.pane {
+    border-radius: 5px;
+    background: #EED8B2;
+    padding: 5px;
+    margin: 2px;
+    overflow: auto;
+}
+
+.pane-on-cursor {
+    background: #EEE0C2;
+}
+
+.package-node-text {
+    color: #222222;
+}
+
+.keymap-table tr:hover:nth-child(n+2) {
+    background-color: #FEFEFE;
+}
+
+.keymap-keystroke-td {
+    color: #BB00BB;
+}
+
+.keymap-inactive-keystroke-td {
+    color: #666666;
+}
+
+.keymap-prefix-description-td {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #0000BB;
+}
+
+.keymap-command-description-td {
+    color: #0000BB;
+}

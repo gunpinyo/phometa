@@ -1,12 +1,15 @@
-- change ComponentPath, ModulePath to more elegent way
- e.g.  type alias ModulePath = [ModuleName]
-     this could be ModulePath = (PackagePath, ModuleName)
-     PackagePath
-      = PackagePathNil
-      | PackagePathCons PackageName PackagePath
+- implement module importation
 
-- try to find a third party package that can save file
+- enhance mathjax by adding editor
 
-- introduce MajorMode in phomata, e.g. package navigation, modulerenameing
+- implement Traditional Theorem tree view
 
-- getCommand in Updates.Update
+- implement undo feature
+  i.e. command that can roll back `Model` to previous state
+
+- make is_folded ui works for node in module pane
+
+- implement package, module, and node deletion
+
+- allow user to open file / doweload file directly
+  as alternative to copy and paste from home pane
