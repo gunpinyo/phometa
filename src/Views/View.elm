@@ -4,7 +4,7 @@ import Html.Attributes exposing (class)
 import Html.Lazy exposing (lazy)
 
 import Tools.Flex exposing (flex_div, flex_grow, flex_split, fullbleed)
-import Tools.HtmlExtra exposing (import_css, import_javascript)
+import Tools.HtmlExtra exposing (import_css, import_javascript, custom_script)
 import Models.ViewState exposing (View)
 import Views.Package exposing (show_package_pane)
 import Views.Keymap exposing (show_keymap_pane)
@@ -18,12 +18,22 @@ show_view : View
 show_view model =
   fullbleed
     <| flex_div [] [class "window"]
-    <| [ import_css ("http://cdnjs.cloudflare.com/ajax/libs/font-awesome/"
-                   ++"4.4.0/css/font-awesome.min.css")
+    <| [ import_css <| "http://cdnjs.cloudflare.com/ajax/libs/font-awesome/"
+                    ++"4.4.0/css/font-awesome.min.css"
        , import_css "style.css"
        , show_window model
-       , import_javascript ("https://ajax.googleapis.com/ajax/libs/jquery/"
-                           ++ "1.12.2/jquery.min.js")
+       , import_javascript <| "https://ajax.googleapis.com/ajax/libs/jquery/"
+                           ++ "1.12.2/jquery.min.js"
+       , custom_script "text/x-mathjax-config" """
+            MathJax.Hub.Config({
+              tex2jax: {
+                inlineMath: [['$','$'],['\\\\(','\\\\)']],
+                processClass: "mathjax",
+                ignoreClass: "window"
+              }
+            }); """
+       , import_javascript <|"https://cdn.mathjax.org/mathjax/latest/MathJax.js"
+                           ++ "?config=TeX-MML-AM_CHTML"
        , import_javascript "naive.js"]
 
 show_window : View

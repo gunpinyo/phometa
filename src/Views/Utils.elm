@@ -112,22 +112,22 @@ show_auto_complete_filter class_name cursor_info placeholder
    in case auto_complete.unicode_state of
         Nothing ->
           Html.input [
-            css_style,
-            on_blur address (ActionCommand blur_cmd),
-            on_typing_to_input_field address (\string -> ActionCommand <|
-              update_auto_complete string auto_complete_focus),
-            Html.Attributes.type' "text",
-            Html.Attributes.placeholder placeholder,
-            Html.Attributes.value auto_complete.filters,
-            Html.Attributes.attribute "data-autofocus" ""] []
+              css_style,
+              on_blur address (ActionCommand blur_cmd),
+              on_typing_to_input_field address (\string -> ActionCommand <|
+                update_auto_complete string auto_complete_focus),
+              Html.Attributes.type' "text",
+              Html.Attributes.placeholder placeholder,
+              Html.Attributes.attribute "data-autofocus" ""]
+            [text auto_complete.filters]
         Just record ->
           div [css_style] [
             text auto_complete.filters,
             Html.input [
-              class "auto-complete-unicode-block",
-              on_typing_to_input_field address (\string -> ActionCommand <|
-                update_auto_complete string auto_complete_focus),
-              Html.Attributes.type' "text",
-              Html.Attributes.placeholder "unicode",
-              Html.Attributes.value record.filters,
-              Html.Attributes.attribute "data-autofocus" ""] []]
+                class "auto-complete-unicode-block",
+                on_typing_to_input_field address (\string -> ActionCommand <|
+                  update_auto_complete string auto_complete_focus),
+                Html.Attributes.type' "text",
+                Html.Attributes.placeholder "unicode",
+                Html.Attributes.attribute "data-autofocus" ""]
+              [text record.filters]]

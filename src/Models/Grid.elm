@@ -83,6 +83,16 @@ update_grid pane_cursor update_func grids =
       PaneCursorGrid4 -> Grids2x2 g1 g2 g3 (update_func g4)
       _               -> grids
 
+update_all_grid : (Grid -> Grid) -> Grids -> Grids
+update_all_grid f grids =
+  case grids of
+    Grids1x1 g1          -> Grids1x1 (f g1)
+    Grids1x2 g1 g2       -> Grids1x2 (f g1) (f g2)
+    Grids1x3 g1 g2 g3    -> Grids1x3 (f g1) (f g2) (f g3)
+    Grids2x1 g1 g2       -> Grids2x1 (f g1) (f g2)
+    Grids3x1 g1 g2 g3    -> Grids3x1 (f g1) (f g2) (f g3)
+    Grids2x2 g1 g2 g3 g4 -> Grids2x2 (f g1) (f g2) (f g3) (f g4)
+
 focus_grid : PaneCursor -> Focus Grids Grid
 focus_grid pane_cursor =
   Focus.create

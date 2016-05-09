@@ -32,6 +32,13 @@ ordered_dict_insert index key value ordered_dict =
               |> list_insert index key
   }
 
+ordered_dict_remove : comparable -> OrderedDict comparable a
+                        -> OrderedDict comparable a
+ordered_dict_remove key ordered_dict =
+  { dict = Dict.remove key ordered_dict.dict
+  , order = List.filter ((/=) key) ordered_dict.order
+  }
+
 ordered_dict_append : comparable -> a -> OrderedDict comparable a
                         -> OrderedDict comparable a
 ordered_dict_append key value ordered_dict =

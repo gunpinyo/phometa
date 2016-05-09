@@ -1,12 +1,11 @@
 module Tools.HtmlExtra where
 
 import Json.Decode as Json
-import Regex exposing (HowMany(..), replace, regex)
 import Signal exposing (Address)
 import Graphics.Element exposing (show)
 
 import Html exposing (Html, Attribute, node, div, text)
-import Html.Attributes exposing (attribute, style, rel, href)
+import Html.Attributes exposing (attribute, style, rel, href, type')
 import Html.Events exposing (onWithOptions, targetValue)
 
 import_css : String -> Html
@@ -19,6 +18,11 @@ import_css css_location =
 import_javascript : String -> Html
 import_javascript javascript_location =
   node "script" [attribute "src" javascript_location] []
+
+custom_script : String -> String -> Html
+custom_script script_type content =
+  node "script" [ type' script_type ]
+                [ text content ]
 
 debug_to_html : a -> Html
 debug_to_html x = Html.div [] [Html.fromElement <| show x]

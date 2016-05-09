@@ -8,10 +8,11 @@ init_package_with_stdlib : Package
 init_package_with_stdlib =
   case decode_repository raw_stdlib_package of
     Ok repository -> repository
-    Err _         -> init_package
+    Err err_msg   -> let log = Debug.log "import repo error" err_msg
+                      in init_package
 
 raw_stdlib_package : String
-raw_stdlib_package = """ {
+raw_stdlib_package = """{
   "is_folded": false,
   "dict": {
     "Standard Library": {
@@ -3284,5 +3285,4 @@ raw_stdlib_package = """ {
       ]
     }
   }
-}
-"""
+}"""

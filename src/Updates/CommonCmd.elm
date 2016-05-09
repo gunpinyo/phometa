@@ -4,8 +4,9 @@ import Focus
 
 import Models.Focus exposing (mode_, pane_cursor_, root_package_, grids_)
 import Models.Cursor exposing (PaneCursor(..))
+import Models.RepoModel exposing (NodePath)
 import Models.RepoEnDeJson exposing (decode_repository)
-import Models.Grid exposing (init_grids)
+import Models.Grid exposing (Grid(..), init_grids, update_all_grid)
 import Models.Message exposing (Message(..))
 import Models.Model exposing (Command, Mode(..))
 import Updates.Message exposing (cmd_send_message)
@@ -29,3 +30,12 @@ cmd_load_repository repo_string =
                     >> cmd_reset_mode
     Err err_msg     -> cmd_send_message (MessageException
                          <| "cannot load repository because " ++ err_msg)
+
+cmd_remove_node_from_grids : NodePath -> Command
+cmd_remove_node_from_grids node_path =
+  Focus.update (grids_) (update_all_grid (\grid -> case grid of
+    GridHome _ -> grid
+    GridModule module_path _ -> if module_path == node_path.module_path
+      then GridModule module_path [] else grid
+    GridNode node_path' _ -> if node_path' == node_path
+      then GridModule node_path.module_path [] else grid))
