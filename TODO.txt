@@ -1,20 +1,15 @@
-- implement ModeRule
-
 - implement module importation
 
-- implement comment embeded by latex or html
+- enhance mathjax by adding editor
 
 - implement Traditional Theorem tree view
 
-- implement undo feature i.e. command that can roll back `Model` to previous state
+- implement undo feature
+  i.e. command that can roll back `Model` to previous state
 
-- make is_folded ui works
+- make is_folded ui works for node in module pane
 
-- complete package pane
+- implement package, module, and node deletion
 
-- try to find a third party package that can save file
-
--- Feature not to forget to write on report ------------------------------------
-
-support unicode in auto_complete
-jump to parent, i_th child, and reduction
+- allow user to open file / doweload file directly
+  as alternative to copy and paste from home pane

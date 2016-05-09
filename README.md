@@ -1,5 +1,6 @@
 # phometa
-Phometa is an application that can build formal system based on visualisation.
+Phometa is a web application
+that can build formal systems based on visualisation.
 
 This is individual project of Gun Pinyo
 Supervisor: Dr. Krysia Broda
@@ -9,9 +10,6 @@ Imperial College London
 
 For full report of this project, please compile master.tex in `doc/` directory.
 **TODO: once the project complete, redirect this to pdf file.**
-
-**NOTE: This project is just start and I am still designing the architecture.**
-**Please do not use this until this note is disappear.**
 
 ## System Requirement for development
 - nodejs (>= 0.10.25)
@@ -83,6 +81,7 @@ main = start app
     import decorations will be ordered alphabetically
 - for defined modules, import decorations will be ordered by dependency
   - a general guideline of order between each package is
+    - `Naive`
     - `Tools`
     - `Models`
     - `Updates`
@@ -94,14 +93,12 @@ e.g.
 ```
 import Signal exposing (Address)
 
-import Flex exposing (row, column, flexDiv, fullbleed)
 import Html exposing (Html, button, text)
-import Html.Events exposing (onClick)
 
-import Models.Package exposing (Package)
+import Models.RepoModel exposing (Package)
 import Models.Model exposing (Model)
 ```
-note on example of defined modules
-  in this case `Models.Model` depends on `Model.Packages` so it must come after,
-  but if there are modules which are not depend to each other, we are free to
-  any on them first
+
+in this case `Models.Model` depends on `Model.RepoModel` so it must come after,
+but if there are modules which are not depend to each other, we are free to
+any on them first

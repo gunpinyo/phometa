@@ -1,7 +1,5 @@
 module Tests.Tools.Utils where
 
-import Set
-
 import ElmTest exposing (Test, test, suite, assert, assertEqual, assertNotEqual)
 
 import Tools.Utils exposing (..)
@@ -31,15 +29,15 @@ tests = suite "Tools.Utils" [
       assertEqual "even" ((parity_pair_extract 8) ("even", "odd"))],
   suite "remove_list_duplicate" [
     test "when empty" <|
-      assertEqual [] (remove_list_duplicate []) ,
+      assertEqual [] (list_remove_duplication []) ,
     test "when no duplicate" <|
-      assertEqual [5, 1, 2] (remove_list_duplicate [5, 1, 2]),
+      assertEqual [5, 1, 2] (list_remove_duplication [5, 1, 2]),
     test "normal" <|
-      assertEqual [5, 1, 2] (remove_list_duplicate [1, 5, 2, 1, 5, 2, 1, 1, 2]),
+      assertEqual [5, 1, 2] (list_remove_duplication [1, 2, 1, 5, 2, 1, 1, 2]),
     test "not allow permute when no duplicate" <|
-      assertNotEqual [5, 1, 2] (remove_list_duplicate [5, 2, 1]),
+      assertNotEqual [5, 1, 2] (list_remove_duplication [5, 2, 1]),
     test "not allow permute" <|
-      assertNotEqual [5, 1, 2] (remove_list_duplicate [1, 2, 1, 5])],
+      assertNotEqual [5, 1, 2] (list_remove_duplication [1, 2, 1, 5])],
   suite "are_list_unorderly_equal_to" [
     test "when both empty" <|
       assert (are_list_unorderly_equal_to [] []),

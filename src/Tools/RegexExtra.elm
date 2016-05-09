@@ -1,9 +1,9 @@
 module Tools.RegexExtra where
 
-import Native.Phometa
-
 import Regex exposing (Regex)
 import String
+
+import Native.Phometa
 
 -- in Phometa, we only use regex for exact match
 -- so these functions put `^` and `$` automatically
