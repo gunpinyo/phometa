@@ -5,6 +5,7 @@ import Html.Attributes exposing (style)
 
 import Tools.CssExtra exposing (CssStyle)
 
+-- credit: css style adapted from  https://css-tricks.com/using-flexbox/
 flex_div : CssStyle -> List Attribute -> List Html -> Html
 flex_div css_style attributes htmls =
   let css_style' =

@@ -11,4 +11,8 @@ cp src/naive.js build/naive.js
 
 elm-make src/Main.elm --yes --output build/phometa.html
 
+cd build
+tar -zcvf phometa.tar.gz *
+cd ..
+
 popd

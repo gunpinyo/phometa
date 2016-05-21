@@ -2,79 +2,254 @@
 \begin{document}
 
 \chapter{Background}
+\label{chap:background}
+
+In this chapter, we will go thought some required materials needed for later
+chapters. These can be linked together by an example of simple arithmetic
+explained below.
 
 \section{Formal System}
 
-A formal system is any well-defined system of abstract thought based on mathematical model\supercite{formal-system-wiki}. Each formal system has a formal language composed of primitive symbols\footnote{phometa will assume that primitive symbols are any Unicode character.} acted by certain formation\supercite{formal-system-britannica}.
+A formal system is any well-defined system of abstract thought based on
+mathematical model\supercite{formal-system-wiki}. Each formal system has a
+formal language composed of primitive symbols\footnote{phometa will assume that
+  primitive symbols are any Unicode character.} acted by certain
+formation\supercite{formal-system-britannica}.
 
-% For example, propositional logic has a grammar like this
+Informally, is an abstract system that has precise structures and can be
+reasoned about. For example, numbers (base 10) and their arithmetic (using $+$
+and $\times$) could form a formal system. This is because every term (e.g. $5$,
+$(3 + 1)$, $(3 \times 4)$) has explicit structure and we can argue something
+like ``\emph{does $12$ equal to $(3 \times 4)$}'' or ``\emph{for any integers
+  $a$ and $b$, $(a + b)$ is equal to $(b + a)$}''.
 
+\section{Backus-Naur Form}
 
-% If not stated otherwise, phometa will assume that primitive symbols are all of unicode,
+Backus-Naur Form (BNF) is a way to construct a term, for example, grammars of
+formal system above can be defined as the following
 
-% Since phometa aims to be a tool and can create arbitrary formal system. So syntax and derivation rule part are vital as well. We try In fact, most of preliminary
-% Although proof assistant related mainly on proving mechanism but we
-% If we keep thinking
+\begin{lstlisting}[style=bnf]
+<Digit>  ::= `0' | `1' | `2' | `3' | `4' | `5' | `6' | `7' | `8' | `9'
 
+<Number> ::= <Digit> | <Number> <Digit>
 
-%  Formally proving a line of proposition might need a page of derivation tree. This is worse than its sound since the width of a tree grows exponentially to its height.
+<Expr>   ::= <Number> | `('<Expr> `+' <Expr>`)' | `('<Expr> `$\times$' <Expr>`)'
 
+<Equation> ::= <Expr> `=' <Expr>
+\end{lstlisting}
 
-% Many of formal systems such as first-order logic\footnote{First-order logic is a logical system, but we can see it as formal system by exclude semantics part.} and lambda calculus are considered to be the most fundamental components Mathematics and Computer Science. Each of them has been designed and implemented separately, however, these formal systems have something in common, for examples,
+A term of \texttt{<Digit>} can be either 0 or 1 or 2 or $\ldots$ or 9 and nothing else.
 
-% \begin{itemize}
-%   \item first-order logic consists of
-%   \begin{itemize}%[label={}]
-%       \item \textbf{Syntax} Grammars of propositions, atoms, terms, variables, etc.
-%       \item \textbf{Reductions} How to reduce complex proposition into simpler one, how to define substitution, etc.
-%       \item \textbf{Proof Rules} $\wedge$-intro, $\wedge$-elim, $\rightarrow-intro$, $\rightarrow$-elim, etc.
-%       \item \textbf{Theorems} T
-%   \end{itemize}
-%   \item lambda calculus consists of
-%   \begin{itemize}%[label={}]
-%       \item \textbf{Syntax} Grammars of propositions, atoms, terms, variables, etc.
-%       \item \textbf{Reduction} How to reduce complex proposition into simpler one, how to define substitution, etc.
-%       \item \textbf{Proof Rules} $\wedge$-intro, $\wedge$-elim, $\rightarrow-intro$, $\rightarrow$-elim, etc.
-%   \end{itemize}
-% \end{itemize}
+\hspace{2ex}
 
-% Since
+A term of \texttt{<Number>} can be either
+\begin{itemize}
+\item \texttt{<Digit>}
+\item another \texttt{<Number>} concatenate with \texttt{<Digit>}
+\end{itemize}
 
-
-\section{Natrual Deduction}
-
-\section{Big picture --- Formal Verification}
-Formal Verification is one of major topics in Computer Science. It dealing with proving or disproving the correctness of algorithms used in curtain system\supercite{formal-verification-wiki}  which is necessary for some critical applications such as rocket launcher or medical surgery where bugs in programs can cause lose of life or financial crisis.
-
-Formal Verification itself split into two ends of spectrum, Model Checking and Theorem Proving. Model Checking required a complete formal-specification of the system, then it will automatically tell us weather the curtain property holds or not. Theorem Proving, in the another hand require us to proof the by our self with some part become automatic if possible.
-
-These two ends of spectrum doesn't superior to one another. Model Checking is easier to used than Theorem Proving (since everything is completely automatic) whereas Theorem Proving has wider horizon of provable properties (since users can give move specific hint on particular property).
-
-Phometa takes Theorem Proving approach with some part become automatic.
-
-\section{Related Traditional Proof Assistant}
-
-\subsection{Coq}
-Coq\supercite{coq-official-website} is one the most famous interactive theorem prover. Coq works within the theory of the calculus of inductive constructions (CIC)\footcite{CIC is itself is developed alongside Coq.} developed by Thierry Coquand\supercite{thierry-coquand-homepage}. Its proving technique relies mainly on tactics which are commands that tell Coq how to prove particular theorem, this might look confuse at the first time but comes to handy later especially when we want to prove something complex.
-
+\hspace{1ex}
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{background-coq}
-    \caption{Coq in action --- with CoqIDE \supercite{coq-official-website}}
-\label{fig:background-coq}
+  \centering \Tree[.{$250$ is \texttt{<Number>}} [.{$25$ is \texttt{<Number>}}
+  [.{$2$ is \texttt{<Number>}} {$2$ is \texttt{<Digit>}} ] {$5$ is
+    \texttt{<Digit>}} ] {$0$ is \texttt{<Digit>}} ]
+    \caption{For example, this diagram show that why $250$ is a term of \texttt{<Number>}}
 \end{figure}
 
-\subsection{Agda}
-Adga\supercite{agda-official-website} is (dependent type) functional programming which can be seen as a proof assistant as well. It is based on Martin Lof Type Theory\footnote{CIC is an impredicative version of Martin Lof Type Theory}. Its proving technique is relies on Curry-Howard correspondence which state that there is direct relationship between computer programs and mathematical proofs\supercite{curry-howard-correspondence}, for example function corresponded to logical implication, product type corresponded to logical implication.
+\hspace{2ex}
 
-\subsection{Lean}
-Lean\supercite{lean-offical-website} is a relatively new theorem prover\footnote{The Lean project was launched by Leonardo de Moura at Microsoft Research in 2013}
+A term of \texttt{<Expr>} can be either
+\begin{itemize}
+\item \texttt{<Number>}
+\item other two \texttt{<Expr>}s concatenate using `$($' `$+$' `$)$'
+\item other two \texttt{<Expr>}s concatenate using `$($' `$\times$' `$)$'
+\end{itemize}
 
-\section{Related Visualised Proof Assistant}
-Sorry I can't finish some part of background chapter for interim report, this will be done in later version.
+\hspace{1ex}
+\begin{figure}[H]
+    \centering
+\Tree[.{$(0 + (12 \times 6))$ is \texttt{<Expr>}} [.{$0$ is \texttt{<Expr>}} [.{$0$ is
+  \texttt{<Number>}} {$0$ is \texttt{<Digit>}} ] ]
+[.{$(12 \times 6)$ is \texttt{<Expr>}} [.{$12$ is \texttt{<Expr>}} [.{$12$ is
+  \texttt{<Number>}} [.{$1$ is \texttt{<Number>}} {$2$ is \texttt{<Digit>}} ]
+{$2$ is \texttt{<Digit>}} ] ] [.{$6$ is \texttt{<Expr>}} [.{$6$ is
+  \texttt{<Number>}} {$6$ is \texttt{<Digit>}} ] ]]]
+    \caption{For example, this diagram show that why $(0 + (12 \times 6))$ is a term of \texttt{<Expr>}}
+\end{figure}
 
-\subsection{Pandora}
-\subsection{http://logitext.mit.edu/tutorial}
-\subsection{Why3}
+\hspace{2ex}
+A term of \texttt{<Equation>} can be only two \texttt{<Expr>}s concatenate using
+`$=$'
+
+\hspace{1ex}
+\begin{figure}[H]
+    \centering
+\Tree[.{$(5 + 7) = 12$ is \texttt{<Equation>}}
+       [.{$(5 + 7)$ is \texttt{<Expr>}}
+         [.{$5$ is \texttt{<Expr>}} [.{$5$ is \texttt{<Number>}} {$5$ is
+           \texttt{<Digit>}} ] ]
+         [.{$7$ is \texttt{<Expr>}} [.{$7$ is \texttt{<Number>}} {$7$ is
+           \texttt{<Digit>}} ] ] ]
+      [.{$12$ is \texttt{<Expr>}}
+         [.{$12$ is \texttt{<Number>}} [.{$1$ is \texttt{<Number>}} {$2$ is \texttt{<Digit>}} ]
+      {$2$ is \texttt{<Digit>}} ] ] ]
+    \caption{For example, this diagram show that why $(5 + 7) = 12$ is \texttt{<Equation>}}
+\end{figure}
+
+\hspace{2ex}
+
+\section{Meta Variables and Pattern Matching}
+
+\emph{Meta variables} are arbitrary sub-terms embedded inside root term. For
+example, an \texttt{<Expr>} $(x + y)$ represents two arbitrary \texttt{<Expr>}
+joined by `$+$'.
+
+But if we have an \texttt{<Equation>} $(x + 7) = 12$, shouldn't $x$ be an unknown
+variable that needed to be solve rather than being arbitrary \texttt{<Expr>}?
+Well, $x$ still represents arbitrary \texttt{<Expr>} but in order make this
+equation hold, $x$ must be $5$. Hence ``\emph{variable needed to be solve}'' is
+just spacial form of ``\emph{variable as arbitrary term}''.
+
+Meta variables help us to represents statement in more general manner. For
+example, ``\emph{the same expressions plus together is the same as 2 times that
+  expression}'' could be represented by $(x + x) = (2 \times x)$ rather than $(0 + 0)
+= (2 \times 0)$ and $(1 + 1) = (2 \times 1)$ and $(2 + 2) = (2 \times 2)$ and so on.
+
+But if we know that $(x + x) = (2 \times x)$, how could we derive its instance e.g.
+$(1 + 1) = (2 \times 1)$ or even $(y \times z) + (y \times z) = (2 \times (y \times z))$ ?
+The solution for this is to use \emph{Pattern Matching} which is algorithm that
+try to substitute pattern's meta variables into more specific form, in order to
+make pattern identical to target, for example
+\begin{itemize}
+\item $(x + x) = (2 \times x)$ is pattern matchable with $(1 + 1) = (2 \times 1)$ by
+  substitute $x$ with$1$
+\item $(x + x) = (2 \times x)$ is pattern matchable with $(y \times z) + (y
+  \times z) = (2 \times (y \times z))$ by substitute $x$ with $(y \times z)$
+\item $(x + x) = (2 \times x)$ is \emph{not} pattern matchable with $(1 + 1) = 2$, if
+  we try to substitute $x$ with $1$ we would get $(1 + 1) = (2 \times 1)$ which is not
+  identical to $(1 + 1) = 2$
+\item $(1 + 1) = (2 \times 1)$ is \emph{not} pattern matchable with $(x + x) =
+  (2 \times x)$, because pattern $(1 + 1) = (2 \times 1)$ doesn't have any meta
+  variable and it is not identical to $(x + x) = (2 \times x)$. This show that
+  pattern matching doesn't generally holds in opposite direction
+\item $(x + x) = (2 \times x)$ is pattern matchable to itself by substitute $x$ with $x$
+\end{itemize}
+
+If pattern matching is successful then the target is instance of the pattern.
+
+\section{Derivation of Formal Systems}
+
+So far, we construct any term based on Backus-Naur Form, this doesn't prevent
+invalid term, for example, $(2 + 2) = 5$ is perfectly a term of
+\texttt{<Equation>}. Thus, we need some mechanism to verify a term i.e.
+\emph{prove} that the particular term holds. One way to deal with this is to use
+derivation system, first, we have a set of derivation rules that has format as
+the following
+
+$$ \derivRule{rule-name}{Conclusion}{Premise_1 \\ Premise_2 \\ Premise_3 \\ \ldots \\
+  Premise_n} $$
+
+This say that if we know that $Premise_1$ and $Premise_2$ and $Premise_3$ and
+$\ldots$ and $Premise_n$ hold then $Conclusion$ holds. In another word, if
+we want to prove $Conclusion$ then we can use this derivation rule then proof
+its premises.
+
+Derivation rules of current example formal system could be shown as the
+following\footnote{The list of derivation rules here is not exhaustive, due to
+limited space}
+
+$$
+\derivRule{eq-refl}{x = x}{ } \qquad  \qquad  \qquad
+\derivRule{eq-symm}{x = y}{y = x} \qquad  \qquad  \qquad
+\derivRule{eq-tran}{x = y}{x = z \\ z = y}
+$$
+
+$$
+\derivRule{add-intro}{(u + v) = (x + y)}{u = x \\ v = y} \qquad  \qquad \qquad \qquad
+\derivRule{mult-intro}{(u \times v) = (x \times y)}{u = x \\ v = y}
+$$
+
+$$
+\derivRule{add-assoc}{((x + y) + z) = (x + (y + z))}{ } \qquad  \qquad  \qquad \qquad
+\derivRule{mult-assoc}{((x \times y) \times z) = (x \times (y \times z))}{ }
+$$
+
+$$
+\derivRule{add-comm}{(x + y) = (y + x)}{ } \qquad  \qquad  \qquad \qquad
+\derivRule{mult-comm}{(x \times y) = (y \times x)}{  }
+$$
+
+$$
+\derivRule{dist-left} {(x \times (y + z)) = ((x \times y) + (x
+  \times z))}{ } \qquad \qquad  \qquad
+\derivRule{dist-right}{((x + y) \times z) = ((x \times z) + (y
+  \times z))}{ }
+$$
+
+In order to use a derivation rule, first the conclusion of the rule is pattern
+match against current goal, if it is pattern matchable then meta variables in
+premises are substituted respect to the pattern matching (if some meta variables
+of premises doesn't exist in substitution list then we are free to substitute by
+anything). These substituted premises will become next goals that we need to prove.
+
+For example if we want to prove $((3 + 4) * 5) = ((4 + 3) * 5)$ we could use
+rule \rulename{mult-intro} to prove it since $(u \times v) = (x \times y)$ is
+pattern matchable with $((3 + 4) * 5) = ((4 + 3) * 5)$ by substitute $u$ with $(3 +
+4)$, $v$ with $5$, $x$ with $(4 + 3)$, and $y$ with $5$. Then premises $u = x$
+and $v = y$ are substituted and become $(3 + 4) = (4 + 3)$ and $5 = 5$
+respectively. Therefore, $((3 + 4) * 5) = ((4 + 3) * 5)$ can be proven by
+\rulename{mult-intro} and produce another two sub-goals which are $(3 + 4) =
+(4 + 3)$ and $5 = 5$. This can be shown as instance of \rulename{mult-intro}
+as the following
+
+$$ \derivTree{add-intro}{((3 + 4) * 5) = ((4 + 3) * 5)}{(3 + 4) = (4 + 3) \\ 5 = 5} $$
+
+For the remaining, we could prove $(3 + 4) = (4 + 3)$ using
+\rulename{add-comm} because $(x + y) = (y + x)$ is pattern matchable with $(3
++ 4) = (4 + 3)$, \rulename{add-comm} doesn't have any premises hence there are
+no further sub-goal. For $5 = 5$ we could use \rulename{eq-refl}, this also
+deosn't produce further sub-goal so the entire proof is complete. We can the
+write the entire proof using \emph{derivation tree} as the following
+
+$$ \derivTree{add-intro}{((3 + 4) * 5) = ((4 + 3) * 5)}
+     {\derivTree{add-comm}{(3 + 4) = (4 + 3)}{ } \\ \\ \\
+      \derivTree{eq-refl}{5 = 5}{ }} $$
+
+For better understanding about derivation system, here is a more complex
+derivation tree which prove $(((w \times x) + (w \times y)) \times z) = (w \times ((x \times z) + (y
+\times z)))$. Reader is encouraged to explore that why this derivation tree is
+correct.
+
+% \begin{sidewaysfigure}
+$$
+\derivTree{eq-tran}{(((w \times x) + (w \times y)) \times z) =
+                    (w \times ((x \times z) + (y \times z)))}
+{ \derivTree{mult-intro}{(((w \times x) + (w \times y)) \times z) =
+                         ((w \times (x + y)) \times z)}
+  { \derivTree{eq-symm}{((w \times x) + (w \times y)) =
+                         (w \times (x + y))}
+    { \derivTree{dist-left}{(w \times (x + y)) = ((w \times x) + (w \times y))} { }
+    }
+   \\ \\ \\
+    { \derivTree{eq-refl}{z = z}{ }
+    }
+  }
+\\ \\ \\ \\
+  \derivTree{eq-tran, leftskip=30em,rightskip=5em,vdots=6em}{((w \times (x + y)) \times z) =
+                      (w \times ((x \times z) + (y \times z)))}
+  { \derivTree{mult-assoc, leftskip=10em,rightskip=20em,vdots=4em}{((w \times (x + y)) \times z) =
+                           (w \times ((x + y) \times z))} { }
+  \\ \\ \\
+    \derivTree{mult-intro}{(w \times ((x + y) \times z)) =
+                      (w \times ((x \times z) + (y \times z)))}
+    { \derivTree{eq-refl}{w = w}{ }
+    \\ \\ \\
+      \derivTree{dist-right}{((x + y) \times z) = ((x \times z) + (y \times z))}
+      { }
+    }
+  }
+}
+$$
+% \end{sidewaysfigure}
 
 \end{document}

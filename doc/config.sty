@@ -14,10 +14,19 @@
 \usepackage{tikz}
 \usepackage{xcolor}
 
-% \usepackage{fontspec}
-% \setmainfont{Arial}
-
 \usepackage{listings}
+\usepackage{qtree}
+\usepackage{proof}
+\usepackage{amsmath}
+\usepackage{mathpartir}
+\newcommand{\rulename}[1]{\textsc{\MakeLowercase{#1}}}
+\newcommand{\derivRule}[3]{
+  \inferrule*[Left=#1]{#3}{#2}
+}
+\newcommand{\derivTree}[3]{
+  \inferrule*[Right=#1]{#3}{#2}
+}
+\usepackage{rotating}
 
 \usepackage{tikz}
 \usepackage[framemethod=tikz]{mdframed}
@@ -28,7 +37,6 @@
 \usepackage[usestackEOL]{stackengine}
 \usepackage{scalerel}
 
-\usepackage{graphicx}
 \usepackage{float}
 \graphicspath{ {images/} }
 \newcommand{\term}[1]{$\vcenter{\hbox{\includegraphics[scale=0.25]{#1.png}}}$}
@@ -46,6 +54,12 @@
    \bibopenbracket\usebibmacro{cite}\bibclosebracket}
   {\supercitedelim}
   {}
+
+\lstdefinestyle{bnf}{
+  mathescape,
+  basicstyle=\footnotesize\ttfamily,
+  breaklines=true
+}
 
 \definecolor{defaultColor}{HTML}{eeeeee}
 
@@ -250,19 +264,10 @@
 \newcommand{\kHide}{\pkw{hide}}
 \newcommand{\kShow}{\pkw{show}}
 
+\newcommand{\kMetaVarRegex}{\pkw{metavar\_regex}}
+\newcommand{\kLiteralRegex}{\pkw{literal\_regex}}
 \newcommand{\kVarRegex}{\pkw{var\_regex}}
-\newcommand{\kExtend}{\pkw{extend}}
 \newcommand{\kChoice}{\pkw{choice}}
-\newcommand{\kRef}{\pkw{ref}}
-\newcommand{\kRegex}{\pkw{regex}}
-\newcommand{\kSubGrammar}{\pkw{sub\_grammar}}
-\newcommand{\kKeyGrammar}{\pkw{key\_grammar}}
-\newcommand{\kValueGrammar}{\pkw{value\_grammar}}
-\newcommand{\kSeparator}{\pkw{separator}}
-\newcommand{\kDelimiter}{\pkw{delimiter}}
-\newcommand{\kWhenEmpty}{\pkw{when\_empty}}
-\newcommand{\kCommutative}{\pkw{commutative}}
-\newcommand{\kIdempotent}{\pkw{idempotent}}
 
 \newcommand{\kSignature}{\pkw{signature}}
 \newcommand{\kPattern}{\pkw{pattern}}

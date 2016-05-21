@@ -83,6 +83,8 @@ $inline-padding: 5px;
 
 .modifiable-block {
     @extend .inline-block;
+
+    /* credit: adapt from http://www.w3schools.com/css/css3_gradients.asp */
     /* For browsers that do not support gradients */
     background: #CCCCCC;
     /* For Safari 5.1 to 6.0 */
@@ -110,6 +112,9 @@ $inline-padding: 5px;
     border: 0px solid #AAAAAA;
     border-top-width: 1px;
 
+    /* credit: 4 lines below from */
+    /* http://stackoverflow.com/questions/880512/ */
+    /* prevent-text-selection-after-double-click */
     -webkit-user-select: none; /* webkit (safari, chrome) browsers */
     -moz-user-select: none; /* mozilla browsers */
     -khtml-user-select: none; /* webkit (konqueror) browsers */
@@ -269,19 +274,6 @@ div {
 th, td {
     padding: 5px;
 }
-
-/* hr { */
-/*   -moz-border-bottom-colors: none; */
-/*   -moz-border-image: none; */
-/*   -moz-border-left-colors: none; */
-/*   -moz-border-right-colors: none; */
-/*   -moz-border-top-colors: none; */
-/*   border-color: #EEEEEE -moz-use-text-color #FFFFFF; */
-/*   border-style: solid none; */
-/*   border-width: 1px 0; */
-/*   color: gray; */
-/*   margin: 7px 0; */
-/* } */
 
 .window {
     font-family: monospace;
