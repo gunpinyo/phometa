@@ -1,10 +1,9 @@
--- Credit - this file is derived from `unicode-math` package.
+-- credit: this file is derived from `unicode-math` package.
 -- https://www.ctan.org/pkg/unicode-math
 
 module Tools.UnicodeLatex where
 
 import Char exposing (KeyCode)
-import Dict exposing (Dict)
 
 latex_to_unicode : List (String, KeyCode)
 latex_to_unicode = [

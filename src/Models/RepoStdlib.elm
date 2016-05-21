@@ -33,7 +33,7 @@ raw_stdlib_package = """{
                             "is_folded": false,
                             "has_locked": true,
                             "metavar_regex": null,
-                            "literal_regex": "[a-z]+([1-9][0-9]*|'*)",
+                            "literal_regex": "[a-z][a-zA-Z]*([1-9][0-9]*|'*)",
                             "choices": []
                           }
                         ]

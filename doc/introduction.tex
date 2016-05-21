@@ -3,65 +3,77 @@
 
 \chapter{Introduction}
 
-\section{What is ``phometa''?}
-
-Phometa is a proof assistant that aims to be an easy tool for users (especially students and newcomers) to express their new logical idea on early stage of development.
-
-Phometa is what-you-see-is-what-you-get editor implemented on web-based application. User will interact with phometa by clicking mainly, and type when necessary. This has many advantages over traditional proof assistant like Coq or Agda, such as
-\begin{itemize}
-    \item Arbitrary string can be used every where, i.e.\ no more problem on ``reserve words'' or ``name collusion''. Unicode is allowed (and even is encouraged) to be used as well.
-    \item It is impossible to make ill-form expression\footnote{Unless the grammar of that term is modified after that}. Phometa use restricted input method to build such a term. This is possible since it knows exactly what is the grammar of every term.
-    \item The entire program will be on valid state\footnote{We still need to fix the problem with dependencies got modified which is quite hard to maintain.} because we can aways control the way that user interact with phometa.
-    \item Easier on eyes for new comers which encourage them to play more with phometa.
-\end{itemize}
-
-Once user start to use it, they will find several formal systems, including first-order logic and lambda calculus shipped with phometa. This allow them to try to build a proof on top of this. Once they get used to with the proving mechanism they can build their own formal system and play with it.
-
-Phometa pronounces as ``po-met-ta'', which come from,
-\begin{itemize}
-    \item \textbf{pho}, it is the Thai name of bodhi tree which its autonomy similar to derivation trees that phometa produces.
-    \item \textbf{meta}, because we want to build an application that describes other systems, word ``meta'' is suitable since it is related to meta-theory.
-\end{itemize}
-
 \section{Motivation}
-One of the problems that make students get frustrated on logic is complexity of derivation tree such as
 
+Proofs are very important to all kinds of Mathematics because they ensure the
+correctness of theorems. However, it is hard to verify the correctness of a
+proof itself especially for a complex proof. To tackle this problem, we can
+proof a theorem on \emph{proof assistant}, aka \emph{interactive theorem
+  prover}, which does not allow us to make a mistake for each step of the proof,
+hence, when we finished writing a proof, we can make sure that it is correct.
+
+There are many powerful and famous proof assistants such as
+Coq\supercite{coq-official-website}, Agda\supercite{agda-official-website}, and
+Isabelle\supercite{isabelle-official-website} which are suitable for extreme use
+case of complex proofs. Nevertheless, they have steep learning curve and have
+specific meta-theory behind it, for example, Coq has Calculus of Inductive
+Construction (CIC), Agda has Unified Theory of Dependent
+Types\supercite{norell:thesis}\supercite{Luo:1994:CRT:184757} which are quite
+hard for newcomers. So I decided to create another proof assistants called
+\emph{phometa} that is easy to use and require minimal prior knowledge.
+
+To be precise, phometa is a tool to build a derivation tree. In order to achieve
+this, phometa has 3 kinds of nodes
 \begin{itemize}
-    \item Formally proving a line of proposition might need a page of derivation tree. Hence, hard to estimate area needed for each proof.
-    \item Width of a derivation tree grows exponentially to its height
-    \item Some proving required unification and term rewriting. For example, when we want to find the type of a term in ``simply type lambda calculus''. This is a problem because new term might be significant longer and need to remap position on the tree.
-    \item User can accidentally misused a derivation rule and create a valid-looking proof that is not even a proof.
+\item \emph{Grammar} --- How to construct a well-form term. For example,
+  proposition can be either
+  $\top \quad \bot \quad A \wedge B \quad A \vee B \quad \neg A \quad A
+  \rightarrow B \quad A \leftrightarrow B$ where $A$ and $B$ are other arbitrary
+  propositions.
+\item \emph{Rule} (or derivation rule) --- Reason that can be used to prove a
+  term. For example, $A \wedge B$ is valid if we can prove that $A$ is valid and
+  $B$ is valid.
+\item \emph{Theorem} (or derivation tree) --- An evidence (proof) that show that
+  a term is valid.
 \end{itemize}
+By this 3 kinds of nodes. We can build any formal system (consists of grammars
+and rules) and prove its correctness as long as it support derivation tree.
 
-One might say that we can solve this problem by writing it in \LaTeX. That is right but
+\newpage
+
+Users can phometa by either
 \begin{itemize}
-    \item It takes a lots longer time to produce a single proof.
-    \item It is quite hard to modify the proof afterwards because proof in source-code view of derivation tree in \LaTeX\ is quite unreadable.
-    \item Still hasn't solve problems about width grows exponentially and misuse rule.
-    \item Require students to familar with \LaTeX\ and additional derivation tree packages.
+\item Learn one of many existing formal systems provided in phometa's standard
+  library and try to proof some theorem regarding to that formal system.
+\item Create their own formal system or extend an existing formal system, and do
+  some experiments about it.
 \end{itemize}
+Once they get used to with this derivation tree builder. They can switch to more
+powerful proof assistants as mention above.
 
-Another one might say that there are several well-known proof assistants that can solve these problems but most of them are tight to specific class of meta-theory and have very high leaning curve.
-
-This was the original reason why I would like to build such a proof assistants that tackle directly to thes problem\footnote{The original intention includes the way to export the proof from phometa to \LaTeX\ as well but it think this would take longer time that I have for my individual project.}.
-
-\section{Phometa as comprehensive playground}
-Phometa as a formal system builder consists of syntax declaration, rules declaration, and derviation-tree builder. However, phometa is not only just about this. Its true aim is to be a comprehensive playground for users to do any experiment with the new logical system of their choice. A logical system is a combination of formal system and semantics. So we need to make phometa compatible with semantics as well.
-
-One way to encode semantics is to express it in term of operational semantics. Fortunately, this can be done in Phometa by adding rewriting mechanism into phometa.
-
-For example, in first-order logic, one of its semantics is to determine the truth value of particular proposition (if it closed term). To express this semantics as operational semantics in phometa, first, we need to define grammar of truth value by syntax declaration, then define a function name ``eval-prop'' that get one proposition and return its truth value. So, when we want extract truth value, we can ask rewriting mechanism to ``rewrite'' eval-prop together with target proposition to produce truth value.
-
-Syntax declaration, rules declaration, rewriting mechanism, and derivation-tree builder are corresponded to \kGrammar, \kRule, \kDefinition, and \kTheorem\ in phometa specification respectively. For more concise specification, see its own chapter.
+In order to make phometa easy to use, it is designed to be web-based
+application. Users will interact with phometa mainly by clicking buttons and
+pressing keyboard-shortcut. This has advantages over traditional proof assistant
+because it is easier to read, ill-from terms never occur, and guarantee that the
+entire system is always in consistent state.
 
 \section{Objectives}
-In conclusion, we can summarise project objectives into several part as the following
+This project carries several objective as the following
 \begin{itemize}
   \item To make a construction of derivation-tree become more systematic. Hence, users become more productive and have less chance to make an error.
   \item To encourage users (especially students and newcomers) to create their own formal systems and reason about it.
   \item To integrate operational semantics with in formal system. Hence, be able represent the entire logical system with in just one framework.
   \item To show that most of formal systems have a similar meta-structure which can be implemented using common framework.
   \item To show advantages of visualised proof assistant over traditional one.
+\end{itemize}
+
+\section{Achievement}
+\begin{itemize}
+\item Finished designing phometa specification in such a way to keep it simple yet be able
+  to produce a complex proof.
+\item Finished implementing phometa. All of basic functionality is working.
+\item Encoded propositional logic and typed lambda calculus in phometa.
+\item Write a tutorial for newcomers to use phometa.
 \end{itemize}
 
 \end{document}

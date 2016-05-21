@@ -3,50 +3,53 @@
 %%% TeX-master: t
 %%% coding: utf-8
 %%% mode: latex
-%%% TeX-engine: xetex
 %%% End:
 
 \documentclass[11pt, a4paper]{report}
 
 \usepackage{config}
 
-\title{
-    Draft of Report --- Phometa \\
-    a proof assistant that can build a formal system \\
-    based on visualisation
-}
-\author{
-    Gun Pinyo \\
-    Supervisor: Dr. Krysia Broda\\
-    Second Marker: Prof. Alessio R. Lomuscio\\
-    Department of Computing \\
-    Imperial College London
-}
-\date{\today}
+% TODO: delete this when report is finished
+\usepackage{lipsum}
 
 \begin{document}
 
-\maketitle
+\subfile{title_page.tex}
+
 \thispagestyle{empty}
 
 \begin{abstract}
-TODO: write abstract
+\lipsum[1-2]
 \end{abstract}
 
+\renewcommand{\abstractname}{Acknowledgements}
+\begin{abstract}
+\lipsum[1]
+\end{abstract}
+
+{
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+}
 \tableofcontents
+}
 
 % this need to be deleted before final report due
 % \subfile{advice_and_todo.tex}
 
-% \subfile{introduction.tex}
-% \subfile{background.tex}
-% \subfile{examples.tex}
-% \subfile{specification.tex}
-% \subfile{implementation.tex}
+\subfile{introduction.tex}
+\subfile{related_work.tex}
+\subfile{background.tex}
+\subfile{example_simple_arithmetic.tex}
+\subfile{example_propositional_logic.tex}
+\subfile{example_lambda_calculus.tex}
+\subfile{specification.tex}
+\subfile{implementation.tex}
 % \subfile{common_tricks.tex}
 % \subfile{project_plan.tex}
-% \subfile{evaluation_plan.tex}
-\subfile{example_propositional_logic.tex}
+\subfile{evaluation.tex}
+\subfile{conclusion.tex}
 
 \printbibliography\
 
