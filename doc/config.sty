@@ -10,6 +10,8 @@
 \usepackage{parskip}
 % \setlength{\parskip}{0.8pt}
 
+\usepackage{wrapfig, framed, caption}
+
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{xcolor}
@@ -103,7 +105,7 @@
 }
 
 % regex
-\definecolor{pregexColor}{HTML}{ee0000}
+\definecolor{pregexColor}{HTML}{0000FF}
 \newcommand{\pregex}[1]{
     \tcbox[on line, frame empty, colback = pregexColor!30!defaultColor, size = fbox]{
         \footnotesize{\texttt{\textbf{\textcolor{pregexColor}{/#1/}}}}
@@ -136,7 +138,7 @@
 }
 
 % rule
-\definecolor{pruleColor}{HTML}{118833}
+\definecolor{pruleColor}{HTML}{005500}
 \newcommand{\prule}[1]{
     \tcbox[on line, frame empty, colback = pruleColor!30!defaultColor, size = fbox] {
         \footnotesize{\texttt{\textbf{\textcolor{pruleColor}{#1}}}}
@@ -144,7 +146,7 @@
 }
 
 % theorem
-\definecolor{pthmColor}{HTML}{667722}
+\definecolor{pthmColor}{HTML}{004488}
 \newcommand{\pthm}[1]{
     \tcbox[on line, frame empty, colback = pthmColor!30!defaultColor, size = fbox] {
         \footnotesize{\texttt{\textbf{\textcolor{pthmColor}{#1}}}}

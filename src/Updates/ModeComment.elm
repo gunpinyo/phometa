@@ -22,11 +22,3 @@ cmd_set_comment record comment =
     (\node -> case node of
        NodeComment _ -> NodeComment comment
        _             -> node)
-
-cmd_remove_comment : RecordModeComment -> Command
-cmd_remove_comment record model =
-  model
-    |> Focus.update (focus_module record.node_path.module_path => nodes_)
-                    (ordered_dict_remove record.node_path.node_name)
-    |> cmd_remove_node_from_grids record.node_path
-    |> cmd_reset_mode

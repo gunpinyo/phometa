@@ -77,19 +77,28 @@ show_float_right_button string command =
       [ text " "
       , show_button string command ]
 
-show_icon_button : String -> Command -> Html
-show_icon_button string command =
-  div [ class "button-panel" ]
+show_plain_icon_button : Bool -> String -> Command -> Html
+show_plain_icon_button is_float string command =
+  div [class <| if is_float then "button-panel" else "button-non-float"]
       [ text " "
       , button [ Html.Attributes.type' "button"
                , on_click address (ActionCommand command) ]
           [ i [ classList [ ("fa", True)
-                          , ("fa-lg", True)
+                          , ("fa-lg", is_float)
                           , (string, True)]] [] ]
       ]
 
+show_icon_button : String -> Command -> Html
+show_icon_button = show_plain_icon_button True
+
+show_ok_button : Command -> Html
+show_ok_button = show_icon_button "fa-check"
+
 show_close_button : Command -> Html
 show_close_button = show_icon_button "fa-times"
+
+show_non_float_close_button : Command -> Html
+show_non_float_close_button = show_plain_icon_button False "fa-times"
 
 show_reset_button : Command -> Html
 show_reset_button = show_icon_button "fa-undo"

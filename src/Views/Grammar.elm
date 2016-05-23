@@ -19,7 +19,7 @@ import Models.Model exposing (Mode(..), RecordModeGrammar, MicroModeGrammar(..))
 import Models.ModelUtils exposing (focus_record_mode_grammar,
                                    get_record_mode_grammar)
 import Models.ViewState exposing (View)
-import Updates.CommonCmd exposing (cmd_nothing)
+import Updates.CommonCmd exposing (cmd_nothing, cmd_delete_node)
 import Updates.ModeRootTerm exposing (embed_css_grammar_choice)
 import Updates.ModeGrammar exposing (cmd_enter_mode_grammar,
                                      cmd_enter_micro_mode_navigate,
@@ -52,7 +52,8 @@ show_grammar cursor_info node_path grammar model =
         [ show_keyword_block <|
             if grammar.has_locked then "Grammar" else "Draft Grammar"
         , show_text_block "grammar-block" node_path.node_name ]
-      header_buttons = if grammar.has_locked then [] else
+      header_buttons = (show_close_button <| cmd_delete_node node_path) ::
+        if grammar.has_locked then [] else
         [ show_lock_button <| cmd_enter_micro_mode_navigate record
                                 >> cmd_lock_grammar
         , show_reset_button <| cmd_enter_micro_mode_navigate record

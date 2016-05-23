@@ -10,6 +10,7 @@ import Updates.CommonCmd exposing (cmd_nothing, cmd_reset_mode)
 import Updates.Cursor exposing (cmd_change_pane_cursor, cmd_toggle_keymap_pane,
                                 cmd_toggle_package_pane, cmd_reform_grids)
 import Updates.KeymapUtils exposing (build_keymap, merge_keymaps)
+import Updates.Environment exposing (cmd_load_repository, cmd_save_repository)
 
 cmd_enter_mode_menu : Command
 cmd_enter_mode_menu model =
@@ -35,6 +36,8 @@ keymap_mode_menu model =
        , ("k", "toggle keymap pane", cmd_toggle_keymap_pane)
        , ("h", "go to home page", cmd_select_home)
        , ("q", "quit menu", cmd_nothing)
+       , ("l", "load local repository", cmd_load_repository)
+       , ("s", "save local repository", cmd_save_repository)
        , ("1", "reform grids to 1x1", cmd_reform_grids 1 1)
        , ("2", "reform grids to 1x2", cmd_reform_grids 1 2)
        , ("3", "reform grids to 1x3", cmd_reform_grids 1 3)

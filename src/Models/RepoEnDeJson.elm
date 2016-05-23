@@ -27,9 +27,7 @@ decode_repository = decodeString de_package
 -- Utils -----------------------------------------------------------------------
 
 en_str       : String -> Value
-en_str       = Regex.replace Regex.All (Regex.regex "\\\\") (\_ -> "\\\\")
-            >> Regex.replace Regex.All (Regex.regex "\\n") (\_ -> "\\n")
-            >> Json.Encode.string
+en_str       = Json.Encode.string
 
 de_str       : Decoder String
 de_str       = Json.Decode.string

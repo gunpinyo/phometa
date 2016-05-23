@@ -15,14 +15,16 @@ import Models.RepoModel exposing (PackageName, PackagePath, Package,
 import Models.Model exposing (Mode(..), MicroModeRepo(..))
 import Models.ViewState exposing (View)
 import Models.Action exposing (Action(..), address)
-import Updates.CommonCmd exposing (cmd_nothing)
+import Updates.CommonCmd exposing (cmd_nothing,
+                                   cmd_delete_package, cmd_delete_module)
 import Updates.ModeRepo exposing (cmd_enter_micro_mode_navigate,
                                   cmd_enter_micro_mode_add_pkgmod,
                                   cmd_select_node, cmd_select_module,
                                   cmd_package_fold_unfold,
                                   cmd_module_fold_unfold,
                                   focus_auto_complete)
-import Views.Utils exposing (show_clickable_block, show_button,
+import Views.Utils exposing (show_clickable_block,
+                             show_button, show_non_float_close_button,
                              show_auto_complete_filter, show_keyword_block)
 
 show_package_pane : View
@@ -31,14 +33,16 @@ show_package_pane model =
     [ classList [("pane", True),
                  ("pane-on-cursor", model.pane_cursor == PaneCursorPackage)]
     , on_click address <| ActionCommand <| cmd_enter_micro_mode_navigate]
-    [show_package "Root Package" [] model.root_package model]
+    [show_package "Repository" [] model.root_package model]
 
 show_package : PackageName -> PackagePath -> Package -> View
 show_package package_name package_path package model =
   let header = tr [] [ td [on_click address <| ActionCommand <|
                              cmd_package_fold_unfold package_path]
                          [text <| if package.is_folded then "▶" else "▼" ]
-                     , td [class "package-block"] [text package_name]]
+                     , td [] [ div [class "package-block"] [text package_name]
+                             , show_non_float_close_button <|
+                              cmd_delete_package package_path]]
       dummy_cursor_info = init_cursor_info False [] PaneCursorPackage
       func (name, package_elem) =
         case package_elem of
@@ -73,10 +77,12 @@ show_module module_name module_path module' model =
   let header = tr [] [ td [on_click address <| ActionCommand <|
                              cmd_module_fold_unfold module_path]
                           [text <| if module'.is_folded then "▶" else "▼" ]
-                     , td [class "module-block"
-                          ,on_click address <| ActionCommand <|
-                             cmd_select_module module_path]
-                          [text module_name]]
+                     , td [] [ div [ class "module-block"
+                                   , on_click address <| ActionCommand <|
+                                       cmd_select_module module_path]
+                                   [text module_name]
+                             , show_non_float_close_button <|
+                                cmd_delete_module module_path]]
       dummy_cursor_info = init_cursor_info False [] PaneCursorPackage
       func index (node_name, node) =
         let css_class = case node of

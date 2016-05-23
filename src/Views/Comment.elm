@@ -13,8 +13,8 @@ import Models.RepoUtils exposing (focus_module)
 import Models.Model exposing (Command, Mode(..), MicroModeComment(..))
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
-import Updates.ModeComment exposing (cmd_enter_mode_comment, cmd_set_comment,
-                                     cmd_remove_comment)
+import Updates.CommonCmd exposing (cmd_delete_node)
+import Updates.ModeComment exposing (cmd_enter_mode_comment, cmd_set_comment)
 import Views.Utils exposing (show_keyword_block, show_text_block, show_button,
                              show_indented_clickable_block, show_close_button)
 
@@ -35,7 +35,7 @@ show_comment cursor_info node_path comment model =
       header_html = div []
         [ show_keyword_block "Comment"
         , show_text_block "comment-block" node_path.node_name
-        , show_close_button <| cmd_remove_comment record
+        , show_close_button <| cmd_delete_node node_path
         , div [class "button-panel"] [
             show_button (if is_editing then "Quit Editing" else "Edit Comment")
                         (cmd_enter_mode_comment toggle_record)]]
@@ -53,7 +53,8 @@ show_comment cursor_info node_path comment model =
                   else
                     [ hr [] []
                     , div [classList [ ("inline-block", True)
-                                     , ("mathjax", True)]]
+                                     , ("mathjax", True)
+                                     , ("wordwrap", True)]]
                           [text comment]]
    in show_indented_clickable_block cursor_info (cmd_enter_mode_comment record)
         <| header_html :: body_htmls

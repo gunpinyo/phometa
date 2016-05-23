@@ -11,6 +11,27 @@ Imperial College London
 For full report of this project, please compile master.tex in `doc/` directory.
 **TODO: once the project complete, redirect this to pdf file.**
 
+## Usage
+
+Phometa can be installed by execute the following command
+```
+mkdir phometa
+cd phometa
+wget https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz
+tar -zxvf phometa.tar.gz
+```
+
+Then, start phometa server by execute ``` ./phometa-server.py 8080 ``` where
+`8080` is port number, you can change this to another port number if you like.
+Please note that python is required for this server.
+
+Then, open your favourite web-browser and enter
+``` http://localhost:8080/phometa.html ```
+
+Now, you can use phometa.
+
+To exit the server, just press `Ctrl-C`  on the terminal that run server
+
 ## System Requirement for development
 - nodejs (>= 0.10.25)
 - npm (>= 1.4.21)

@@ -17,7 +17,7 @@ import Models.Model exposing (Mode(..), EditabilityRootTerm(..),
                               RecordModeRule, MicroModeRule(..))
 import Models.ModelUtils exposing (init_auto_complete)
 import Models.ViewState exposing (View)
-import Updates.CommonCmd exposing (cmd_nothing)
+import Updates.CommonCmd exposing (cmd_nothing, cmd_delete_node)
 import Updates.ModeRule exposing (cmd_enter_mode_rule,
                                   cmd_enter_micro_mode_navigate,
                                   cmd_enter_micro_mode_cascade,
@@ -71,7 +71,8 @@ show_rule cursor_info node_path rule model =
         [ show_keyword_block <| if rule.has_locked then "Rule" else "Draft Rule"
         , show_text_block "rule-block" node_path.node_name
         , text " "]
-      header_buttons = if rule.has_locked then [] else
+      header_buttons = (show_close_button <| cmd_delete_node node_path) ::
+        if rule.has_locked then [] else
         [ show_lock_button <| cmd_enter_micro_mode_navigate record
                                 >> cmd_lock_rule
         , show_reset_button <| cmd_enter_micro_mode_navigate record
