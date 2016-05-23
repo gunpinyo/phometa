@@ -9,7 +9,8 @@ import Models.Environment exposing (Environment)
 import Models.Model exposing (Model)
 import Models.ModelUtils exposing (init_model)
 import Models.Action exposing (Action(..), mailbox, address)
-import Updates.Environment exposing (inject_env_to_action, extract_task)
+import Updates.Environment exposing (inject_env_to_action, extract_task,
+                                     task_load_repository)
 import Updates.Update exposing (update)
 import Views.View exposing (view)
 
@@ -36,5 +37,6 @@ port task_signal = Signal.filterMap extract_task activating_task model_signal
 -- will behave correctly only after model_signal got the first action
 -- we can't rely purely on init_* to make the the model on valid state
 -- hence, need to kick out the first action as soon as possible
+-- also, we need to load repository as soon as possible
 activating_task : Task () ()
-activating_task = Signal.send address ActionNothing
+activating_task = task_load_repository

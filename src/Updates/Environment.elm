@@ -7,12 +7,16 @@ import Task exposing (Task)
 import Time exposing (timestamp)
 
 import Focus exposing ((=>))
+import Http
 
 import Tools.KeyboardExtra exposing (Keystroke)
 import Models.Focus exposing (environment_, maybe_task_)
 import Models.Environment exposing (Environment)
+import Models.Message exposing (Message(..))
 import Models.Model exposing (Model, Command, KeyBinding(..))
-import Models.Action exposing (Action(..))
+import Models.Action exposing (Action(..), address)
+import Updates.Message exposing (cmd_send_message)
+import Updates.CommonCmd exposing (cmd_parse_and_load_repository)
 
 inject_env_to_action : Signal Action -> Signal (Environment, Action)
 inject_env_to_action action_signal =
@@ -31,3 +35,12 @@ cmd_add_task func model =
                    Nothing       -> func model
                    Just old_task -> Task.andThen old_task (\ () -> func model)
    in Focus.set (environment_ => maybe_task_) (Just new_task) model
+
+task_load_repository : Task () ()
+task_load_repository =
+  Http.getString "./repository.json"
+    |> (flip Task.andThen) (\repo_string -> Signal.send address
+          (ActionCommand <| cmd_parse_and_load_repository repo_string))
+    |> (flip Task.onError) (\http_error ->  Signal.send address
+          (ActionCommand <| cmd_send_message (MessageException
+            <| "cannot load repository because " ++ (toString http_error))))

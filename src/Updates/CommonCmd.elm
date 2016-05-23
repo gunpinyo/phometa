@@ -5,7 +5,7 @@ import Focus
 import Models.Focus exposing (mode_, pane_cursor_, root_package_, grids_)
 import Models.Cursor exposing (PaneCursor(..))
 import Models.RepoModel exposing (NodePath)
-import Models.RepoEnDeJson exposing (decode_repository)
+import Models.RepoEnDeJson exposing (decode_repository, de_package)
 import Models.Grid exposing (Grid(..), init_grids, update_all_grid)
 import Models.Message exposing (Message(..))
 import Models.Model exposing (Command, Mode(..))
@@ -20,8 +20,8 @@ cmd_reset_mode model =
     |> Focus.set pane_cursor_ PaneCursorPackage
     |> Focus.set mode_ ModeNothing
 
-cmd_load_repository : String -> Command
-cmd_load_repository repo_string =
+cmd_parse_and_load_repository : String -> Command
+cmd_parse_and_load_repository repo_string =
   case decode_repository repo_string of
     Ok root_package -> Focus.set root_package_ root_package
                     >> cmd_send_message (MessageSuccess
@@ -29,7 +29,7 @@ cmd_load_repository repo_string =
                     >> Focus.set grids_ init_grids
                     >> cmd_reset_mode
     Err err_msg     -> cmd_send_message (MessageException
-                         <| "cannot load repository because " ++ err_msg)
+                         <| "cannot parse repository because " ++ err_msg)
 
 cmd_remove_node_from_grids : NodePath -> Command
 cmd_remove_node_from_grids node_path =

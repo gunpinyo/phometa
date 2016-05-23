@@ -10,8 +10,7 @@ import Models.Focus exposing (mode_, unicode_state_)
 import Models.Config exposing (init_config)
 import Models.Cursor exposing (init_pane_cursor)
 import Models.RepoModel exposing (NodePath)
-import Models.RepoUtils exposing (check_package)
-import Models.RepoStdlib exposing (init_package_with_stdlib)
+import Models.RepoUtils exposing (check_package, init_package)
 import Models.Grid exposing (init_grids)
 import Models.Message exposing (init_message_list)
 import Models.Environment exposing (init_environment)
@@ -21,7 +20,7 @@ import Models.Model exposing (..)
 init_model : Model
 init_model =
   { config        = init_config
-  , root_package  = init_package_with_stdlib
+  , root_package  = init_package
   , root_keymap   = init_keymap
   , grids         = init_grids
   , pane_cursor   = init_pane_cursor
