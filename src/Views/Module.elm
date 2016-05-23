@@ -1,13 +1,18 @@
 module Views.Module where
 
-import Html exposing (div, hr, br, text)
+import String
+
+import Html exposing (Html, div, hr, br, text)
 import Html.Attributes exposing (class, style)
 import Focus
 
 import Tools.OrderedDict exposing (ordered_dict_to_list)
 import Tools.StripedList exposing (stripe_two_list_together)
+import Tools.CssExtra exposing (CssInlineStr, css_inline_str_embed,
+                                css_inline_str_compile)
 import Models.Cursor exposing (CursorInfo, cursor_info_go_to_sub_elem)
-import Models.RepoModel exposing (ModulePath, Node(..), NodeType(..))
+import Models.RepoModel exposing (PackagePath, ModulePath,
+                                  Node(..), NodeType(..))
 import Models.RepoUtils exposing (focus_module)
 import Models.Model exposing (Command, Mode(..), MicroModeModule(..))
 import Models.ViewState exposing (View)
@@ -22,6 +27,18 @@ import Views.Grammar exposing (show_grammar)
 import Views.Rule exposing (show_rule)
 import Views.Theorem exposing (show_theorem)
 
+get_package_path_css : PackagePath -> CssInlineStr
+get_package_path_css package_path = String.concat <|
+  css_inline_str_embed "keyword-block" "/" ::
+  List.concatMap (\package_name ->
+    [ css_inline_str_embed "package-block" package_name
+    , css_inline_str_embed "keyword-block" "/"]) package_path
+
+get_module_path_css : ModulePath -> CssInlineStr
+get_module_path_css module_path =
+  get_package_path_css module_path.package_path ++
+  css_inline_str_embed "module-block" module_path.module_name
+
 show_module : CursorInfo -> ModulePath -> View
 show_module cursor_info module_path model =
   let record = { top_cursor_info = cursor_info
@@ -30,12 +47,8 @@ show_module cursor_info module_path model =
                , micro_mode = MicroModeModuleNavigate
                }
       module' = Focus.get (focus_module module_path) model
-      header_html = div [] <|
-        [show_keyword_block "module "] ++
-        List.concatMap (\package_name ->
-          [ div [class "package-block"] [text package_name]
-          , show_keyword_block "/"]) module_path.package_path ++
-        [div [class "module-block"] [text module_path.module_name]]
+      header_html = div [] <| [show_keyword_block "module "] ++
+                     (css_inline_str_compile <| get_module_path_css module_path)
       nodes_htmls = (ordered_dict_to_list module'.nodes)
         |> List.indexedMap (\index (node_name, node) ->
              let sub_cursor_info = List.foldl cursor_info_go_to_sub_elem

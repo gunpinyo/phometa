@@ -19,4 +19,7 @@ function handleAutofocus(nodeList) {
     }
 }
 
-setInterval(function(){MathJax.Hub.Queue(["Typeset", MathJax.Hub]);}, 1000);
+setInterval(function(){
+    if (typeof MathJax !== 'undefined')
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+}, 1000);

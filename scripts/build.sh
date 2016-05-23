@@ -2,7 +2,7 @@
 
 pushd $(git rev-parse --show-toplevel)
 
-bash scripts/clean.sh
+# bash scripts/clean.sh
 
 mkdir -p build
 

@@ -24,7 +24,7 @@ import Models.Model exposing (Model,
 import Models.ModelUtils exposing (init_auto_complete)
 import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
-import Updates.CommonCmd exposing (cmd_nothing)
+import Updates.CommonCmd exposing (cmd_nothing, cmd_delete_node)
 import Updates.Cursor exposing (cmd_click_block)
 import Updates.ModeTheorem exposing (cmd_enter_mode_theorem,
                                      cmd_theorem_auto_focus_next_todo,
@@ -54,7 +54,8 @@ show_theorem cursor_info node_path theorem has_locked model =
       header = [ div []
                  ([ show_keyword_block
                       (if has_locked then "Lemma" else "Theorem ")
-                  , show_text_block "theorem-block" node_path.node_name ]
+                  , show_text_block "theorem-block" node_path.node_name
+                  , show_close_button <| cmd_delete_node node_path]
                   ++ if has_locked then [] else
                       [ show_lock_button <| cmd_enter_mode_theorem record
                                               >> cmd_lock_as_lemma

@@ -2880,7 +2880,7 @@
                       },
                       "// Module Description": {
                         "NodeComment": [
-                          "This module implements a formal system named \"Simple Arithmetic\". It aims to be the first example of formal system for new comer to play around. Please note that this is just a faction of actual arithmetic modified to make it easy to understand, so it is not as powerful as the actual one.\\n\\nFor further information, please see chapter 3 (Background) and chapter 4 (Example - Simple Arithmetic) in phometa documentation."
+                          "This module implements a formal system named \"Simple Arithmetic\". It aims to be the first example of formal system for new comer to play around. Please note that this is just a faction of actual arithmetic modified to make it easy to understand, so it is not as powerful as the actual one.\n\nFor further information, please see chapter 3 (Background) and chapter 4 (Example - Simple Arithmetic) in phometa documentation."
                         ]
                       },
                       "// Rules": {

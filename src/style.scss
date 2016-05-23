@@ -170,6 +170,11 @@ input {
     margin-top: 3px
 }
 
+.button-non-float {
+    @extend .inline-block;
+    padding: 0;
+}
+
 .button-block {
     @extend .inline-block;
     color: #000000;

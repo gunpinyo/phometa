@@ -137,6 +137,62 @@ focus_node node_path =
                  Just node -> node)
     (update_node node_path)
 
+get_nodes_types : ModulePath -> Model -> Dict NodeName NodeType
+get_nodes_types module_path model =
+   case get_module module_path model of
+     Nothing -> Dict.empty
+     Just module' -> Dict.map (\_ node -> case node of
+                                NodeComment _   -> NodeTypeComment
+                                NodeGrammar _   -> NodeTypeGrammar
+                                NodeRule _      -> NodeTypeRule
+                                NodeTheorem _ _ -> NodeTypeTheorem)
+                       module'.nodes.dict
+
+get_nodes_dependencies : ModulePath -> Model -> Dict NodeName (List NodeName)
+get_nodes_dependencies module_path model =
+  let func node_name node = case node of
+        NodeComment _ -> []
+        NodeGrammar grammar ->
+          List.concatMap striped_list_get_odd_element grammar.choices
+        NodeRule rule ->
+          -- no need to get grammars from parameters since all is in premises
+          get_root_term_grammars rule.conclusion ++
+          (List.concatMap (\premise -> case premise of
+            PremiseDirect pattern -> get_root_term_grammars pattern
+            PremiseCascade records -> List.concatMap (\record ->
+              record.rule_name :: (get_root_term_grammars record.pattern) ++
+              (List.concatMap get_root_term_grammars record.arguments)
+            ) records) rule.premises)
+        NodeTheorem top_theorem _ ->
+          let theorem_func theorem = (get_root_term_grammars theorem.goal) ++
+                case theorem.proof of
+                  ProofTodo -> []
+                  ProofTodoWithRule rule_name arguments -> rule_name ::
+                    (List.concatMap get_root_term_grammars arguments)
+                  ProofByRule rule_name arguments _ sub_theorems -> rule_name ::
+                    (List.concatMap get_root_term_grammars arguments) ++
+                    (List.concatMap theorem_func sub_theorems)
+                  ProofByLemma lemma_name _ -> [lemma_name]
+           in theorem_func top_theorem
+   in case get_module module_path model of
+        Nothing -> Dict.empty
+        Just module' -> Dict.map (\node_name node ->
+          list_remove_duplication <| func node_name node) module'.nodes.dict
+
+get_nodes_inv_dependencies : ModulePath -> Model -> Dict NodeName(List NodeName)
+get_nodes_inv_dependencies module_path model =
+   let node_list = case get_module module_path model of
+         Nothing -> []
+         Just module' -> module'.nodes.order
+       dep_graph = get_nodes_dependencies module_path model
+    in Dict.map (\dependee _ ->
+         List.filter (\depender ->
+           List.member dependee (
+             Maybe.withDefault [] (Dict.get depender dep_graph)
+           )
+         ) node_list
+       ) dep_graph
+
 -- Comment ---------------------------------------------------------------------
 
 get_comment_names : ModulePath -> Model -> List NodeName
@@ -304,6 +360,15 @@ get_root_term_variables root_term =
       List.foldl
         (\root_sub_term -> Dict.union (get_root_term_variables root_sub_term))
         Dict.empty
+        (get_sub_root_terms grammar_choice sub_terms)
+
+get_root_term_grammars : RootTerm -> List GrammarName
+get_root_term_grammars root_term = root_term.grammar ::
+  case root_term.term of
+    TermTodo -> []
+    TermVar _ -> []
+    TermInd grammar_choice sub_terms ->
+      List.concatMap get_root_term_grammars
         (get_sub_root_terms grammar_choice sub_terms)
 
 has_root_term_completed : RootTerm -> Bool
