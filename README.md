@@ -21,9 +21,9 @@ wget https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz
 tar -zxvf phometa.tar.gz
 ```
 
-Then, start phometa server by execute the following command (python is required)
-``` ./phometa-server.py 8080 ```
+Then, start phometa server by execute ``` ./phometa-server.py 8080 ``` where
 `8080` is port number, you can change this to another port number if you like.
+Please note that python is required for this server.
 
 Then, open your favourite web-browser and enter
 ``` http://localhost:8080/phometa.html ```

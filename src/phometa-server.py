@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-# credit: this file come from https://gist.github.com/UniIsland/3346170
+# credit: this file is modified version of
+#         https://gist.github.com/UniIsland/3346170
 
 """Simple HTTP Server With Upload.
 
@@ -28,6 +29,10 @@ try:
 except ImportError:
     from StringIO import StringIO
 
+# start modified area
+try: import simplejson as json
+except ImportError: import json
+# end modified area
 
 class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
@@ -60,71 +65,21 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_POST(self):
         """Serve a POST request."""
-        r, info = self.deal_post_data()
-        print r, info, "by: ", self.client_address
-        f = StringIO()
-        f.write('<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">')
-        f.write("<html>\n<title>Upload Result Page</title>\n")
-        f.write("<body>\n<h2>Upload Result Page</h2>\n")
-        f.write("<hr>\n")
-        if r:
-            f.write("<strong>Success:</strong>")
-        else:
-            f.write("<strong>Failed:</strong>")
-        f.write(info)
-        f.write("<br><a href=\"%s\">back</a>" % self.headers['referer'])
-        f.write("<hr><small>Powerd By: bones7456, check new version at ")
-        f.write("<a href=\"http://li2z.cn/?s=SimpleHTTPServerWithUpload\">")
-        f.write("here</a>.</small></body>\n</html>\n")
-        length = f.tell()
-        f.seek(0)
+
+        # start modified area
+        # credit: inspired by https://stackoverflow.com/questions/31371166/
+        #                     reading-json-from-simplehttpserver-post-data
+        self.data_string = self.rfile.read(int(self.headers['Content-Length']))
+
         self.send_response(200)
-        self.send_header("Content-type", "text/html")
-        self.send_header("Content-Length", str(length))
+        self.send_header('Content-type', 'application/json')
         self.end_headers()
-        if f:
-            self.copyfile(f, self.wfile)
-            f.close()
-        
-    def deal_post_data(self):
-        boundary = self.headers.plisttext.split("=")[1]
-        remainbytes = int(self.headers['content-length'])
-        line = self.rfile.readline()
-        remainbytes -= len(line)
-        if not boundary in line:
-            return (False, "Content NOT begin with boundary")
-        line = self.rfile.readline()
-        remainbytes -= len(line)
-        fn = re.findall(r'Content-Disposition.*name="file"; filename="(.*)"', line)
-        if not fn:
-            return (False, "Can't find out file name...")
-        path = self.translate_path(self.path)
-        fn = os.path.join(path, fn[0])
-        line = self.rfile.readline()
-        remainbytes -= len(line)
-        line = self.rfile.readline()
-        remainbytes -= len(line)
-        try:
-            out = open(fn, 'wb')
-        except IOError:
-            return (False, "Can't create file to write, do you have permission to write?")
-                
-        preline = self.rfile.readline()
-        remainbytes -= len(preline)
-        while remainbytes > 0:
-            line = self.rfile.readline()
-            remainbytes -= len(line)
-            if boundary in line:
-                preline = preline[0:-1]
-                if preline.endswith('\r'):
-                    preline = preline[0:-1]
-                out.write(preline)
-                out.close()
-                return (True, "File '%s' upload success!" % fn)
-            else:
-                out.write(preline)
-                preline = line
-        return (False, "Unexpect Ends of data.")
+
+        data = json.loads(self.data_string)
+        with open("repository.json", "w") as outfile:
+            json.dump(data, outfile)
+        self.wfile.write("{}")
+        # end modified area
 
     def send_head(self):
         """Common code for GET and HEAD commands.
