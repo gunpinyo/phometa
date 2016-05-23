@@ -31,7 +31,7 @@ show_package_pane model =
     [ classList [("pane", True),
                  ("pane-on-cursor", model.pane_cursor == PaneCursorPackage)]
     , on_click address <| ActionCommand <| cmd_enter_micro_mode_navigate]
-    [show_package "Root Package" [] model.root_package model]
+    [show_package "Repository" [] model.root_package model]
 
 show_package : PackageName -> PackagePath -> Package -> View
 show_package package_name package_path package model =
