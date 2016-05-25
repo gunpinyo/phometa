@@ -1,14 +1,15 @@
 \documentclass[master.tex]{subfiles}
 \begin{document}
 
-\chapter{Example --- Simple Arithmetic}
+\chapter{Example Formal System --- Simple Arithmetic}
 \label{chap:example_simple_arithmetic}
 
-As in \hyperref[chap:background]{background chapter}, simple arithmetic is
+As in \hyperref[chap:background]{background chapter}, Simple Arithmetic is
 used as example to explain basic concept of formal systems and its derivations.
 In order to make the transition goes smoother, this chapter aims to encode
-simple arithmetic into phometa. Please note that this is just a faction of
-actual arithmetic modified to make it easy to understand, so it is not as
+Simple Arithmetic and explain basic features and usability of \emph{phometa} at
+the same time. Please note that this is just a faction of
+actual arithmetic modified to make it easier to understand, so it is not as
 powerful as the actual one.
 
 \section{First time with phometa}
@@ -68,7 +69,7 @@ features during using it
 
 \section{Grammars}
 
-The Backus-Naur Form of simple arithmetic in figure \ref{fig:background-bnf}
+The Backus-Naur Form of Simple Arithmetic in figure \ref{fig:background-bnf}
 could be transformed in to this four following grammars
 \begin{figure}[H]
     \centering
@@ -87,7 +88,7 @@ We take advantage of visualisation by replacing brackets with underlines, this
 should improve readability because reader can see a whole term in a compact
 way but still able check how they are bounded when needed, for example,
 \begin{itemize}
-\item \texttt{<Digit>} $2$ is transformed to \pgmr{Digit} \term{arith-term-digit}
+% \item \texttt{<Digit>} $2$ is transformed to \pgmr{Digit} \term{arith-term-digit}
 \item \texttt{<Number>} $250$ is transformed to
   \pgmr{Number} \term{arith-term-number}
 \item \texttt{<Expr>} $(0 + (12 \times 6))$ is transformed to
@@ -110,7 +111,7 @@ however, it could have meta variables as sub-term e.g. \pgmr{Equation}
 
 \section{Rules}
 
-The derivation rules of simple arithmetic in figure \ref{fig:background-derivation-rules}
+The derivation rules of Simple Arithmetic in figure \ref{fig:background-derivation-rules}
 can be transformed as the following
 
 \begin{center}
