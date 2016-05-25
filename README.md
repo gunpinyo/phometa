@@ -2,25 +2,20 @@
 Phometa is a web application
 that can build formal systems based on visualisation.
 
-This is individual project of Gun Pinyo
-Supervisor: Dr. Krysia Broda
-Second Marker: Prof. Alessio R. Lomuscio
-MEng Computing (4YFT)
-Imperial College London
+This is individual project of **Gun Pinyo**
+Supervisor: **Dr. Krysia Broda**
+Second Marker: **Prof. Alessio R. Lomuscio**
+MEng Computing (4YFT) **Imperial College London**
 
 For full report of this project, please read
-```
-https://github.com/gunpinyo/phometa/raw/master/build/phometa-doc.pdf
-```
+[here](https://github.com/gunpinyo/phometa/raw/master/build/phometa-doc.pdf
+"https://github.com/gunpinyo/phometa/raw/master/build/phometa-doc.pdf")
 
 ## Usage
 
-Phometa can be installed by downloading complied version at
-
-```
-https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz
-```
-
+Phometa can be installed by downloading complied version
+[here](https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz
+"https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz")
 and unzip it.
 
 Then, start phometa server by execute
