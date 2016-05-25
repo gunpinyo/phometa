@@ -8,6 +8,10 @@ mkdir -p build
 
 rm -rf build/*
 
+if [ -e doc/master.pdf ]
+then cp doc/master.pdf build/phometa-doc.pdf
+fi
+
 sass src/style.scss build/style.css
 cp src/naive.js build/naive.js
 cp src/repository.json build/repository.json

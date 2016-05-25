@@ -1,29 +1,28 @@
 \documentclass[master.tex]{subfiles}
 \begin{document}
 
-\chapter{Sample Formal System - Propositional Logic}
+\chapter{Example Formal System --- Propositional Logic}
 \label{chap:example_propositional_logic}
 
-This chapter aims to explain some basic features and usability of \emph{phometa}
-by going though a simple formal system named \emph{Propositional Logic} which is
-the most well known logical system. Propositional logic is very common so I
-decide to include it in phometa's standard library, this also allows reader to
-interact with it during reading this chapter.
+Once you are familiar with some basic features and usability of \emph{phometa}
+from the last chapter. This chapter aims to show more advance features on
+another formal system named \emph{Propositional Logic} which is the most well
+known logical system\footnote{Logical system is a formal system together with
+  semantics\supercite{formal-system-wiki}}.
+
+Logic, in general, works so well with traditional derivation system, hence there
+is spacial name called \emph{Natural Deduction} which combination of any kind of
+Logic together with derivation system.
 
 \section{Grammars}
 
-For every formal system, the first thing that needed to be defined is syntax
-which consists of several grammars. Propositional logic has \pgmr{Prop},
-\pgmr{Atom}, \pgmr{Context}, and \pgmr{Judgement} as its grammars.
+As usual, the first thing that needed to be defined is syntax which consists of
+several grammars. Propositional logic has \pgmr{Prop}, \pgmr{Atom},
+\pgmr{Context}, and \pgmr{Judgement} as its grammars.
 
 \pgmr{Prop} is a proposition, semantically, it is a term that can be evaluated
 to either true or false (given that there are no variables in the term).
-Grammars of \pgmr{Prop} can be defined in phometa as the following\footnote{In
-  this chapter all grammars and rules are given, but users can create their own
-  grammars and rules as will be explain in
-  % \ref{chap:example_simply_typed_lambda_calculus}
-  (TODO:\ add label of lambda
-  calculus chapter)}
+Grammars of \pgmr{Prop} can be defined in phometa as the following
 
 \centerline{\includegraphics[scale=0.5]{prop-grammar-prop.png}}
 

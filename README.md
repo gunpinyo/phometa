@@ -2,31 +2,36 @@
 Phometa is a web application
 that can build formal systems based on visualisation.
 
-This is individual project of Gun Pinyo
-Supervisor: Dr. Krysia Broda
-Second Marker: Prof. Alessio R. Lomuscio
-MEng Computing (4YFT)
-Imperial College London
+This is individual project of **Gun Pinyo**<br/>
+Supervisor: **Dr. Krysia Broda**<br/>
+Second Marker: **Prof. Alessio R. Lomuscio**<br/>
+MEng Computing (4YFT) **Imperial College London**
 
-For full report of this project, please compile master.tex in `doc/` directory.
-**TODO: once the project complete, redirect this to pdf file.**
+For full report of this project, please read
+[here](https://github.com/gunpinyo/phometa/raw/master/build/phometa-doc.pdf
+"https://github.com/gunpinyo/phometa/raw/master/build/phometa-doc.pdf")
 
 ## Usage
 
-Phometa can be installed by execute the following command
+Phometa can be installed by downloading complied version
+[here](https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz
+"https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz")
+and unzip it.
+
+Then, start phometa server by execute
+
 ```
-mkdir phometa
-cd phometa
-wget https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz
-tar -zxvf phometa.tar.gz
+./phometa-server.py 8080
 ```
 
-Then, start phometa server by execute ``` ./phometa-server.py 8080 ``` where
-`8080` is port number, you can change this to another port number if you like.
-Please note that python is required for this server.
+where `8080` is port number, you can change this to another port number if you
+like. Please note that python is required for this server.
 
 Then, open your favourite web-browser and enter
-``` http://localhost:8080/phometa.html ```
+
+```
+http://localhost:8080/phometa.html
+```
 
 Now, you can use phometa.
 
