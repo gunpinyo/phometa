@@ -52,15 +52,15 @@ show_theorem cursor_info node_path theorem has_locked model =
                , micro_mode       = MicroModeTheoremNavigate
                }
       header = [ div []
-                 ([ show_keyword_block
-                      (if has_locked then "Lemma" else "Theorem ")
-                  , show_text_block "theorem-block" node_path.node_name
-                  , show_close_button <| cmd_delete_node node_path]
+                 ([ show_close_button <| cmd_delete_node node_path]
                   ++ if has_locked then [] else
                       [ show_lock_button <| cmd_enter_mode_theorem record
                                               >> cmd_lock_as_lemma
                       , show_reset_button <| cmd_enter_mode_theorem record
-                                              >> cmd_reset_top_theorem])
+                                              >> cmd_reset_top_theorem
+                  , show_keyword_block
+                      (if has_locked then "Lemma" else "Theorem ")
+                  , show_text_block "theorem-block" node_path.node_name])
                , hr [] []]
       body = show_sub_theorem cursor_info
                record theorem theorem_focus has_locked model
@@ -130,12 +130,13 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
               |> List.concat
               |> List.append [ show_keyword_block "proof_by_rule"
                              , show_text_block "rule-block" rule_name ]
-      goal_proof_div_html proof_htmls =
-        div [] (goal_html :: text " " :: proof_htmls)
+      goal_proof_div_html can_reset_proof proof_htmls =
+        div [] ((if can_reset_proof then reset_proof_htmls else [])
+                  ++ (goal_html :: text " " :: proof_htmls))
    in case theorem.proof of
         ProofTodo ->
           if not <| has_root_term_completed theorem.goal then
-            [ goal_proof_div_html
+            [ goal_proof_div_html False
                 [ show_todo_keyword_block "to_prove"
                 , text " "
                 , show_todo_keyword_block
@@ -175,16 +176,15 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                   else
                     [ show_todo_keyword_block
                         "but there are nothing possible to prove it."]
-             in [ goal_proof_div_html <|
+             in [ goal_proof_div_html False <|
                     [ show_todo_keyword_block "to_prove"
                     , text " "] ++ possibly_rule_lemma_htmls
                 ]
         ProofTodoWithRule rule_name arguments ->
           [ show_todo_keyword_block <| "to_prove "
                                     ++ "please enter arguments before continue."
-          , goal_proof_div_html
-              (show_rule_name_and_arguments True rule_name arguments
-                 ++ reset_proof_htmls) ]
+          , goal_proof_div_html True
+              (show_rule_name_and_arguments True rule_name arguments) ]
         ProofByRule rule_name arguments pattern_matching_info sub_theorems ->
           let indexed_map_func index sub_theorem =
                 let cursor_index = 1 + List.length arguments + index
@@ -200,12 +200,10 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                       (cmd_enter_mode_theorem record')
                       (sub_theorem_htmls)
            in (List.indexedMap indexed_map_func sub_theorems) ++
-                [ goal_proof_div_html
-                   (show_rule_name_and_arguments False rule_name arguments
-                     ++ reset_proof_htmls) ]
+                [ goal_proof_div_html True
+                   (show_rule_name_and_arguments False rule_name arguments) ]
         ProofByLemma theorem_name pattern_matching_info ->
-          [ goal_proof_div_html <|
+          [ goal_proof_div_html True
               [ show_keyword_block "proof_by_lemma"
               , show_text_block "theorem-block" theorem_name]
-              ++ reset_proof_htmls
           ]

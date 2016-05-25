@@ -41,7 +41,7 @@
 
 \usepackage{float}
 \graphicspath{ {images/} }
-\newcommand{\term}[1]{$\vcenter{\hbox{\includegraphics[scale=0.25]{#1.png}}}$}
+\newcommand{\term}[1]{$\vcenter{\hbox{\includegraphics[scale=0.50]{#1.png}}}$}
 
 \usepackage[backend=biber]{biblatex}
 \addbibresource{bibliography.bib}
@@ -77,6 +77,12 @@
 \definecolor{pkwColor}{HTML}{8B4513}
 \newcommand{\pkw}[1]{
     {\texttt{\textbf{\color{pkwColor}{#1}}}}
+}
+
+% key blinding
+\definecolor{pkbdColor}{HTML}{BB00BB}
+\newcommand{\pkbd}[1]{
+    {\texttt{\textbf{\color{pkbdColor}{#1}}}}
 }
 
 % comment
@@ -251,6 +257,7 @@
 \newcommand{\kDefinition}{\pkw{definition}}
 \newcommand{\kAlias}{\pkw{alias}}
 \newcommand{\kRule}{\pkw{rule}}
+\newcommand{\kParameter}{\pkw{parameter}}
 \newcommand{\kInference}{\pkw{inference}}
 \newcommand{\kCompound}{\pkw{compound}}
 \newcommand{\kTheorem}{\pkw{theorem}}

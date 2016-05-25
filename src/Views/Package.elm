@@ -37,8 +37,9 @@ show_package_pane model =
 
 show_package : PackageName -> PackagePath -> Package -> View
 show_package package_name package_path package model =
-  let header = tr [] [ td [on_click address <| ActionCommand <|
-                             cmd_package_fold_unfold package_path]
+  let header = tr [] [ td [ on_click address <| ActionCommand <|
+                             cmd_package_fold_unfold package_path
+                          , style [("cursor", "pointer")]]
                          [text <| if package.is_folded then "▶" else "▼" ]
                      , td [] [ div [class "package-block"] [text package_name]
                              , show_non_float_close_button <|
@@ -74,12 +75,14 @@ show_package package_name package_path package model =
 
 show_module : ModuleName -> ModulePath -> Module -> View
 show_module module_name module_path module' model =
-  let header = tr [] [ td [on_click address <| ActionCommand <|
-                             cmd_module_fold_unfold module_path]
+  let header = tr [] [ td [ on_click address <| ActionCommand <|
+                             cmd_module_fold_unfold module_path
+                          , style [("cursor", "pointer")]]
                           [text <| if module'.is_folded then "▶" else "▼" ]
                      , td [] [ div [ class "module-block"
                                    , on_click address <| ActionCommand <|
-                                       cmd_select_module module_path]
+                                       cmd_select_module module_path
+                                   , style [("cursor", "pointer")]]
                                    [text module_name]
                              , show_non_float_close_button <|
                                 cmd_delete_module module_path]]
@@ -97,8 +100,6 @@ show_module module_name module_path module' model =
               css_class dummy_cursor_info   -- since cursor will be changed
               (cmd_select_node node_path)   -- immediately by `cmd_select_node`
               [text node_name]
-            -- swap_button = show_clickable_block "inline-block" dummy_cursor_info
-            --   (cmd_swap_node module_path index) [text "⬮"]
          in [html]
       detail = if module'.is_folded || Dict.isEmpty module'.nodes.dict then []
                  else ordered_dict_to_list module'.nodes

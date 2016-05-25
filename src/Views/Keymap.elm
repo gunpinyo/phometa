@@ -23,7 +23,8 @@ show_keymap_pane model =
                                      |> List.partition (fst >> List.isEmpty)
       detail = keymap_items
                  |> List.map (\ (keys, ((raw_key, description), key_binding)) ->
-                      tr [on_click address (ActionKeystroke keys)] [
+                      tr [ on_click address (ActionKeystroke keys)
+                         , style [("cursor", "pointer")]] [
                         td [align "center", class "keymap-keystroke-td"]
                            [text raw_key],
                         td [align "center",

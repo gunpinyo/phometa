@@ -30,6 +30,10 @@ model_signal = Signal.foldp update init_model env_action_pair_signal
 main : Signal Html
 main = Signal.map view model_signal
 
+-- set html page title
+port title : String
+port title = "phometa"
+
 port task_signal : Signal (Task () ())
 port task_signal = Signal.filterMap extract_task activating_task model_signal
 

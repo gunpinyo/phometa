@@ -72,19 +72,13 @@ The Backus-Naur Form of simple arithmetic in figure \ref{fig:background-bnf}
 could be transformed in to this four following grammars
 \begin{figure}[H]
     \centering
-\begin{minipage}{0.48\textwidth}
-\begin{flushleft}
+\begin{minipage}{0.7\textwidth}
     \includegraphics[width=\textwidth]{arith-grammar-digit}
-\end{flushleft}
-\end{minipage}
-~
-\begin{minipage}{0.48\textwidth}
-\begin{flushright}
     \includegraphics[width=\textwidth]{arith-grammar-number}
     \includegraphics[width=\textwidth]{arith-grammar-expr}
     \includegraphics[width=\textwidth]{arith-grammar-equation}
-\end{flushright}
 \end{minipage}
+
     \caption{Grammars of Simple Arithmetic}
 \label{fig:arith-grammars}
 \end{figure}
@@ -93,15 +87,16 @@ We take advantage of visualisation by replacing brackets with underlines, this
 should improve readability because reader can see a whole term in a compact
 way but still able check how they are bounded when needed, for example,
 \begin{itemize}
+\item \texttt{<Digit>} $2$ is transformed to \pgmr{Digit} \term{arith-term-digit}
 \item \texttt{<Number>} $250$ is transformed to
-  \pgmr{Number} \bat{\bat{\bat{\bat{$2$}} \bat{$5$}} \bat{$0$}}
+  \pgmr{Number} \term{arith-term-number}
 \item \texttt{<Expr>} $(0 + (12 \times 6))$ is transformed to
-  \pgmr{Expr} \bat{\bat{\bat{\bat{$0$}}} $+$ \bat{\bat{\bat{\bat{\bat{$1$}} \bat{$2$}}} $\times$ \bat{\bat{\bat{$6$}}}}}
+  \pgmr{Expr} \term{arith-term-expr}
 \item \texttt{<Equation>} $(5 + 7) = 12$ is transformed to
-  \pgmr{Equation} \bat{\bat{\bat{\bat{\bat{$5$}}} $+$ \bat{\bat{\bat{$7$}}}} $=$ \bat{\bat{\bat{\bat{$1$}} \bat{$2$}}}}
+  \pgmr{Equation} \term{arith-term-equation}
 \end{itemize}
-These underline patterns coincide with diagram in figures
-\ref{fig:background-number}, \ref{fig:background-expr}, and
+These underline patterns coincide with diagram in figures \ref{fig:background-digit},
+\ref{fig:background-number}, \ref{fig:background-expr-2}, and
 \ref{fig:background-equation} respectively.
 
 \kMetaVarRegex\ is used to control the name meta variables of each grammar. If
@@ -111,16 +106,272 @@ comply to regular expression \pregex{\texttt{[a-z][0-9]*}} (e.g. \pvar{a}, \pvar
 $\ldots$, \pvar{z}, \pvar{a1}, \pvar{a2}, $\ldots$), whereas \pgmr{Digit},
 \pgmr{Number}, and \pgmr{Equation} couldn't instantiate any meta variables,
 however, it could have meta variables as sub-term e.g. \pgmr{Equation}
-\bat{\bat{\pvar{x} $+$ \pvar{x}} $=$ \bat{\bat{\bat{\bat{$2$}}} $\times$ \pvar{x}}}.
+\term{arith-term-equation-var}.
 
 \section{Rules}
 
 The derivation rules of simple arithmetic in figure \ref{fig:background-derivation-rules}
-could be transformed as the following
+can be transformed as the following
+
+\begin{center}
+\begin{minipage}{0.6\textwidth}
+    \includegraphics[width=\textwidth]{arith-rule-eq-refl}
+    \includegraphics[width=\textwidth]{arith-rule-eq-symm}
+    \includegraphics[width=\textwidth]{arith-rule-eq-tran}
+\end{minipage}
+\end{center}
+
+\begin{figure}[H]
+    \centering
+\begin{minipage}{0.6\textwidth}
+    \includegraphics[width=\textwidth]{arith-rule-add-intro}
+    \includegraphics[width=\textwidth]{arith-rule-mult-intro}
+    \includegraphics[width=\textwidth]{arith-rule-add-assoc}
+    \includegraphics[width=\textwidth]{arith-rule-mult-assoc}
+    \includegraphics[width=\textwidth]{arith-rule-add-comm}
+    \includegraphics[width=\textwidth]{arith-rule-mult-comm}
+    \includegraphics[width=\textwidth]{arith-rule-dist-left}
+\end{minipage}
+    \caption{Rules of Simple Arithmetic}
+\label{fig:arith-rules}
+\end{figure}
+
+Most of rules here are self explain but in rule \prule{eq-tran}, there is an
+additional property named \kParameter{}(s) which is a meta veritable that appear
+in premises but not in conclusion, hence user need to give a term when the rule
+is applied. Please note that \kParameter{} is automatic i.e.\ when user define
+they own rule, it will change automatically depending on premises and conclusion
 
 \pthm{dist-right} is not defined here but it will be defined as \emph{lemma}
 in the next section.
 
 \section{Theorems}
 
+The first example of derivation tree (figure
+\ref{fig:background-derivation-tree-1}) could be transformed to theorem
+
+\begin{figure}[H]
+    \centering
+\begin{minipage}{0.8\textwidth}
+    \includegraphics[width=\textwidth]{arith-theorem-example-theorem-1}
+\end{minipage}
+\caption{A theorem that show that $(3 + 4) \times 5 = (4 + 3) \times 5$.}
+\label{fig:arith-theorem-example-theorem-1}
+\end{figure}
+
+You can see that the theorem still preserve tree-like structure but the width
+doesn't grow exponentially like derivation.
+
+Next, I will show you that how was the theorem above constructed. Once we click
+module ``Simple Arithmetic'' on the repository pane, we will see the whole
+context similar to figure \ref{fig:arith-phometa-arith-window}, you will also
+see that there are adding panel intersperse among each node
+
+\includegraphics[width=\textwidth]{arith-thm-ex-1}
+
+Now, click ``Add Theorem'', the button will change to input box where you can
+specify theorem name. Type ``tutorial-theorem-1'', can you will get empty
+theorem as the following
+
+\includegraphics[width=\textwidth]{arith-thm-ex-2}
+
+The first thing that we can do is to construct the goal that will be proven. On
+the picture above you will see button labelled ``Choose Grammar'' which is, in
+fact, a term that doesn't know its grammar. We can specify grammar by click the
+button, which in-tern, will change to input box. Now the keymap pane will look
+like this
+
+\begin{center}
+\includegraphics[width=0.4\textwidth]{arith-thm-ex-3}
+\end{center}
+
+The keymap pane told us that there are 4 grammars available, we can either press
+\pkbd{Alt-{1..4}} or click on the row in keymap pane directly to select grammar.
+Alternatively, you can search a grammars by type faction on it is input box e.g.
+``eq''
+
+\begin{center}
+\includegraphics[width=0.4\textwidth]{arith-thm-ex-4}
+\end{center}
+
+Now, it is only \pgmr{Equation} available because it is the only one that has
+``eq'' as (case-insensitively) sub-string. And since it is the only one, you can
+select it by press \pkbd{Return}, even though in this case we don't have too
+many options but still benefit from it in auto complete favour. Please note that
+this input box support multiple matching separated by space e.g. ``eq ti'' still
+match \pgmr{Equation} because both of ``eq'' and ``ti'' are sub-string of it.
+
+Once you select a grammar, the box will change to green colour and waiting for a
+term of that grammar. In this case, we select \pgmr{Equation} since it has just
+one choice and doesn't have meta variable or literal\footnote{literal is similar
+  to meta-variable but only match to itself, will be explained in later
+  chapter} so phometa automatically click such a choice and the theorem will
+look like this
+
+\begin{center}
+\includegraphics[width=\textwidth]{arith-thm-ex-5}
+\end{center}
+
+You may notice that the goal term as grey background rather than white as
+before. This indicate that the term is still modifiable.
+
+Next, we will continue on the \pgmr{Expr} term on the left hand side of
+``$=$''. When the cursor is in it, the keymap will look like this
+
+\begin{center}
+\includegraphics[width=0.4\textwidth]{arith-thm-ex-6}
+\end{center}
+
+Again, there are 3 choice available which can be selected similar manner when we
+select grammar. At the this stage you might wonder how to type ``$\times$''
+since it is unicode character. Well, we can go to unicode mode by press
+\pkbd{Alt-u} as keymap pane suggest. Then keymap pane will look like this
+
+\begin{center}
+\includegraphics[width=0.3\textwidth]{arith-thm-ex-7}
+\end{center}
+
+This allow us to search unicode character by using its \LaTeX{}'s math-mode
+name. Now type ``times'' in the input box, you should see ``$\times$'' appear on
+keymap. Once you select it, the unicode mode disappear and put ``$\times$'' in
+the input box, which in-tern, filter other choices out so you can hit
+\pkbd{Return} for multiplication. The goal will transform to
+\begin{center}
+\includegraphics[width=0.3\textwidth]{arith-thm-ex-8}
+\end{center}
+
+Next we will focus middle \pgmr{Expr}. If we type string and hit \pkbd{Return}
+here it will assume that we enter meta variable or literal (to avoid conflict
+auto complete similar to choose grammar is disabled here). E.g.\ if we type ``a''
+and press enter it will become like this
+
+\begin{center}
+\includegraphics[width=0.2\textwidth]{arith-thm-ex-9}
+\end{center}
+
+If we enter the name that that doesn't comply to regular expression, it will
+do nothing and prompt error message above main pane as the following
+
+\begin{center}
+\includegraphics[width=\textwidth]{arith-thm-ex-10}
+\end{center}
+
+By the way, the goal here doesn't involve any meta variable. We can reset any
+sub-term e.g. in this case that \pvar{a} by pressing \pkbd{Alt-t}. Ultimately,
+you can reset the whole term by pressing \pkbd{Alt-r}
+
+By recursively fill the the goal, eventually it will become like this
+
+\includegraphics[width=\textwidth]{arith-thm-ex-11}
+
+Since the goal is complete, it is ready to be proven. You can select a rule by
+clicking ``Proof By Rule'' and select \prule{mult-intro} similar manner to
+choose grammar. Then the theorem will look like this
+
+\includegraphics[width=\textwidth]{arith-thm-ex-12}
+
+Once the rule is applied, it will further sub-goals. Notice that the goal
+background changes to white colour as we can longer modify the goal. However if
+you made a mistake and want to go back, you can press \pkbd{Alt-t} to reset
+current proof then you can modify it again. Ultimately you can press
+\pkbd{Alt-r} to reset entire theorem.
+
+Two remaining sub-goals that have been generated can be proven similar to the
+process above i.e.\ select rule \prule{add-comm} for first sub goal and
+\prule{eq-refl} for second one.
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{arith-thm-ex-13}
+\end{center}
+
+Once the theorem is complete, you can claim validity of the goal. More over you
+can convert it to lemma that can be used in later theorem by clicking lock
+button on top-right corner of theorem
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{arith-thm-ex-14}
+\end{center}
+
+Similarly, we can can create lemma \pthm{dist-right} as the following
+
+\begin{figure}[H]
+    \centering
+\begin{minipage}{0.8\textwidth}
+    \includegraphics[width=\textwidth]{arith-lemma-dist-right}
+\end{minipage}
+\caption{An example of lemma obtained by lock a theorem.}
+\label{fig:arith-lemma-dist-right}
+\end{figure}
+
+To gain more familiarly on theorem, here is more complex theorem corresponded
+the second example of derivation tree on figure \ref{fig:background-derivation-tree-2}
+
+\begin{figure}[H]
+    \centering
+\begin{minipage}{\textwidth}
+    \includegraphics[width=\textwidth]{arith-theorem-example-theorem-2}
+\end{minipage}
+\caption{The second example theorem of Simple Arithmetic.}
+\label{fig:arith-theorem-example-theorem-2}
+\end{figure}
+
+We will recreate this theorem again so you can see how this can be done. First
+create create a theorem \pthm{tutorial-theorem-2} using the same goal as above
+
+\includegraphics[width=\textwidth]{arith-thm-ex-15}
+
+Then apply rule \prule{eq-tran} to this goal
+
+\includegraphics[width=\textwidth]{arith-thm-ex-16}
+
+The rule applying process is not complete because \prule{eq-tran} contains
+\pvar{z} which appear in premises but not in conclusion (i.e. \pvar{z} is
+parameter) so phometa ask us to fill the term that we want to use. In this case
+we want \term{arith-thm-ex-aux-1} so put it there
+
+\includegraphics[width=\textwidth]{arith-thm-ex-17}
+
+Now, let focus on the second sub-goal, we can apply \prule{eq-tran} again but
+with \\ \pvar{z} = \term{arith-thm-ex-aux-2}. Then, apply \prule{mult-intro} in the second its sub-goal.
+
+\includegraphics[width=\textwidth]{arith-thm-ex-18}
+
+You can see that there is a sub-goal that has button ``Proof By Lemma''. This is
+because there is at least one lemma that is pattern matchable with that
+sub-goal. If you click ``Proof By Lemma'' button, the keymap will look like this
+
+\begin{center}
+\includegraphics[width=0.4\textwidth]{arith-thm-ex-19}
+\end{center}
+
+In this case, there is one lemma which is \pthm{dist-right} that is pattern
+matchable to that sub-goal. You can hit \pkbd{Return} to use this lemma and it
+will look like this
+
+\includegraphics[width=\textwidth]{arith-thm-ex-20}
+
+The remaining step is easy enough.
+
+It is a good practice to create lots of small lemmas rather than a big theorem.
+This is because it is easier to read and you can use a lemma multiple time i.e.
+no need to duplicate sub-proof.
+
+\newpage
+\section{Exercises}
+
+\begin{itemize}
+\item Create a theorem and proof each of the following
+  \begin{itemize}
+  \item \term{arith-ex-1-1}
+  \item \term{arith-ex-1-2}
+  \item \term{arith-ex-1-3}
+  \end{itemize}
+\item Extend Simple Arithmetic to support
+  \begin{itemize}
+  \item addition and multiplication identity.
+  \item addition and multiplication idempotent.
+  \item inequality.
+  \end{itemize}
+\item Create 5 theorems of your own choice and proof it.
+\end{itemize}
 \end{document}

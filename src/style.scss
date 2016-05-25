@@ -111,6 +111,7 @@ $inline-padding: 5px;
     @extend .block-spacial;
     border: 0px solid #AAAAAA;
     border-top-width: 1px;
+    cursor: pointer;
 
     /* credit: 4 lines below from */
     /* http://stackoverflow.com/questions/880512/ */
@@ -165,9 +166,20 @@ input {
 }
 
 /* button */
+button {
+    cursor: pointer;
+}
+
+/* Credit: https://css-tricks.com/snippets/css/css-hacks-targeting-firefox/ */
+@-moz-document url-prefix() {
+    button {
+        background-color: #DDDDDD;
+    }
+}
+
 .button-panel {
     float: right;
-    margin-top: 3px
+    margin-top: 3px;
 }
 
 .button-non-float {
@@ -179,14 +191,6 @@ input {
     @extend .inline-block;
     color: #000000;
     background-color: #DDDDDD;
-}
-
-/* icon */
-.icon-block {
-    @extend .inline-block;
-    @include color-with-bg(#880000);
-    vertical-align:middle;
-    font-weight: bold;
 }
 
 /* auto complete unicode state */
@@ -268,6 +272,35 @@ input {
     font-weight: bold;
     text-decoration: underline;
     color: #BB00BB;
+}
+
+/* measage */
+.success-msg {
+    @extend .inline-block;
+    @include color-with-bg(green);
+    font-weight: bold;
+}
+.info-msg {
+    @extend .inline-block;
+    @include color-with-bg(blue);
+    font-weight: bold;
+}
+.warning-msg {
+    @extend .inline-block;
+    @include color-with-bg(orange);
+    font-weight: bold;
+}
+.err-msg {
+    @extend .inline-block;
+    @include color-with-bg(red);
+    font-weight: bold;
+}
+.confirmnation-msg {
+    @extend .inline-block;
+    @include color-with-bg(red);
+    font-weight: bold;
+    background-color: red;
+    color: white;
 }
 
 /* -------------------------------------------------------------------------- */

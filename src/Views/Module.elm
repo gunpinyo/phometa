@@ -77,7 +77,6 @@ show_module cursor_info module_path model =
                       if index == index' then Just node_type else Nothing
               _                 -> Nothing
          in div [class "module-intersperse-panel"] <| [
-             show_keyword_block " ", -- for vertical gap
              div [class "button-panel"] <|
                List.concatMap (\html -> [html, text " "]) <|
                List.map2 (\node_type placeholder ->
@@ -92,6 +91,7 @@ show_module cursor_info module_path model =
              ++ (if index == 0 || index == List.length nodes_htmls then []
                else [ div [class "button-panel"] [text " "]
                     , show_swap_button <| cmd_swap_node record (index - 1)])
+             ++ [show_keyword_block " "] -- for vertical gap
 
         ) (List.repeat (List.length nodes_htmls + 1) ())
    in div [] <| header_html ::

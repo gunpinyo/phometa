@@ -115,7 +115,7 @@ keymap_auto_complete original_choices is_visible maybe_for_hit_return
           [ ("Escape", "quit searching unicode", KbCmd quit_unicode_cmd)
           , ("(Input)", filters_css, KbCmd cmd_nothing) ]
         else
-          ( key_prefix ++ "Space", "search unicode",
+          ( key_prefix ++ "u", "search unicode",
             KbCmd <| Focus.set unicode_focus
                   <| Just {filters = "", counter = 0})
           :: ("(Input)", filters_css, KbCmd cmd_nothing)

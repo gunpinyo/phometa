@@ -5,8 +5,10 @@
 \label{chap:background}
 
 In this chapter, we will go thought some required materials needed for later
-chapters. These can be linked together by an example of simple arithmetic
+chapters. These can be linked together by an example of Simple Arithmetic
 explained below.
+
+\hspace{1ex}
 
 \section{Formal System}
 
@@ -23,10 +25,14 @@ $(3 + 1)$, $(3 \times 4)$) has explicit structure and we can argue something
 like ``\emph{does $12$ equal to $(3 \times 4)$}'' or ``\emph{for any integers
   $a$ and $b$, $(a + b)$ is equal to $(b + a)$}''.
 
+\hspace{1ex}
+
 \section{Backus-Naur Form}
 
 Backus-Naur Form (BNF) is a way to construct a term, for example, grammars of
 formal system above can be defined as the following
+
+\hspace{1ex}
 
 \begin{figure}[H]
 \begin{framed}
@@ -42,12 +48,24 @@ formal system above can be defined as the following
 <Equation> ::= <Expr> `=' <Expr>
 \end{lstlisting}
 \end{framed}
-\caption{Backus-Naur Form of simple arithmetic}
+\caption{Backus-Naur Form of Simple Arithmetic}
 \label{fig:background-bnf}
 \end{figure}
 
+\hspace{2ex}
+
 \begin{itemize}
 \item A term of \texttt{<Digit>} can be either 0 or 1 or 2 or $\ldots$ or 9 and nothing else.
+
+\begin{figure}[H]
+\begin{framed}
+  \centering $2$ is \texttt{<Digit>} ($3^{rd}$ choice)
+\end{framed}
+    \caption{This diagram explains that why $2$ is a term of \texttt{<Digit>}}
+\label{fig:background-digit}
+\end{figure}
+
+\hspace{1ex}
 
 \item A term of \texttt{<Number>} can be either
 \begin{itemize}
@@ -57,11 +75,11 @@ formal system above can be defined as the following
 
 \begin{figure}[H]
 \begin{framed}
-  \centering \Tree[.{$250$ is \texttt{<Number>}} [.{$25$ is \texttt{<Number>}}
-  [.{$2$ is \texttt{<Number>}} {$2$ is \texttt{<Digit>}} ] {$5$ is
-    \texttt{<Digit>}} ] {$0$ is \texttt{<Digit>}} ]
+  \centering \Tree[.{$250$ is \texttt{<Number>} ($2^{nd}$ choice)} [.{$25$ is \texttt{<Number>} ($2^{nd}$ choice)}
+  [.{$2$ is \texttt{<Number>} ($1^{st}$ choice)} {$2$ is \texttt{<Digit>} ($3^{rd}$ choice)} ] {$5$ is
+    \texttt{<Digit>} ($6^{th}$ choice)} ] {$0$ is \texttt{<Digit>} ($1^{st}$ choice)} ]
 \end{framed}
-    \caption{For example, this diagram show that why $250$ is a term of \texttt{<Number>}}
+    \caption{This diagram explains that why $250$ is a term of \texttt{<Number>}}
 \label{fig:background-number}
 \end{figure}
 
@@ -74,23 +92,41 @@ formal system above can be defined as the following
 
 Please note that we need brackets around `$+$' and `$\times$' to avoid
 ambiguity. If we don't have these brackets, $3 + 4 + 5$ could be interpreted as
-either $(3 + 4) + 5$ or $3 + (4 + 5)$ which is not precise. Moreover, $0 + 12
-\times 6$ will be interpreted as $0 + (12 \times 6)$ due to priority of $\times$
-over $+$ and it is impossible to encode some thing like $(0 + 12) \times 6$.
+either $(3 + 4) + 5$ or $3 + (4 + 5)$ which is not precise. Moreover, $12 + 0
+\times 6$ will be interpreted as $12 + (0 \times 6)$ due to priority of $\times$
+over $+$ and it is impossible to encode some thing like $(12 + 0) \times 6$.
 
 \begin{figure}[H]
 \begin{framed}
     \centering
-\Tree[.{$(0 + (12 \times 6))$ is \texttt{<Expr>}} [.{$0$ is \texttt{<Expr>}} [.{$0$ is
-  \texttt{<Number>}} {$0$ is \texttt{<Digit>}} ] ]
-[.{$(12 \times 6)$ is \texttt{<Expr>}} [.{$12$ is \texttt{<Expr>}} [.{$12$ is
-  \texttt{<Number>}} [.{$1$ is \texttt{<Number>}} {$2$ is \texttt{<Digit>}} ]
-{$2$ is \texttt{<Digit>}} ] ] [.{$6$ is \texttt{<Expr>}} [.{$6$ is
-  \texttt{<Number>}} {$6$ is \texttt{<Digit>}} ] ]]]
+\Tree[.{$((3 + 4) + 5)$ is \texttt{<Expr>} ($2^{nd}$ choice)}
+       [.{$(3 + 4)$ is \texttt{<Expr>} ($2^{nd}$ choice)}
+         [.{$3$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$3$ is
+           \texttt{<Number>}} {$3$ is \texttt{<Digit>}} ] ]
+         [.{$4$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$4$ is
+           \texttt{<Number>}} {$4$ is \texttt{<Digit>}} ] ] ]
+       [.{$5$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$5$ is \texttt{<Number>}} {$5$ is \texttt{<Digit>}} ] ] ]
 \end{framed}
-    \caption{For example, this diagram show that why $(0 + (12 \times 6))$ is a term of \texttt{<Expr>}}
+    \caption{This diagram explains that why $((3 + 4) + 5)$ is a term of \texttt{<Expr>}}
 \label{fig:background-expr}
 \end{figure}
+
+\begin{figure}[H]
+\begin{framed}
+    \centering
+\Tree[.{$(12 + (0 \times 6))$ is \texttt{<Expr>} ($2^{nd}$ choice)}
+       [.{$12$ is \texttt{<Expr>} ($1^{st}$ choice)}
+         [.{$12$ is \texttt{<Number>}}
+           [.{$1$ is \texttt{<Number>}} {$1$ is \texttt{<Digit>}} ]
+           {$2$ is \texttt{<Digit>}} ] ]
+       [.{$(0 \times 6)$ is \texttt{<Expr>} ($3^{rd}$ choice)}
+         [.{$0$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$0$ is \texttt{<Number>}} {$0$ is \texttt{<Digit>}} ] ]
+         [.{$6$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$6$ is \texttt{<Number>}} {$6$ is \texttt{<Digit>}} ] ]]]
+\end{framed}
+    \caption{This diagram explains that why $(12 + (0 \times 6))$ is a term of \texttt{<Expr>}}
+\label{fig:background-expr-2}
+\end{figure}
+
 
 \item A term of \texttt{<Equation>} can be only two \texttt{<Expr>}s concatenate using
 `$=$'
@@ -98,19 +134,38 @@ over $+$ and it is impossible to encode some thing like $(0 + 12) \times 6$.
 \begin{figure}[H]
 \begin{framed}
     \centering
-\Tree[.{$(5 + 7) = 12$ is \texttt{<Equation>}}
-       [.{$(5 + 7)$ is \texttt{<Expr>}}
-         [.{$5$ is \texttt{<Expr>}} [.{$5$ is \texttt{<Number>}} {$5$ is
+\Tree[.{$(5 + 7) = 12$ is \texttt{<Equation>} ($1^{st}$ choice)}
+       [.{$(5 + 7)$ is \texttt{<Expr>} ($2^{nd}$ choice)}
+         [.{$5$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$5$ is \texttt{<Number>}} {$5$ is
            \texttt{<Digit>}} ] ]
-         [.{$7$ is \texttt{<Expr>}} [.{$7$ is \texttt{<Number>}} {$7$ is
+         [.{$7$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$7$ is \texttt{<Number>}} {$7$ is
            \texttt{<Digit>}} ] ] ]
-      [.{$12$ is \texttt{<Expr>}}
-         [.{$12$ is \texttt{<Number>}} [.{$1$ is \texttt{<Number>}} {$2$ is \texttt{<Digit>}} ]
+      [.{$12$ is \texttt{<Expr>} ($1^{st}$ choice)}
+         [.{$12$ is \texttt{<Number>}} [.{$1$ is \texttt{<Number>}} {$1$ is \texttt{<Digit>}} ]
       {$2$ is \texttt{<Digit>}} ] ] ]
 \end{framed}
-    \caption{For example, this diagram show that why $(5 + 7) = 12$ is \texttt{<Equation>}}
+    \caption{This diagram explains that why $(5 + 7) = 12$ is a term of \texttt{<Equation>}}
 \label{fig:background-equation}
 \end{figure}
+
+\begin{figure}[H]
+\begin{framed}
+    \centering
+\Tree[.{$(2 \times 3) = 5$ is \texttt{<Equation>} ($1^{st}$ choice)}
+       [.{$(2 \times 3)$ is \texttt{<Expr>} ($3^{rd}$ choice)}
+         [.{$2$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$2$ is \texttt{<Number>}} {$2$ is
+           \texttt{<Digit>}} ] ]
+         [.{$3$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$3$ is \texttt{<Number>}} {$3$ is
+           \texttt{<Digit>}} ] ] ]
+       [.{$5$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$5$ is \texttt{<Number>}} {$5$ is
+         \texttt{<Digit>}} ] ] ]
+\end{framed}
+    \caption{This diagram explains that why $(2 \times 3) = 5$ is a term of
+      \texttt{<Equation>}. Please note that this construction is purely
+      syntactic so wrong equation is acceptable.}
+\label{fig:background-equation-2}
+\end{figure}
+
 \end{itemize}
 
 \hspace{1ex}
@@ -157,7 +212,7 @@ If pattern matching is successful then the target is instance of the pattern.
 \section{Derivation of Formal Systems}
 
 So far, we construct any term based on Backus-Naur Form, this doesn't prevent
-invalid term, for example, $(2 + 2) = 5$ is perfectly a term of
+invalid term, for example, $(2 \times 3) = 5$ is perfectly a term of
 \texttt{<Equation>}. Thus, we need some mechanism to verify a term i.e.
 \emph{prove} that the particular term holds. One way to deal with this is to use
 derivation system, first, we have a set of derivation rules that has format as
@@ -210,7 +265,7 @@ $$
 \derivRule{dist-right}{((x + y) \times z) = ((x \times z) + (y
   \times z))}{ }
 $$
-\caption{Derivation rules of simple arithmetic (not exhaustive, due to limited
+\caption{Derivation rules of Simple Arithmetic (not exhaustive, due to limited
   space).}
 \label{fig:background-derivation-rules}
 \end{figure}
@@ -250,6 +305,7 @@ $$ \derivTree{add-intro}{((3 + 4) * 5) = ((4 + 3) * 5)}
      {\derivTree{add-comm}{(3 + 4) = (4 + 3)}{ } \\ \\ \\
       \derivTree{eq-refl}{5 = 5}{ }} $$
 \caption{Example of derivation tree.}
+\label{fig:background-derivation-tree-1}
 \end{figure}
 
 Some rules in figure \ref{fig:background-derivation-rules} don't have any
@@ -294,6 +350,7 @@ $$
 }
 $$
 \caption{Example of more complex derivation tree.}
+\label{fig:background-derivation-tree-2}
 \end{figure}
 
 \end{document}
