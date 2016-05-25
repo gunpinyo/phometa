@@ -59,17 +59,19 @@ show_grammar cursor_info node_path grammar model =
         , show_reset_button <| cmd_enter_micro_mode_navigate record
                                  >> cmd_reset_grammar ]
       metavar_regex_header =  [ show_keyword_block "metavar_regex", text " "]
-      metavar_unlocked_inactive = metavar_regex_header ++
+      metavar_unlocked_inactive =
         case grammar.metavar_regex of
-          Nothing -> [show_button "Disabled"
+          Nothing -> metavar_regex_header ++
+                     [show_button "Disabled"
                         (cmd_enter_micro_mode_metavar record)]
           Just regex ->
+            [ show_close_button <| cmd_disable_metavar record ] ++
+            metavar_regex_header ++
             [ show_html_button
                 "regex-block"
                 (cursor_info_go_to_sub_elem 0 cursor_info)
                 (cmd_enter_micro_mode_metavar record)
-                [text <| regex_to_string regex]
-            , show_close_button <| cmd_disable_metavar record]
+                [text <| regex_to_string regex]]
       metavar_regex_html = div [] (
         if grammar.has_locked then
           case grammar.metavar_regex of
@@ -81,26 +83,28 @@ show_grammar cursor_info node_path grammar model =
           Just record' ->
             case record'.micro_mode of
               MicroModeGrammarSetMetaVarRegex _ ->
+                [ show_close_button <| cmd_disable_metavar record] ++
                 metavar_regex_header ++
                 [ show_auto_complete_filter "regex-block"
                     (cursor_info_go_to_sub_elem 0 cursor_info)
                     "metavar regex" cmd_nothing
                     focus_auto_complete model
-                , text " "
-                , show_close_button <| cmd_disable_metavar record]
+                , text " "]
               _ -> metavar_unlocked_inactive)
       literal_regex_header =  [ show_keyword_block "literal_regex", text " "]
-      literal_unlocked_inactive = literal_regex_header ++
+      literal_unlocked_inactive =
         case grammar.literal_regex of
-          Nothing -> [show_button "Disabled"
+          Nothing -> literal_regex_header ++
+                     [show_button "Disabled"
                         (cmd_enter_micro_mode_literal record)]
           Just regex ->
+            [ show_close_button <| cmd_disable_literal record ] ++
+            literal_regex_header ++
             [ show_html_button
                 "regex-block"
                 (cursor_info_go_to_sub_elem 0 cursor_info)
                 (cmd_enter_micro_mode_literal record)
-                [text <| regex_to_string regex]
-            , show_close_button <| cmd_disable_literal record]
+                [text <| regex_to_string regex]]
       literal_regex_html = div [] (
         if grammar.has_locked then
           case grammar.literal_regex of
@@ -112,13 +116,13 @@ show_grammar cursor_info node_path grammar model =
           Just record' ->
             case record'.micro_mode of
               MicroModeGrammarSetLiteralRegex _ ->
+                [show_close_button <| cmd_disable_literal record] ++
                 literal_regex_header ++
                 [ show_auto_complete_filter "regex-block"
                     (cursor_info_go_to_sub_elem 0 cursor_info)
                     "literal regex" cmd_nothing
                     focus_auto_complete model
-                , text " "
-                , show_close_button <| cmd_disable_literal record]
+                , text " "]
               _ -> literal_unlocked_inactive)
       add_choice_inactive = [show_button "Add Choice"
                               (cmd_enter_micro_mode_add_choice record)]
@@ -184,16 +188,16 @@ show_grammar cursor_info node_path grammar model =
                             (cmd_enter_micro_mode_grammar choice_index
                                gmr_index record) [text gmr_string])
               in div [] <|
-                   [show_keyword_block "choice "] ++
-                   stripe_two_list_together format_htmls grammar_name_htmls ++
                    [show_close_button <| cmd_enter_micro_mode_navigate record
                                            >> cmd_delete_choice choice_index] ++
                    (if List.length grammar.choices == 1 then [] else
                       [show_swap_button <| cmd_enter_micro_mode_navigate record
-                                             >> cmd_swap_choice choice_index])
+                                             >> cmd_swap_choice choice_index])++
+                   [show_keyword_block "choice "] ++
+                   stripe_two_list_together format_htmls grammar_name_htmls
             ) grammar.choices
    in show_indented_clickable_block cursor_info (cmd_enter_mode_grammar record)
-        [ div [] (header_htmls ++ header_buttons ++ [choices_header_html])
+        [ div [] (header_buttons ++ [choices_header_html] ++ header_htmls)
         , hr [] []
         , metavar_regex_html
         , literal_regex_html

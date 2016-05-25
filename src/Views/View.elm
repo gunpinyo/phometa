@@ -4,7 +4,8 @@ import Html.Attributes exposing (class)
 import Html.Lazy exposing (lazy)
 
 import Tools.Flex exposing (flex_div, flex_grow, flex_split, fullbleed)
-import Tools.HtmlExtra exposing (import_css, import_javascript, custom_script)
+import Tools.HtmlExtra exposing (import_css, import_javascript, import_icon,
+                                 custom_script)
 import Models.ViewState exposing (View)
 import Views.Package exposing (show_package_pane)
 import Views.Keymap exposing (show_keymap_pane)
@@ -18,7 +19,8 @@ show_view : View
 show_view model =
   fullbleed
     <| flex_div [] [class "window"]
-    <| [ import_css <| "http://cdnjs.cloudflare.com/ajax/libs/font-awesome/"
+    <| [ import_icon
+       , import_css <| "http://cdnjs.cloudflare.com/ajax/libs/font-awesome/"
                     ++"4.4.0/css/font-awesome.min.css"
        , import_css "style.css"
        , show_window model

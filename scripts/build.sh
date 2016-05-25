@@ -12,6 +12,7 @@ sass src/style.scss build/style.css
 cp src/naive.js build/naive.js
 cp src/repository.json build/repository.json
 cp src/phometa-server.py build/phometa-server.py
+cp logo.png build/logo.png
 
 elm-make src/Main.elm --yes --output build/phometa.html
 

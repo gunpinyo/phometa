@@ -19,6 +19,10 @@ import_javascript : String -> Html
 import_javascript javascript_location =
   node "script" [attribute "src" javascript_location] []
 
+import_icon : Html
+import_icon =
+  node "link" [rel "shortcut icon", type' "image/png", href "/logo.png"][]
+
 custom_script : String -> String -> Html
 custom_script script_type content =
   node "script" [ type' script_type ]

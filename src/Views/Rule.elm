@@ -82,7 +82,13 @@ show_rule cursor_info node_path rule model =
       cascade_elem_func cas_records index sub_index cas_record = div [] (
         let sub_focus = focus_premise_cascade_records index
                           => list_focus_elem sub_index
-         in [ [show_text_block "rule-block" cas_record.rule_name]
+         in [ if rule.has_locked then [] else
+              [show_close_button <| cmd_enter_micro_mode_navigate record
+                   >> cmd_delete_cascade_rule index sub_index] ++
+                 (if List.length cas_records == 1 then [] else
+                    [show_swap_button <| cmd_enter_micro_mode_navigate record
+                       >> cmd_swap_cascade_rule index sub_index])
+            , [show_text_block "rule-block" cas_record.rule_name]
             , if rule.has_locked then
                  if cas_record.allow_unification
                    then [] else [show_keyword_block "exact_match"]
@@ -109,15 +115,16 @@ show_rule cursor_info node_path rule model =
                           (sub_focus => arguments_ => list_focus_elem arg_index)
                           [index + 1, sub_index + 1, arg_index + 1] False)
                           argument model]) |> List.concat
-            , if rule.has_locked then [] else
-              [show_close_button <| cmd_enter_micro_mode_navigate record
-                   >> cmd_delete_cascade_rule index sub_index] ++
-                 (if List.length cas_records == 1 then [] else
-                    [show_swap_button <| cmd_enter_micro_mode_navigate record
-                       >> cmd_swap_cascade_rule index sub_index])
             ] |> List.concatMap (\htmls -> htmls ++ [text " "]))
       premise_func index premise =
-        ((div [] <| (case premise of
+        ((div [] <|
+         (if rule.has_locked then [] else
+              [show_close_button <| cmd_enter_micro_mode_navigate record
+                                         >> cmd_delete_premise index] ++
+                 (if List.length rule.premises == 1 then [] else
+                    [show_swap_button <| cmd_enter_micro_mode_navigate record
+                                           >> cmd_swap_premise index]))
+         ++ (case premise of
           PremiseDirect pattern ->
             [ show_keyword_block "premise "
             , show_root_term
@@ -140,13 +147,7 @@ show_rule cursor_info node_path rule model =
                                  cursor_info [index + 1, 0]) "sub-rule name"
                                  cmd_nothing focus_auto_complete model]
                        _ -> inactive_add_cascade_html
-                   _ -> inactive_add_cascade_html))
-        ++ (if rule.has_locked then [] else
-              [show_close_button <| cmd_enter_micro_mode_navigate record
-                                         >> cmd_delete_premise index] ++
-                 (if List.length rule.premises == 1 then [] else
-                    [show_swap_button <| cmd_enter_micro_mode_navigate record
-                                           >> cmd_swap_premise index])))
+                   _ -> inactive_add_cascade_html)))
         :: (case premise of
              PremiseDirect _ -> []
              PremiseCascade cas_records ->
@@ -186,7 +187,7 @@ show_rule cursor_info node_path rule model =
               (cmd_toggle_allow_reduction record)
           ]
    in show_indented_clickable_block cursor_info (cmd_enter_mode_rule record) <|
-        [ div [] (header_htmls ++ header_buttons)
+        [ div [] (header_buttons ++ header_htmls)
         , hr [] []] ++
         premises_htmls ++
         (if List.isEmpty rule.premises then [] else [hr [] []]) ++

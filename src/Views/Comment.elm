@@ -33,12 +33,12 @@ show_comment cursor_info node_path comment model =
       toggle_record = Focus.set micro_mode_ (if is_editing
         then MicroModeCommentNavigate else MicroModeCommentEditing) record
       header_html = div []
-        [ show_keyword_block "Comment"
-        , show_text_block "comment-block" node_path.node_name
-        , show_close_button <| cmd_delete_node node_path
+        [ show_close_button <| cmd_delete_node node_path
         , div [class "button-panel"] [
             show_button (if is_editing then "Quit Editing" else "Edit Comment")
-                        (cmd_enter_mode_comment toggle_record)]]
+                        (cmd_enter_mode_comment toggle_record)]
+        , show_keyword_block "Comment"
+        , show_text_block "comment-block" node_path.node_name]
       body_htmls = if is_editing then
                      [ hr [] []
                      , Html.textarea
