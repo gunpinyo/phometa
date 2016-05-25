@@ -2,9 +2,9 @@
 Phometa is a web application
 that can build formal systems based on visualisation.
 
-This is individual project of **Gun Pinyo**
-Supervisor: **Dr. Krysia Broda**
-Second Marker: **Prof. Alessio R. Lomuscio**
+This is individual project of **Gun Pinyo**<br/>
+Supervisor: **Dr. Krysia Broda**<br/>
+Second Marker: **Prof. Alessio R. Lomuscio**<br/>
 MEng Computing (4YFT) **Imperial College London**
 
 For full report of this project, please read
