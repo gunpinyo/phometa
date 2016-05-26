@@ -45,6 +45,7 @@ init_auto_complete =
   { filters       = ""
   , counter       = 0
   , unicode_state = Nothing
+  , need_to_fetch = False
   }
 
 focus_auto_complete_unicode : Focus AutoComplete { filters : String

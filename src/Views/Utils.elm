@@ -94,6 +94,12 @@ show_lock_button = show_icon_button "fa-lock"
 show_swap_button : Command -> Html
 show_swap_button = show_icon_button "fa-arrows-v"
 
+show_focus_button : Command -> Html
+show_focus_button = show_icon_button "fa-thumb-tack"
+
+show_unfocus_button : Command -> Html
+show_unfocus_button = show_icon_button "fa-sign-out"
+
 show_auto_complete_filter : CssClass -> CursorInfo -> String -> Command ->
                               Focus Model AutoComplete -> View
 show_auto_complete_filter class_name cursor_info placeholder
@@ -105,14 +111,16 @@ show_auto_complete_filter class_name cursor_info placeholder
         ("block-on-cursor", cursor_info_is_here cursor_info)]
    in case auto_complete.unicode_state of
         Nothing ->
-          Html.input [
+          Html.input ([
               css_style,
               on_blur address (ActionCommand blur_cmd),
               on_typing_to_input_field address (\string -> ActionCommand <|
                 update_auto_complete string auto_complete_focus),
               Html.Attributes.type' "text",
               Html.Attributes.placeholder placeholder,
-              Html.Attributes.attribute "data-autofocus" ""]
+              Html.Attributes.attribute "data-autofocus" ""] ++
+              if not auto_complete.need_to_fetch then [] else
+                [Html.Attributes.value auto_complete.filters])
             [text auto_complete.filters]
         Just record ->
           div [css_style] [

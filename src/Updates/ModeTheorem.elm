@@ -7,7 +7,7 @@ import Focus exposing (Focus, (=>))
 import Tools.Utils exposing (list_get_elem, list_update_elem, list_rotate)
 import Tools.CssExtra exposing (css_inline_str_embed)
 import Models.Focus exposing (mode_, micro_mode_, reversed_ref_path_,
-                              node_name_, goal_, proof_,
+                              node_name_, goal_, proof_, is_folded_,
                               sub_cursor_path_)
 import Models.Cursor exposing (IntCursorPath, CursorInfo,
                                cursor_info_is_here,
@@ -335,6 +335,53 @@ cmd_set_lemma theorem_name model =
 cmd_set_micro_mode : MicroModeTheorem -> Command
 cmd_set_micro_mode micro_mode model =
   Focus.set (focus_record_mode_theorem => micro_mode_) micro_mode model
+
+is_thorem_focusable : Theorem -> Bool
+is_thorem_focusable theorem =
+  case theorem.proof of
+    ProofByRule _ _ _ sub_theorems ->
+      List.any (\sub_theorem -> case sub_theorem.proof of
+        ProofByRule _ _ _ sub_sub_theorems ->
+          not <| List.isEmpty sub_sub_theorems
+        _                                  -> False) sub_theorems
+    _                              -> False
+
+is_thorem_focused : Theorem -> Bool
+is_thorem_focused theorem =
+  case theorem.proof of
+    ProofByRule _ _ _ sub_theorems ->
+      List.all (Focus.get is_folded_) sub_theorems
+    _                              -> False
+
+reset_all_theorem_all_is_folded : Theorem -> Theorem
+reset_all_theorem_all_is_folded theorem =
+  let proof' = case theorem.proof of
+        ProofByRule rule_name arguments pm_info sub_theorems ->
+          ProofByRule rule_name arguments pm_info
+            (List.map reset_all_theorem_all_is_folded sub_theorems)
+        _                                                    -> theorem.proof
+  in theorem
+       |> Focus.set is_folded_ False
+       |> Focus.set proof_ proof'
+
+cmd_toggle_focus_current_theorem : Command
+cmd_toggle_focus_current_theorem old_model =
+  let record = Focus.get focus_record_mode_theorem old_model
+      top_theorem_focus = focus_theorem record.node_path
+      cur_theorem_focus = top_theorem_focus =>
+                            focus_sub_theorem record.sub_cursor_path
+      will_sub_thorems_be_folded = not <| is_thorem_focused <|
+        Focus.get cur_theorem_focus old_model
+      model = Focus.update top_theorem_focus
+                reset_all_theorem_all_is_folded old_model
+      cur_theorem = Focus.get cur_theorem_focus model
+   in if not will_sub_thorems_be_folded then model else
+      case Focus.get (cur_theorem_focus => proof_) model of
+        ProofByRule rule_name arguments pm_info sub_theorems ->
+          let sub_theorems' = List.map (Focus.set is_folded_ True) sub_theorems
+              proof' = ProofByRule rule_name arguments pm_info sub_theorems'
+           in Focus.set (cur_theorem_focus => proof_) proof' model
+        _                                                    -> model
 
 cmd_reset_current_proof : Command
 cmd_reset_current_proof model =

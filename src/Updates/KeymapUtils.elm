@@ -10,7 +10,8 @@ import Tools.CssExtra exposing (CssInlineStr, CssInlineToken(..),
                                 css_inline_str_tokenise)
 import Tools.KeyboardExtra exposing (RawKeystroke, Keystroke, to_keystroke)
 import Tools.Unicode exposing (name_to_unicode)
-import Models.Focus exposing (filters_, counter_, unicode_state_)
+import Models.Focus exposing (filters_, counter_,
+                              unicode_state_,  need_to_fetch_)
 import Models.Model exposing (Model, Command, KeyBinding(..), KeyDescription,
                               Keymap, Counter, AutoComplete)
 import Models.ModelUtils exposing (focus_auto_complete_unicode)
@@ -64,6 +65,7 @@ update_auto_complete filters auto_complete_focus model =
         Nothing -> Focus.set auto_complete_focus { filters = filters
                                                  , counter = 0
                                                  , unicode_state = Nothing
+                                                 , need_to_fetch = False
                                                  } model
         Just record -> Focus.set unicode_focus (Just { filters = filters
                                                      , counter = 0
@@ -102,6 +104,7 @@ keymap_auto_complete original_choices is_visible maybe_for_hit_return
                 List.all (filter_func key) filtering_patterns) name_to_unicode
               cmd_func val =
                 Focus.update (auto_complete_focus => filters_) ((flip (++)) val)
+                  >> Focus.set (auto_complete_focus => need_to_fetch_) True
                   >> quit_unicode_cmd
               map_func (key, val) =
                 ( key ++ " " ++ (css_inline_str_embed "newly-defined-block" val)
