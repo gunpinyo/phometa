@@ -8,73 +8,103 @@
 Proofs are very important to all kinds of Mathematics because they ensure the
 correctness of theorems. However, it is hard to verify the correctness of a
 proof itself especially for a complex proof. To tackle this problem, we can
-proof a theorem on \emph{proof assistant}, aka \emph{interactive theorem
-  prover}, which does not allow us to make a mistake for each step of the proof,
-hence, when we finished writing a proof, we can make sure that it is correct.
+prove a theorem on a \emph{proof assistant}, aka \emph{interactive theorem
+  prover}, which provides a rigorous method to construct a proof such that an
+invalid proof will never occur. Therefore if we manage to complete a proof, it
+is guaranteed that the proof is valid.
 
 There are many powerful and famous proof assistants such as
 Coq\supercite{coq-official-website}, Agda\supercite{agda-official-website}, and
 Isabelle\supercite{isabelle-official-website} which are suitable for extreme use
-case of complex proofs. Nevertheless, they have steep learning curve and have
+case of complex proofs. Nevertheless, they have a steep learning curve and have
 specific meta-theory behind it, for example, Coq has Calculus of Inductive
 Construction (CIC), Agda has Unified Theory of Dependent
 Types\supercite{norell:thesis}\supercite{Luo:1994:CRT:184757} which are quite
-hard for newcomers. So I decided to create another proof assistants called
-\emph{phometa} that is easy to use and require minimal prior knowledge.
+hard for newcomers. To solve this problem they should start with something
+easier than these and come back again later.
 
-To be precise, phometa is a tool to build a derivation tree. In order to achieve
-this, phometa has 3 kinds of nodes
+One of the easiest starting point to learn about formal proof is to use
+derivation trees where validity of a term is derived from a derivation rule
+together with validity of zero or more terms depending on the rule. These
+prerequisite terms can be proven similarly to the main term. The proving process
+will happen recursively, this lead to tree-like structure of the final proof,
+this is why it is called ``derivation tree''.
+
+The naive way to construct such a derivation tree is to draw it on a paper,
+however, this has many disadvantages such as
 \begin{itemize}
-\item \emph{Grammar} --- How to construct a well-form term. For example,
-  proposition can be either
-  $\top \quad \bot \quad A \wedge B \quad A \vee B \quad \neg A \quad A
-  \rightarrow B \quad A \leftrightarrow B$ where $A$ and $B$ are other arbitrary
-  propositions.
-\item \emph{Rule} (or derivation rule) --- Reason that can be used to prove a
-  term. For example, $A \wedge B$ is valid if we can prove that $A$ is valid and
-  $B$ is valid.
-\item \emph{Theorem} (or derivation tree) --- An evidence (proof) that show that
-  a term is valid.
+\item The width of a derivation tree usually grow exponentially to its height ---
+  hard to arrange the layout on a paper.
+\item We don't know that how much space that each branch requires --- need to
+  recreate the tree for many iterations.
+\item Variables might need to be rewritten by other terms as a result of
+  internal unification when applying a rule --- again, need to recreate the tree
+  for many iterations.
+\item When a derivation tree is completed, there is nothing to guarantee that it
+  doesn't have any errors --- conflict with the ambition to use proof assistant
+  at the first place.
 \end{itemize}
-By this 3 kinds of nodes. We can build any formal system (consists of grammars
-and rules) and prove its correctness as long as it support derivation tree.
+So I decided to create a proof assistants called \emph{Phometa} to solve this
+derivation-tree manually-drawing problem. To be precise, Phometa is proof
+assistant that allows user to create a formal system and prove theorems using
+derivation trees.
 
-\newpage
-
-Users can phometa by either
+Phometa fundamentally consists of three kinds\footnote{There exists the fourth
+  kind of node which are comment node but I don't include it there since it is
+  not relevant to the fundamental concept.} of node as the following
 \begin{itemize}
-\item Learn one of many existing formal systems provided in phometa's standard
+\item \emph{Grammar} (or Backus-Naur Form) --- How to construct a well-form
+  term.\\ For example, a simple arithmetic expression can be constructed by a
+  number \emph{or} two expressions adding together \emph{or} two expressions
+  multiply together.
+\item \emph{Rule} (or derivation rule) --- A reason that can be used to prove
+  validity of terms. For example, $(u + v) = (x + y)$ is valid if $u = x$ and $v
+  = y$.
+\item \emph{Theorem} (or derivation tree) --- An evidence (proof) showing that \\
+  a particular term is valid. For example,
+  \begin{itemize}
+  \item[] $((3 + 4) \times 5) = ((4 + 3) \times 5)$ is valid by rule
+    \rulename{add-intro} and
+    \begin{itemize}
+    \item[] $(3 + 4) = (4 + 3)$ is valid by rule \rulename{add-comm}
+    \item[] $5 = 5$ is valid by rule \rulename{eq-refl}
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+A formal system will be represented by a set of grammars and rules. Validity of
+terms will be represented by theorems (derivation trees).
+
+In term of usage, users can Phometa by either
+\begin{itemize}
+\item Learn one of many existing formal systems provided in Phometa's standard
   library and try to proof some theorem regarding to that formal system.
-\item Create their own formal system or extend an existing formal system, and do
-  some experiments about it.
+\item Create their own formal system or extend an existing formal system, then
+  do some experiments about it.
 \end{itemize}
-Once they get used to with this derivation tree builder. They can switch to more
-powerful proof assistants as mention above.
 
-In order to make phometa easy to use, it is designed to be web-based
-application. Users will interact with phometa mainly by clicking buttons and
+In order to make Phometa easy to use, it is designed to be web-based
+application. Users will interact with Phometa mainly by clicking buttons and
 pressing keyboard-shortcut. This has advantages over traditional proof assistant
 because it is easier to read, ill-from terms never occur, and guarantee that the
 entire system is always in consistent state.
 
 \section{Objectives}
-This project carries several objective as the following
 \begin{itemize}
-  \item To make a construction of derivation-tree become more systematic. Hence, users become more productive and have less chance to make an error.
-  \item To encourage users (especially students and newcomers) to create their own formal systems and reason about it.
-  \item To integrate operational semantics with in formal system. Hence, be able represent the entire logical system with in just one framework.
+  \item To make a construction of derivation tree become more systematic. Hence, users become more productive and have less chance to make an error.
+  \item To encourage users to create their own formal systems and reason about it.
+  % \item To integrate operational semantics with in formal system. Hence, be able represent the entire logical system with in just one framework.
   \item To show that most of formal systems have a similar meta-structure which can be implemented using common framework.
   \item To show advantages of visualised proof assistant over traditional one.
 \end{itemize}
 
 \section{Achievement}
 \begin{itemize}
-\item Finished designing phometa specification in such a way to keep it simple yet be able
+\item Finished designing Phometa specification in such a way to keep it simple yet be able
   to produce a complex proof.
-\item Finished implementing phometa. All of basic functionality is working.
-\item Encoded Simple Arithmetic, Propositional Logic, and Typed Lambda Calculus
-  as standard library in phometa.
-\item Write a tutorial for newcomers to use phometa (chapters
+\item Finished implementing Phometa. All of basic functionality is working.
+\item Encoded several formal systems such as Simple Arithmetic, Propositional Logic, and Typed Lambda Calculus
+  as standard library in Phometa.
+\item Wrote a tutorial for newcomers to use Phometa (chapters
   \ref{chap:background}, \ref{chap:example_simple_arithmetic},
   \ref{chap:example_propositional_logic}, and
   \ref{chap:example_lambda_calculus}).

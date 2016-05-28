@@ -4,7 +4,7 @@
 \chapter{Example Formal System --- Propositional Logic}
 \label{chap:example_propositional_logic}
 
-Once you are familiar with some basic features and usability of \emph{phometa}
+Once you are familiar with some basic features and usability of \emph{Phometa}
 from the last chapter. This chapter aims to show more advance features on
 another formal system named \emph{Propositional Logic} which is the most well
 known logical system\footnote{Logical system is a formal system together with
@@ -22,7 +22,7 @@ several grammars. Propositional logic has \pgmr{Prop}, \pgmr{Atom},
 
 \pgmr{Prop} is a proposition, semantically, it is a term that can be evaluated
 to either true or false (given that there are no variables in the term).
-Grammars of \pgmr{Prop} can be defined in phometa as the following
+Grammars of \pgmr{Prop} can be defined in Phometa as the following
 
 \centerline{\includegraphics[scale=0.5]{prop-grammar-prop.png}}
 
@@ -104,7 +104,7 @@ directly, but knowing
 \bat{\bat{\pvar{raining}}\propOr\bat{\propNot\bat{\pvar{raining}}}} doesn't
 help us to derive something like the former case does. In order to prevent this
 confusion we set \kVarRegex\ of \pgmr{Prop} and \pgmr{Atom} differently, so if
-user accidentally write \pvar{p} on a hole that require \pgmr{Prop}, phometa
+user accidentally write \pvar{p} on a hole that require \pgmr{Prop}, Phometa
 will raise an error messages and user can fix it.
 
 (TODO:\ ask Dr Krysia, the reason above doesn't prevent meta-variable of atom to
@@ -120,7 +120,7 @@ dealing with only holds under certain assumptions, hence, a \emph{judgement}
 should be in the form $A_1, A_2, ..., A_n \vdash B$ where $A_{1..n}$ are
 assumptions and $B$ is conclusion.
 
-To model a judgement in phometa, first we need to model assumptions or in the
+To model a judgement in Phometa, first we need to model assumptions or in the
 other name, \pgmr{Context} as the following (TODO:\ replace this with the real
 screenshot)
 
@@ -215,7 +215,7 @@ automatically, please note that the meta-variable name must comply to \kVarRegex
 of corresponding grammar, otherwise, it will not convert to meta-variable. If
 you want to create an atom here, you can't just type directly since it is for
 \pgmr{Prop} meta-variable (As you can see from background text in todo),
-instead, you need to press \emph{3} to tell phometa that it is construction for
+instead, you need to press \emph{3} to tell Phometa that it is construction for
 \pgmr{Atom}, like this
 
 \centerline{\includegraphics[scale=0.25]{term-input-method-008.png}}
@@ -276,7 +276,7 @@ a \pgmr{Prop} term is valid iff that term always evaluate to true, a
 \pgmr{Judgement} term is valid iff assuming all propositions form left hand
 side then the proposition on the right hand side hold.
 
-The main idea of proving in phometa is that you state (in a theorem) that some
+The main idea of proving in Phometa is that you state (in a theorem) that some
 term is valid, then give a reason why it is valid, this can be done by either
 \emph{Prove by Rule} or \emph{Prove by Lemma}.
 

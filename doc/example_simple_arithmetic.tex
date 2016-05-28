@@ -7,23 +7,23 @@
 As in \hyperref[chap:background]{background chapter}, Simple Arithmetic is
 used as example to explain basic concept of formal systems and its derivations.
 In order to make the transition goes smoother, this chapter aims to encode
-Simple Arithmetic and explain basic features and usability of \emph{phometa} at
+Simple Arithmetic and explain basic features and usability of \emph{Phometa} at
 the same time. Please note that this is just a faction of
 actual arithmetic modified to make it easier to understand, so it is not as
 powerful as the actual one.
 
-\section{First time with phometa}
+\section{First time with Phometa}
 
-You can download complied version of phometa at
+You can download complied version of Phometa at
 
 {\centering\url{https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz}}
 
-Once you unzip this file, you can start phometa server by execute
+Once you unzip this file, you can start Phometa server by execute
 
 \texttt{./phometa-server.py 8080}
 
 where \texttt{8080} is port number, you can change this to another port number
-if you like. Please note that python is required for this server.
+if you like. Please note that Python is required for this server.
 
 Then open your favourite web-browser\footnote{but Google Chrome is recommended}
 and enter
@@ -46,7 +46,7 @@ current repository has one package named ``Standard Library'' which consists of
 three modules named ``Propositional Logic'', ``Simple Arithmetic'', and ``Typed
 Lambda Calculus''.
 
-Module in phometa are analogous to text file. It consists of nodes that could
+Module in Phometa are analogous to text file. It consists of nodes that could
 depend on one another. There are four types of node which are \emph{Comment},
 \emph{Grammar} (Backus-Naur Form), \emph{Rule} (Derivation Rule), and
 \emph{Theorem} (Derivation Tree). If you click at a module on the repository
@@ -61,7 +61,7 @@ repository pane directly to focus on particular node.
 \label{fig:arith-phometa-arith-window}
 \end{figure}
 
-In order to improve productivity, phometa has several key-bindings specific to
+In order to improve productivity, Phometa has several key-bindings specific to
 curtain state of program. Fortunately, user don't need to remember any of this
 since the right pane (i.e. keymap pane) shows every possible key-binding with
 its description on current state. This also allow new-comer to explore new
@@ -206,7 +206,7 @@ Once you select a grammar, the box will change to green colour and waiting for a
 term of that grammar. In this case, we select \pgmr{Equation} since it has just
 one choice and doesn't have meta variable or literal\footnote{literal is similar
   to meta-variable but only match to itself, will be explained in later
-  chapter} so phometa automatically click such a choice and the theorem will
+  chapter} so Phometa automatically click such a choice and the theorem will
 look like this
 
 \begin{center}
@@ -358,7 +358,7 @@ unfocus button at the same position that focus button was there before. And the
 theorem will look the same as figure \ref{fig:arith-theorem-example-theorem-2}
 again.
 
-When you read some proof in phometa, it is a good idea to click focus on the
+When you read some proof in Phometa, it is a good idea to click focus on the
 main proof first so you can read the main rule instance easily. Once you
 understand main proof you can read one of sub proof by clicking focus button
 that correspond to that sub-proof. If you click focus button on the first
@@ -383,7 +383,7 @@ Then apply rule \prule{eq-tran} to this goal
 
 The rule applying process is not complete because \prule{eq-tran} contains
 \pvar{z} which appear in premises but not in conclusion (i.e. \pvar{z} is
-parameter) so phometa ask us to fill the term that we want to use. In this case
+parameter) so Phometa ask us to fill the term that we want to use. In this case
 we want \term{arith-thm-ex-aux-1} so put it there
 
 \includegraphics[width=\textwidth]{arith-thm-ex-17}
