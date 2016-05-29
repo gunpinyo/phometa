@@ -9,17 +9,15 @@
 
 \usepackage{config}
 
-% TODO: delete this when report is finished
-\usepackage{lipsum}
-
 \begin{document}
 
 \subfile{title_page.tex}
 
 {
 \hypersetup{
-    colorlinks=false,
-    pdfborder={0 0 0},
+    colorlinks = false,
+    linkcolor  = black,
+    pdfborder  = {0 0 0},
 }
 \tableofcontents
 }
@@ -35,8 +33,6 @@
 \subfile{example_lambda_calculus.tex}
 \subfile{specification.tex}
 \subfile{implementation.tex}
-% \subfile{common_tricks.tex}
-% \subfile{project_plan.tex}
 \subfile{evaluation.tex}
 \subfile{conclusion.tex}
 

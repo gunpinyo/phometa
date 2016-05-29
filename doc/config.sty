@@ -57,6 +57,12 @@
   {\supercitedelim}
   {}
 
+\hypersetup{
+     colorlinks = true,
+     citecolor  = blue,
+     linkcolor  = brown,
+}
+
 \lstdefinestyle{bnf}{
   mathescape,
   basicstyle=\footnotesize\ttfamily,
@@ -135,16 +141,8 @@
     % }
 }
 
-% definition
-\definecolor{pdefColor}{HTML}{552288}
-\newcommand{\pdef}[1]{
-    \tcbox[on line, frame empty, colback = pdefColor!30!defaultColor, size = fbox] {
-        \footnotesize{\texttt{\textbf{\textcolor{pdefColor}{#1}}}}
-    }
-}
-
 % rule
-\definecolor{pruleColor}{HTML}{005500}
+\definecolor{pruleColor}{HTML}{008800}
 \newcommand{\prule}[1]{
     \tcbox[on line, frame empty, colback = pruleColor!30!defaultColor, size = fbox] {
         \footnotesize{\texttt{\textbf{\textcolor{pruleColor}{#1}}}}
@@ -288,6 +286,7 @@
 
 \newcommand{\kPremise}{\pkw{premise}}
 \newcommand{\kConclude}{\pkw{conclude}}
+\newcommand{\kExactMatch}{\pkw{exact\_match}}
 \newcommand{\kForall}{\pkw{forall}}
 \newcommand{\kExists}{\pkw{exists}}
 \newcommand{\kIn}{\pkw{in}}

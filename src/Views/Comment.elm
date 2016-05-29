@@ -53,7 +53,6 @@ show_comment cursor_info node_path comment model =
                   else
                     [ hr [] []
                     , div [classList [ ("inline-block", True)
-                                     , ("mathjax", True)
                                      , ("wordwrap", True)]]
                           [text comment]]
    in show_indented_clickable_block cursor_info (cmd_enter_mode_comment record)

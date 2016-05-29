@@ -26,16 +26,6 @@ show_view model =
        , show_window model
        , import_javascript <| "https://ajax.googleapis.com/ajax/libs/jquery/"
                            ++ "1.12.2/jquery.min.js"
-       , custom_script "text/x-mathjax-config" """
-            MathJax.Hub.Config({
-              tex2jax: {
-                inlineMath: [['$','$'],['\\\\(','\\\\)']],
-                processClass: "mathjax",
-                ignoreClass: "window"
-              }
-            }); """
-       , import_javascript <|"https://cdn.mathjax.org/mathjax/latest/MathJax.js"
-                           ++ "?config=TeX-MML-AM_CHTML"
        , import_javascript "naive.js"]
 
 show_window : View

@@ -20,6 +20,116 @@ structure of repository
 \section{Node Comment}
 \section{Node Grammar}
 \section{Root Term}
+
+
+\section{Input method of a term (TODO: modify this)}
+
+% When a term is created, it can be in one of this mode
+
+% \subsection{Editable up to Grammars}
+% On this mode, we have a absolute control over a term i.e.\ both of grammar and
+% term content can be changed, when it is created it will look like this,
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-001.png}}
+
+% This is a completely blank term, we can set its grammar by clicking on it, then
+% you will see option on keymap-pane (left-bottom corner of screen) as the following
+
+% \centerline{\includegraphics[scale=0.5]{term-input-method-002.png}}
+
+% This show all of possible key-blinding including all of grammar that can be use,
+% now we will select \pgmr{Prop} for this term's grammar by press \emph{1}
+% (or alternatively clicking on \pgmr{Prop} directly), which now tern the
+% term to be like this
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-003.png}}
+
+% This means the term now know that it is \pgmr{Prop} term and hasn't know a
+% content, and in order give a content we can set it to be either a construction
+% term or meta-variable term. Now let make it a construction term, if you see
+% keymap-pane again, it will look like this
+
+% \centerline{\includegraphics[scale=0.5]{term-input-method-004.png}}
+
+% Similar to grammar selection, we can press the corresponded key-blinding that
+% construct the term as we like. Let press \emph{7} for \bat{\pgmr{Prop}
+%   \pifmt{$\rightarrow$} \pgmr{Prop}} and now the term become like this,
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-005.png}}
+
+% The root term now has \pifmt{$\rightarrow$} as the main connector and
+% \emph{todos} spilt into two place, this process is recursive, you can try to
+% split it again by e.g. press \emph{5} for \bat{\pgmr{Prop}
+%   \pifmt{$\wedge$} \pgmr{Prop}} and get
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-006.png}}
+
+% We also be able to move to other todos by clicking on target todo or simply
+% press left arrow or right arrow for previous and next todo respectively.
+
+% Next, we can make it to be meta-variable term by enter meta-variable name on the
+% target todo then press enter. Let type \emph{A} for the first todo
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-007.png}}
+
+% Now the first term become meta-variable and the cursor move to the next one
+% automatically, please note that the meta-variable name must comply to \kVarRegex
+% of corresponding grammar, otherwise, it will not convert to meta-variable. If
+% you want to create an atom here, you can't just type directly since it is for
+% \pgmr{Prop} meta-variable (As you can see from background text in todo),
+% instead, you need to press \emph{3} to tell Phometa that it is construction for
+% \pgmr{Atom}, like this
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-008.png}}
+
+% Now the background of current todo change from \emph{Prop} to \emph{Atom} and
+% has extra underline so now you can type and atom
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-009.png}}
+
+% Not only meta-variable that can finish up todos, some of grammar choice just
+% doesn't have sub-term, we could finish the last todo, by just press \emph{1} for \propTop
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-010.png}}
+
+% Now the term is finished, you can still return to the term and click some of
+% them e.g.\ clicking \pvar{A}
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-011.png}}
+
+% You can navigate to parent term my press up-arrow
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-012.png}}
+
+% If you think you create some sub-term wrongly, you click on the that sub-term
+% (in this is case \bat{\pvar{A} \propOr \bat{\pvar{p}}}) then press \emph{Alt-t}
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-013.png}}
+
+% Or if everything is wrong including the root term grammar, you just press
+% \emph{Alt-r}, this will go back to \emph{asking for grammar state}
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-001.png}}
+
+% To give more example, let try to create \pgmr{Judgement} term, by click \emph{4}
+
+% \centerline{\includegraphics[scale=0.25]{term-input-method-014.png}}
+
+% You might expect that after pressing \emph{4}, it should be just green area with
+% background written as \emph{Judgement}, why it is auto expend like this, well,
+% we have spacial case that if selecting grammar as just one choice and can't be
+% meta-variable (we didn't state \kVarRegex\ for \pgmr{Judgement}), it will auto
+% expend to that choice since that is the only action available.
+
+% \subsection{Editable up to Term}
+% This mode is the the same as editable up to grammar except that the grammar is
+% given and we can't change it. If we try to reset the whole term \emph{Alt-r}, it
+% the grammar still remain there.
+
+% \subsection{Read only}
+% In this mode, you can just view the term and nothing else.
+
+
 \section{Node Rule}
 \section{Node Theorem}
 
