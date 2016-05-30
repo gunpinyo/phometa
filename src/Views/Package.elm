@@ -68,7 +68,7 @@ show_package package_name package_path package model =
               if package_path /= package_path' then input_panel_inactive else
               [ show_auto_complete_filter "button-block" dummy_cursor_info
                   (if is_adding_module then "Add Module" else "Add Package")
-                  cmd_nothing focus_auto_complete model]
+                  focus_auto_complete model]
             _ -> input_panel_inactive
           _ -> input_panel_inactive
    in table [class "package-module-table"] (header :: input_panel ++ detail)

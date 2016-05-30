@@ -12,7 +12,7 @@ import Http
 
 import Tools.KeyboardExtra exposing (Keystroke)
 import Models.Focus exposing (environment_, maybe_task_)
-import Models.Environment exposing (Environment)
+import Models.Environment exposing (Environment, init_environment)
 import Models.Message exposing (Message(..))
 import Models.RepoEnDeJson exposing (encode_repository)
 import Models.Model exposing (Model, Command, KeyBinding(..))
@@ -21,12 +21,8 @@ import Updates.Message exposing (cmd_send_message)
 import Updates.CommonCmd exposing (cmd_parse_and_load_repository)
 
 inject_env_to_action : Signal Action -> Signal (Environment, Action)
-inject_env_to_action action_signal =
-  let time_to_env time = { time       = time
-                         , maybe_task = Nothing
-                         }
-   in Signal.map (\ (time, action) -> (time_to_env time, action))
-        <| timestamp action_signal
+inject_env_to_action =
+  Signal.map (\action -> (init_environment, action))
 
 extract_task : Model -> Maybe (Task () ())
 extract_task model = model.environment.maybe_task

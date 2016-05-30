@@ -28,7 +28,8 @@ model_signal : Signal Model
 model_signal = Signal.foldp update init_model env_action_pair_signal
 
 main : Signal Html
-main = Signal.map view model_signal
+main = Signal.map view (Signal.filter (.environment >> .model_is_modified)
+                          init_model model_signal)
 
 -- set html page title
 port title : String

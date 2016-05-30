@@ -1,4 +1,4 @@
-# phometa
+# Phometa
 Phometa is a web application
 that can build formal systems based on visualisation.
 
@@ -18,7 +18,7 @@ Phometa can be installed by downloading complied version
 "https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz")
 and unzip it.
 
-Then, start phometa server by execute
+Then, start Phometa server by execute
 
 ```
 ./phometa-server.py 8080
@@ -33,7 +33,7 @@ Then, open your favourite web-browser and enter
 http://localhost:8080/phometa.html
 ```
 
-Now, you can use phometa.
+Now, you can use Phometa.
 
 To exit the server, just press `Ctrl-C`  on the terminal that run server
 

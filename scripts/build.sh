@@ -8,9 +8,13 @@ mkdir -p build
 
 rm -rf build/*
 
-if [ -e doc/master.pdf ]
-then cp doc/master.pdf build/phometa-doc.pdf
+if [ ! -e doc/master.pdf ]
+then
+cd doc
+latexmk -pdf --synctex=1 -interaction=nonstopmode -file-line-error master.tex
+cd ..
 fi
+cp doc/master.pdf build/phometa-doc.pdf
 
 sass src/style.scss build/style.css
 cp src/naive.js build/naive.js

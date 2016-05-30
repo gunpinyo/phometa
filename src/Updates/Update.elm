@@ -3,9 +3,9 @@ module Updates.Update where
 import Maybe
 import Dict
 
-import Focus
+import Focus exposing ((=>))
 
-import Models.Focus exposing (environment_)
+import Models.Focus exposing (environment_, model_is_modified_)
 import Models.Environment exposing (Environment)
 import Models.Message exposing (Message(..))
 import Models.Model exposing (Model, Command, KeyBinding(..))
@@ -31,7 +31,9 @@ update (environment, action) old_model =
 add_pre_post_cmd : Command -> Command
 add_pre_post_cmd command =
   let cmd_pre  = cmd_nothing -- currently, there is no pre-command
-      cmd_post = cmd_assign_root_keymap >> cmd_sanity_check
+      cmd_post = cmd_assign_root_keymap
+                   >> Focus.set (environment_ => model_is_modified_) True
+                   >> cmd_sanity_check
    in cmd_pre >> command >> cmd_post
 
 cmd_sanity_check : Command

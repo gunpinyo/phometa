@@ -82,7 +82,7 @@ show_module cursor_info module_path model =
                List.map2 (\node_type placeholder ->
                  if maybe_node_type == Just node_type then
                    show_auto_complete_filter "button-block" sub_cursor_info
-                     placeholder cmd_nothing focus_auto_complete model
+                     placeholder focus_auto_complete model
                  else
                    show_button placeholder <|
                      cmd_enter_micro_mode_add_node record index node_type)

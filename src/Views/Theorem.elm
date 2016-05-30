@@ -6,6 +6,7 @@ import Focus exposing (Focus, (=>))
 import Html exposing (Html, div, text, hr)
 import Html.Attributes exposing (class, classList, style)
 
+import Tools.CssExtra exposing (css_inline_str_compile)
 import Tools.HtmlExtra exposing (debug_to_html, on_click)
 import Models.Focus exposing (goal_)
 import Models.Cursor exposing (CursorInfo, cursor_info_go_to_sub_elem,
@@ -26,11 +27,15 @@ import Models.Action exposing (Action(..), address)
 import Models.ViewState exposing (View)
 import Updates.CommonCmd exposing (cmd_nothing, cmd_delete_node)
 import Updates.Cursor exposing (cmd_click_block)
+import Updates.ModeRootTerm exposing (embed_css_root_term)
 import Updates.ModeTheorem exposing (cmd_enter_mode_theorem,
                                      cmd_theorem_auto_focus_next_todo,
                                      cmd_select_rule,
                                      cmd_select_lemma,
                                      cmd_execute_current_rule,
+                                     is_thorem_focusable,
+                                     is_thorem_focused,
+                                     cmd_toggle_focus_current_theorem,
                                      cmd_reset_current_proof,
                                      cmd_reset_top_theorem,
                                      cmd_lock_as_lemma,
@@ -40,6 +45,7 @@ import Views.Utils exposing (show_indented_clickable_block,
                              show_clickable_block, show_text_block,
                              show_keyword_block, show_todo_keyword_block,
                              show_auto_complete_filter, show_reset_button,
+                             show_focus_button, show_unfocus_button,
                              show_close_button, show_lock_button, show_button)
 import Views.Term exposing (show_root_term)
 
@@ -51,16 +57,20 @@ show_theorem cursor_info node_path theorem has_locked model =
                , sub_cursor_path  = []
                , micro_mode       = MicroModeTheoremNavigate
                }
+      goal_htmls = if not <| has_root_term_completed theorem.goal then [] else
+        (show_keyword_block " = " :: (css_inline_str_compile <|
+           embed_css_root_term node_path.module_path model theorem.goal))
       header = [ div []
-                 ([ show_close_button <| cmd_delete_node node_path]
-                  ++ if has_locked then [] else
-                      [ show_lock_button <| cmd_enter_mode_theorem record
-                                              >> cmd_lock_as_lemma
-                      , show_reset_button <| cmd_enter_mode_theorem record
-                                              >> cmd_reset_top_theorem
-                  , show_keyword_block
+                 ([ show_close_button <| cmd_delete_node node_path] ++
+                  (if has_locked then [] else
+                    [ show_lock_button <| cmd_enter_mode_theorem record
+                                            >> cmd_lock_as_lemma
+                    , show_reset_button <| cmd_enter_mode_theorem record
+                                            >> cmd_reset_top_theorem]) ++
+                  [ show_keyword_block
                       (if has_locked then "Lemma" else "Theorem ")
-                  , show_text_block "theorem-block" node_path.node_name])
+                  , show_text_block "theorem-block" node_path.node_name] ++
+                  goal_htmls)
                , hr [] []]
       body = show_sub_theorem cursor_info
                record theorem theorem_focus has_locked model
@@ -71,8 +81,9 @@ show_sub_theorem : CursorInfo -> RecordModeTheorem -> Theorem ->
                      Focus Model Theorem -> Bool -> Model -> List Html
 show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
   let module_path = record.node_path.module_path
-      is_setting_main_goal =
-        theorem.proof == ProofTodo && List.isEmpty record.sub_cursor_path
+      is_setting_main_goal = theorem.proof == ProofTodo
+                               && List.isEmpty record.sub_cursor_path
+                               && not has_locked
       goal_record =
         { module_path = module_path
         , root_term_focus = (theorem_focus => goal_)
@@ -83,7 +94,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
         , editability = (if is_setting_main_goal
                            then EditabilityRootTermUpToGrammar
                            else EditabilityRootTermReadOnly)
-        , is_reducible = theorem.proof == ProofTodo
+        , is_reducible = theorem.proof == ProofTodo && not has_locked
         , can_create_fresh_vars = is_setting_main_goal
         , get_existing_variables = get_theorem_variables record.node_path
         , on_modify_callback = cmd_nothing
@@ -116,7 +127,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                   , editability = if is_editable
                                     then EditabilityRootTermUpToTerm
                                     else EditabilityRootTermReadOnly
-                  , is_reducible = is_editable
+                  , is_reducible = is_editable && not has_locked
                   , can_create_fresh_vars = False
                   , get_existing_variables = get_theorem_variables
                                                record.node_path
@@ -147,7 +158,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                       on_click_cmd = cmd_select_rule 1 record
                    in if cursor_info_is_here sub_cursor_info then
                         show_auto_complete_filter "button-block" sub_cursor_info
-                          "Proof By Rule" cmd_nothing focus_auto_complete model
+                          "Proof By Rule" focus_auto_complete model
                       else
                         show_button "Proof By Rule" on_click_cmd
                 lemma_html =
@@ -155,7 +166,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                       on_click_cmd = cmd_select_lemma 2 record
                    in if cursor_info_is_here sub_cursor_info then
                         show_auto_complete_filter "button-block" sub_cursor_info
-                          "Proof By Lemma" cmd_nothing focus_auto_complete model
+                          "Proof By Lemma" focus_auto_complete model
                       else
                         show_button "Proof By Lemma" on_click_cmd
                 rule_exists = not <| List.isEmpty <| get_usable_rule_names
@@ -199,9 +210,24 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                  in show_indented_clickable_block cursor_info'
                       (cmd_enter_mode_theorem record')
                       (sub_theorem_htmls)
-           in (List.indexedMap indexed_map_func sub_theorems) ++
-                [ goal_proof_div_html True
-                   (show_rule_name_and_arguments False rule_name arguments) ]
+              children_htmls = if theorem.is_folded then [] else
+                                 List.indexedMap indexed_map_func sub_theorems
+              main_div = div [] <|
+                reset_proof_htmls ++
+                (if not <| is_thorem_focusable theorem then [] else
+                   [(if is_thorem_focused theorem
+                      then show_unfocus_button else show_focus_button)
+                   (cmd_enter_mode_theorem record >>
+                      cmd_toggle_focus_current_theorem)]) ++
+                -- if the theorem doesn't have any children
+                -- "folded" sign must not be shown although is_folded is True
+                -- is avoid user unnecessary confusing
+                -- yet internal representation still easy to work with
+                (if not theorem.is_folded || List.isEmpty sub_theorems then []
+                   else [show_keyword_block "folded "]) ++
+                (goal_html :: text " " ::
+                   (show_rule_name_and_arguments False rule_name arguments))
+           in children_htmls ++ [main_div]
         ProofByLemma theorem_name pattern_matching_info ->
           [ goal_proof_div_html True
               [ show_keyword_block "proof_by_lemma"

@@ -17,12 +17,14 @@ import Models.Cursor exposing (IntCursorPath, CursorInfo,
                                get_cursor_info_from_cursor_tree,
                                cursor_info_go_to_sub_elem,
                                cursor_tree_go_to_sub_elem)
-import Models.RepoModel exposing (NodePath, Term(..), RootTerm, RuleName, Rule,
+import Models.RepoModel exposing (NodePath, Term(..), RootTerm, VarType(..),
+                                  RuleName, Rule,
                                   Premise(..), PremiseCascadeRecord)
 import Models.RepoUtils exposing (has_root_term_completed,
                                   get_usable_rule_names, focus_rule, apply_rule,
                                   has_root_term_completed,
                                   get_root_term_variables,
+                                  get_variable_type,
                                   init_root_term, init_root_term_alt,
                                   root_term_undefined_grammar,
                                   get_term_todo_cursor_paths, init_rule,
@@ -34,15 +36,12 @@ import Models.Model exposing (Model, Command, KeyBinding(..), Keymap, Command,
                               RecordModeRule, MicroModeRule(..))
 import Models.ModelUtils exposing (focus_record_mode_theorem,
                                    init_auto_complete, focus_record_mode_rule)
-import Updates.CommonCmd exposing (cmd_nothing)
 import Updates.Message exposing (cmd_send_message)
 import Updates.KeymapUtils exposing (empty_keymap,
                                      merge_keymaps, merge_keymaps_list,
                                      build_keymap, build_keymap_cond,
                                      keymap_auto_complete)
 import Updates.Cursor exposing (cmd_click_block)
-import Updates.ModeRootTerm exposing (embed_css_root_term,
-                                      cmd_enter_mode_root_term)
 
 keymap_mode_rule : RecordModeRule -> Model -> Keymap
 keymap_mode_rule record model =
@@ -97,6 +96,8 @@ cmd_update_rule_params_and_cascades record model =
         |> List.reverse            -- reverse list before and after
         |> list_remove_duplication -- to preserve the first occurrence
         |> List.reverse            -- instead of the last occurrence
+        |> List.filter (\param -> Just VarTypeMetaVar ==
+             get_variable_type module_path model param.var_name param.grammar)
       model' = Focus.set (cur_rule_focus => parameters_) parameters model
       rules_names = get_usable_rule_names Nothing module_path model True
       map_func cas_record =

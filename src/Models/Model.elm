@@ -51,6 +51,7 @@ type alias AutoComplete =
   , unicode_state : Maybe { filters : String
                           , counter : Counter
                           }
+  , need_to_fetch : Bool -- if True then fetch input box with value
   }
 
 -- Mode ------------------------------------------------------------------------
