@@ -322,59 +322,356 @@ For example, this example only holds only under Classical Logic.
 \newpage
 
 \section{Validity of Proposition}
+\label{sec:validity_of_proposition}
 
 Although we prove validity of \pgmr{Judgement} to show that a curtain proposition
 holds under curtain assumptions. But \pgmr{Prop} it self has meaning of validity
-as well, that is, a proposition holds without any assumptions. Hence, we could
-introduce a rule to prove stand alone \pgmr{Prop} like this.
+as well, that is, a proposition holds without any assumptions. The following
+rules allow us to prove that a \pgmr{Prop} is valid and make use of its validity
+when needed.
 
 \begin{figure}[H]
     \centering
-  \includegraphics[scale=0.5]{prop-rule-prop-intro}
-\caption{Rule that allow to prove \pgmr{Prop} directly}
-\label{fig:prop-rule-prop-intro}
+
+
+\begin{minipage}{0.48\textwidth}
+\begin{flushleft}
+\includegraphics[width=\textwidth]{prop-rule-prop-intro}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.48\textwidth}
+\begin{flushright}
+\includegraphics[width=\textwidth]{prop-rule-prop-elim}
+\end{flushright}
+\end{minipage}
+
+\caption{\prule{prop-intro} can be used to prove that a \pgmr{Prop} is valid.
+  And its duality, \prule{prop-elim} can be used to prove \pgmr{Judgement} when
+  its conclusion is valid.}
+\label{fig:prop-rule-prop-intro-elim}
 \end{figure}
 
 For example, the following theorem shows that \term{prop-ex-thm-4-term} always holds
-no matter of what \pvar{A} or \pvar{B} will be
+no matter of what \pvar{A} or \pvar{B} will be. Please note that the goal of
+this theorem is \pgmr{Prop} rather than \pgmr{Judgement} as usual.
 
 \begin{center}
-  \includegraphics[scale=0.4]{prop-ex-thm-4}
+  \includegraphics[scale=0.6]{prop-ex-thm-4}
 \end{center}
-
-\hspace{1ex}
 
 \section{Context manipulation}
 
 Context in Propositional Logic is just a set of assumption so the order and
-duplication among assumptions shouldn't matter. The three rules below allow
-context to be manipulated during proving a theorem.
+duplication among assumptions shouldn't matter. Formally, \term{prop-ctx-man-1}
+is \emph{definitionally equal} to \term{prop-ctx-man-2} and
+\term{prop-ctx-man-3} is \emph{definitionally equal} to
+\term{prop-ctx-man-4}. Definitional equality is stronger than object level
+equality in the sense that two terms can be equal \emph{implicitly} i.e.\
+one term can be transformed to another without any rule or lemma required.
+
+To handle definitional equality, phometa has a mechanism called meta-reduction
+which allow a rule that has flag \kAllowReduction\ and doesn't have any
+parameters to digest the target term, if it returns exactly one sub-goal that
+has the same grammar and doesn't have any further unification, then replace that
+sub-goal on the term.
+
+Meta-reduction for context manipulation can be encoded by the following three
+rules
 
 \begin{figure}[H]
     \centering
-  \includegraphics[scale=0.5]{prop-context-comm}\\
-  \includegraphics[scale=0.5]{prop-context-idem-1}\\
-  \includegraphics[scale=0.5]{prop-context-idem-2}
-\caption{Rule for context manipulation}
-\label{fig:prop-context-munipulation}
+
+\begin{minipage}{0.48\textwidth}
+\begin{flushleft}
+\includegraphics[width=\textwidth]{prop-context-comm}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.48\textwidth}
+\begin{flushright}
+\includegraphics[width=\textwidth]{prop-context-idem-1}
+\includegraphics[width=\textwidth]{prop-context-idem-2}
+\end{flushright}
+\end{minipage}
+
+\caption{Rules for context manipulation}
+\label{fig:prop-context-manipulation}
 \end{figure}
 
-You can TODO:
+For example, let construct an unfinished theorem as the following
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-ctx-man-5}
+\end{center}
+
+Then, if you click \term{prop-ctx-man-6} on the sub-goal, the keymap will look
+like this
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-ctx-man-7}
+\end{center}
+
+Keymap says that this term is reducible by either \prule{context-commutative} or \\
+\prule{context-idempotent-1}. Now we will swap the last two assumption by
+pressing \pkbd{4} or clicking the row the keymap directly, the theorem will look
+like this.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-ctx-man-8}
+\end{center}
+
+We want to eliminate duplication on of \term{prop-ctx-man-9}, this canbe
+done by clicking \term{prop-ctx-man-10} \\ now \prule{context-idempotent-2} is also
+available in keymap so we can select it.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-ctx-man-11}
+\end{center}
+
+Although I said that white background means not modifiable, but meta-reduction
+is exceptional because its implicitness. Meta-reduction is very powerful but
+also dangerous so I limit usage of meta-reduction only for \emph{empty}
+sub-goal\footnote{Sub-goal that has associate lemma or rule (including the one
+  that is waiting for parameter(s)), is not empty sub-goal.} in unfinished
+theorem where proving process will benefit from it. In contrast, it doesn't make
+sense to do this in rules or lemmas and only make user confuse.
+
+Context manipulation is not that important to for Propositional Logic since rule
+\prule{hypothesis} can penetrate thought out of \pgmr{Context}. However, is
+better to show it here so you will know how meta-reduction works. This is
+particularly important when we start to implement Lambda Calculus in the next
+chapter.
 
 \section{How to build Grammars and Rules}
+\label{sec:how_to_built_grammars_and_rules}
 
 So far we introduce grammars and rules out of the box, this allows user to prove
 a theorem which is the most important part directly. However, Phometa also have
 ability to create new grammars and rules as well.
 
-To show how these can be built. I will recreate \pgmr{Prop} for grammars and
-recreate \prule{and-intro} and \prule{hypothesis} for rules.
+To show how to build these, I will recreate \pgmr{Prop} for grammars and
+recreate \prule{or-elim} and \prule{hypothesis} for rules.
+
+\subsection{Recreation of \pgmr{Prop}}
 
 The first step, we need to press ``Add Grammar'' on one of adding panels in
 module ``Propositional Logic'', then enter the grammar name. I will use
 ``TutorialProp'' to avoid conflict with the real one.
 
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-prop-1}
+\end{center}
+
+This is just a draft grammar i.e.\ it cannot be used by any rule or any theorem
+at the moment. To specify regular expression for meta variable, click a button
+that follow \kMetaVarRegex, the button will tern to input box so you can write
+regular expression\footnote{Please note that this regular expression must comply to
+JavaScript regexp specification.} here,
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-prop-2}
+\end{center}
+
+The background colour of this regular expression is grey, so you can edit it
+afterword by click the box again. Alternatively you can delete it using close
+button on the right of the row.
+
+For \kLiteralRegex, we do nothing about it as \pgmr{TutorialProp} will not
+instantiate literal.
+
+Next, we will add choices to the grammar, I will start with the one that has
+``$\wedge$'' connector. Click ``Add Choice'' button on the header of this
+grammar, it will tern to be input box that you can write number of sub-grammars
+for this choice, in this case it is 2, so write it and press enter.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-prop-3}
+\end{center}
+
+You will see a \kChoice\ that have buttons labelled ``Grammar'', you can
+click it to specify a sub-grammar. In this case, select \pgmr{TutorialProp} in
+both of position.
+
+There are other three buttons labelled ``Format'' intersperse sub-grammars which
+accept any string that will be used as syntax, you can also use unicode input
+method similar when we construct a term in last chapter. In this case, click
+button in the middle, press \pkbd{Alt-u}, and type ``wedge'', you will see
+``$\wedge$'' on the keymap pane, then click it. ``$\wedge$'' will appear in
+input box of middle ``Format''. Then hit \pkbd{Return} to finished writing this.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-prop-4}
+\end{center}
+
+The background colour of these are gray so you can edit it similar to
+\kMetaVarRegex. For the first and last ``Format'' buttons, we do nothing on it
+as this choice make no use on those positions.
+
+Other choices can be done in similar way, once you finish adding choices, it
+should look like this.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-prop-5}
+\end{center}
+
+You can lock this draft grammar by clicking lock button on top-right corner,
+this will transform it as a proper grammar where you can refer it in rules and
+theorems.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-prop-6}
+\end{center}
+
+\subsection{Recreation of \prule{or-elim}}
+
+The next thing that we recreate is rule \prule{or-elim}. First, click ``Add
+Rule'' in adding panel and write ``tutorial-or-elim'' on it.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-or-elim-1}
+\end{center}
+
+This is just a draft rule i.e.\ it cannot be used by any theorem at the moment.
+Let start by filling \kConclusion, we just need to input a term similar to when
+we input a goal of a theorem.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-or-elim-2}
+\end{center}
+
+Next is \kAllowReduction\, it is disabled by default, we could click on button
+``Disable'' to toggle it to ``Enable'', however, we don't want to rise this flag
+for \prule{tutorial-or-elim} so leave it as it is.
+
+Now, let build the first \kPremise\ by clicking ``Add Premise'' on the top-right
+corner of this rule.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-or-elim-3}
+\end{center}
+
+Then write a term similar to what we have done in \kConclusion\
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-or-elim-4}
+\end{center}
+
+You can see that there is \kParameter\ row pop-up. This represents meta
+variables that appear in one of \kPremise\ but not in \kConclusion\ and you can't
+manually change it.
+
+The two remaining premises can be done by similar process above
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-or-elim-5}
+\end{center}
+
+You can lock this draft rule by clicking lock button on top-right corner,
+this will transform it as a proper rule where you can refer it in theorems.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-or-elim-6}
+\end{center}
+
+\newpage
+
+\subsection{Recreation of \prule{hypothesis}}
+
+The recreation of \prule{or-elim} shows most of features of rule construction
+except how to deal with cascade so we will recreate \prule{hypothesis} to
+illustrate this. First, adding a rule with name ``tutorial-hypothesis'' on it.
+Then, enter a term for \kConclusion.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-rule-hypo-1}
+\end{center}
+
+Then, add a cascade premise by clicking ``Add Cascade'' on the top-right corner.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-rule-hypo-2}
+\end{center}
+
+Then click ``Add Sub-Rule'' to add the first sub-rule, the button will
+transformed into input box where you can select such a rule, in this case select
+\prule{hypothesis-base}
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-rule-hypo-3}
+\end{center}
+
+Sub-rule calling-template will appear, you can construct a term that will passed
+into this sub-rule. A sub-rule is unifiable by default, you can set it to
+\kExactMatch\ by toggling button ``Unifiable''.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-rule-hypo-4}
+\end{center}
+
+The second sub-rule could be construct on similar manner to the first one.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-rule-hypo-5}
+\end{center}
+
+Then you can lock this draft rule, to change it to a proper rule.
+
+\begin{center}
+  \includegraphics[scale=0.5]{prop-tut-rule-hypo-6}
+\end{center}
+
+\newpage
+
 \section{Exercises}
-TODO:
+
+Credit: Some of material here modified from tutorial 3, 4, and 5 of first year Logic
+course, Department of Computing, Imperial College London. Thank you Prof Ian
+Hodkinson.
+
+\begin{itemize}
+\item Create a theorem and proof each of the following
+  \begin{itemize}
+  \item \term{prop-ex-1-a}
+  \item \term{prop-ex-1-b} (reminder: this is \pgmr{Prop} not \pgmr{Judgement})
+  \item \term{prop-ex-1-c}
+  \item \term{prop-ex-1-d}
+  \item \term{prop-ex-1-e}
+  \item \term{prop-ex-1-f}
+  \item \term{prop-ex-1-g}
+  \item \term{prop-ex-2-a}
+  \item \term{prop-ex-2-b}
+  \item \term{prop-ex-2-c}
+  \item \term{prop-ex-2-d}
+  \item \term{prop-ex-2-e}
+  \item \term{prop-ex-2-f}
+  \item \term{prop-ex-2-g}
+  \item \term{prop-ex-2-h}
+  \item \term{prop-ex-2-i}
+  \item \term{prop-ex-2-j}
+  \end{itemize}
+\item Equivalence of Propositional Logic could be written in the form ($A \equiv
+  B$) stated that, $A$ holds if and only if $B$ holds. Please
+  introduce new a grammar \pgmr{Equivalence} and write \prule{equiv-intro}
+  similar section \ref{sec:validity_of_proposition} and prove the following
+  \begin{itemize}
+  \item \term{prop-ex-eqv-1}
+  \item \term{prop-ex-eqv-2}
+  \item \term{prop-ex-eqv-3}
+  \item \term{prop-ex-eqv-4}
+  \item \term{prop-ex-eqv-5}
+  \item \term{prop-ex-eqv-6}
+  \item \term{prop-ex-eqv-7}
+  \item \term{prop-ex-eqv-8}
+  \item \term{prop-ex-eqv-9}
+  \item \term{prop-ex-eqv-10}
+  \item \term{prop-ex-eqv-11}
+  \item \term{prop-ex-eqv-12}
+  \item \term{prop-ex-eqv-13}
+  \item \term{prop-ex-eqv-14}
+  \item \term{prop-ex-eqv-15}
+  \end{itemize}
+\item (Challenge) Extend this Propositional Logic to become First Order Logic.
+\end{itemize}
 
 \end{document}

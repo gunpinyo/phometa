@@ -162,7 +162,7 @@ auto_focus_next_todo cursor_info record remaining_path theorem_focus model =
                        |> .term
                        |> get_term_todo_cursor_paths
                        |> list_get_elem 0
-                   , is_reducible = True
+                   , is_reducible = False
                    , micro_mode = MicroModeRootTermTodo init_auto_complete
                    , editability = EditabilityRootTermUpToTerm
                    , can_create_fresh_vars = False

@@ -81,8 +81,9 @@ show_sub_theorem : CursorInfo -> RecordModeTheorem -> Theorem ->
                      Focus Model Theorem -> Bool -> Model -> List Html
 show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
   let module_path = record.node_path.module_path
-      is_setting_main_goal =
-        theorem.proof == ProofTodo && List.isEmpty record.sub_cursor_path
+      is_setting_main_goal = theorem.proof == ProofTodo
+                               && List.isEmpty record.sub_cursor_path
+                               && not has_locked
       goal_record =
         { module_path = module_path
         , root_term_focus = (theorem_focus => goal_)
@@ -93,7 +94,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
         , editability = (if is_setting_main_goal
                            then EditabilityRootTermUpToGrammar
                            else EditabilityRootTermReadOnly)
-        , is_reducible = theorem.proof == ProofTodo
+        , is_reducible = theorem.proof == ProofTodo && not has_locked
         , can_create_fresh_vars = is_setting_main_goal
         , get_existing_variables = get_theorem_variables record.node_path
         , on_modify_callback = cmd_nothing
@@ -126,7 +127,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                   , editability = if is_editable
                                     then EditabilityRootTermUpToTerm
                                     else EditabilityRootTermReadOnly
-                  , is_reducible = is_editable
+                  , is_reducible = is_editable && not has_locked
                   , can_create_fresh_vars = False
                   , get_existing_variables = get_theorem_variables
                                                record.node_path
@@ -157,7 +158,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                       on_click_cmd = cmd_select_rule 1 record
                    in if cursor_info_is_here sub_cursor_info then
                         show_auto_complete_filter "button-block" sub_cursor_info
-                          "Proof By Rule" cmd_nothing focus_auto_complete model
+                          "Proof By Rule" focus_auto_complete model
                       else
                         show_button "Proof By Rule" on_click_cmd
                 lemma_html =
@@ -165,7 +166,7 @@ show_sub_theorem cursor_info record theorem theorem_focus has_locked model =
                       on_click_cmd = cmd_select_lemma 2 record
                    in if cursor_info_is_here sub_cursor_info then
                         show_auto_complete_filter "button-block" sub_cursor_info
-                          "Proof By Lemma" cmd_nothing focus_auto_complete model
+                          "Proof By Lemma" focus_auto_complete model
                       else
                         show_button "Proof By Lemma" on_click_cmd
                 rule_exists = not <| List.isEmpty <| get_usable_rule_names

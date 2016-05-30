@@ -1,15 +1,8 @@
 - implement module importation
 
-- enhance mathjax by adding editor
-
 - implement Traditional Theorem tree view
 
 - implement undo feature
   i.e. command that can roll back `Model` to previous state
 
 - make is_folded ui works for node in module pane
-
-- implement package, module, and node deletion
-
-- allow user to open file / doweload file directly
-  as alternative to copy and paste from home pane

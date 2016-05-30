@@ -47,7 +47,7 @@ show_root_term raw_record root_term model =
           show_todo_keyword_block "GRAMMAR UNDEFINED"
         else if cursor_info_is_here cursor_info then
           show_auto_complete_filter "button-block" cursor_info "Choose Grammar"
-            cmd_nothing focus_auto_complete model
+            focus_auto_complete model
         else
           show_button "Choose Grammar" (cmd_enter_mode_root_term record)
       else
@@ -68,7 +68,7 @@ show_term cursor_info record grammar_name term model =
             show_todo_keyword_block "UNFINISHED TERM"
           else if cursor_info_is_here cursor_info then
             show_auto_complete_filter "term-todo-block" cursor_info grammar_name
-              cmd_nothing focus_auto_complete model
+              focus_auto_complete model
           else
             show_clickable_block "term-todo-block" cursor_info
               (cmd_enter_mode_root_term record')

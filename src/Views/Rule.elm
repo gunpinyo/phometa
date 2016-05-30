@@ -145,7 +145,7 @@ show_rule cursor_info node_path rule model =
                          else [show_auto_complete_filter "button-block"
                                 (List.foldl cursor_info_go_to_sub_elem
                                  cursor_info [index + 1, 0]) "sub-rule name"
-                                 cmd_nothing focus_auto_complete model]
+                                 focus_auto_complete model]
                        _ -> inactive_add_cascade_html
                    _ -> inactive_add_cascade_html)))
         :: (case premise of

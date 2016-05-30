@@ -87,8 +87,7 @@ show_grammar cursor_info node_path grammar model =
                 metavar_regex_header ++
                 [ show_auto_complete_filter "regex-block"
                     (cursor_info_go_to_sub_elem 0 cursor_info)
-                    "metavar regex" cmd_nothing
-                    focus_auto_complete model
+                    "metavar regex" focus_auto_complete model
                 , text " "]
               _ -> metavar_unlocked_inactive)
       literal_regex_header =  [ show_keyword_block "literal_regex", text " "]
@@ -120,8 +119,7 @@ show_grammar cursor_info node_path grammar model =
                 literal_regex_header ++
                 [ show_auto_complete_filter "regex-block"
                     (cursor_info_go_to_sub_elem 0 cursor_info)
-                    "literal regex" cmd_nothing
-                    focus_auto_complete model
+                    "literal regex" focus_auto_complete model
                 , text " "]
               _ -> literal_unlocked_inactive)
       add_choice_inactive = [show_button "Add Choice"
@@ -135,8 +133,7 @@ show_grammar cursor_info node_path grammar model =
                 MicroModeGrammarAddChoice _ ->
                   [show_auto_complete_filter "button-block"
                     (cursor_info_go_to_sub_elem 2 cursor_info)
-                    "number of sub-terms" cmd_nothing
-                    focus_auto_complete model]
+                    "number of sub-terms" focus_auto_complete model]
                 _ -> add_choice_inactive)
       choices_aux = case get_record_mode_grammar node_path model of
         Nothing -> Nothing
@@ -165,7 +162,7 @@ show_grammar cursor_info node_path grammar model =
                         if choices_aux == Just (True, choice_index, fmt_index)
                         then show_auto_complete_filter "ind-format-block"
                           (cursor_info_func (2 * fmt_index)) "format"
-                          cmd_nothing focus_auto_complete model
+                          focus_auto_complete model
                         else if fmt_string == "" then
                           show_button "Format" (cmd_enter_micro_mode_format
                             choice_index fmt_index record)
@@ -179,7 +176,7 @@ show_grammar cursor_info node_path grammar model =
                         if choices_aux == Just (False, choice_index, gmr_index)
                         then show_auto_complete_filter "grammar-block"
                           (cursor_info_func (2 * gmr_index + 1)) "sub-grammar"
-                          cmd_nothing focus_auto_complete model
+                          focus_auto_complete model
                         else if gmr_string == root_term_undefined_grammar then
                           show_button "Grammar" (cmd_enter_micro_mode_grammar
                             choice_index gmr_index record)
