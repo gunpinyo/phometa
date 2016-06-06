@@ -5,7 +5,7 @@
 
 There are many proof assistants available out there, each of them rely on
 slightly different meta-theory. We can separate proof assistants into 2
-categories as the following
+categories which are text-base proof assistants and visualised proof assistants.
 
 \section{Text-Base Proof Assistants}
 
@@ -43,10 +43,11 @@ learning Emacs.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{related-work-coq}
-    \caption{Screenshot of Coq (using CoqIde) --- The left pane is file content
-      and Upper right pane is the current goal which is changed depending on
-      where the cursor point on file content.}
-\label{fig:background-coq}
+    \caption{Screenshot of Coq (using CoqIde, Credit:
+      \cite{coq-official-website}) --- The left pane is file content and Upper
+      right pane is the current goal which is changed depending on where the
+      cursor point on file content.}
+\label{fig:related-work-coq}
 \end{figure}
 
 \subsection{Agda}
@@ -62,7 +63,7 @@ proofs\supercite{curry-howard-correspondence}, for example function corresponded
 to implication, product type corresponded to logical implication.
 
 Agda is suitable for reasoning about functional programs because we can write a
-program and prove that curtain properties of a function hold using the same
+program and prove that certain properties of a function hold using the same
 language. This is feasible since a proof is just a function due to Curry-Howard
 correspondence.
 
@@ -84,44 +85,111 @@ other editor.
     \includegraphics[width=0.6\textwidth]{related-work-agda}
     \caption{Screenshot of Agda --- Credit: an example in Agda standard library,
     removing comment out to save space.}
-\label{fig:background-agda}
+\label{fig:related-work-agda}
 \end{figure}
 
 
 \subsection{Isabelle}
 
-Isabelle\supercite{isabelle-official-website} is generic proof assistant.
+Isabelle\supercite{isabelle-official-website} is generic proof assistant which
+allows user to express mathematical formulae in a formal language and provide a
+tool to prove something about it. There are many systems that Isabelle supports
+but the most widespread one is \emph{Isabelle/HOL} which provide a higher order
+logic environment that is ready for a big application.
 
+One of the main advantage of Isabelle is its readability, the proofs will be
+constructed by a language called \emph{Isar} which is designed in such a way
+that it could be read easily by both of computers and humans. Another advantage
+of Isabelle is that some part of a proof can be automatically proven, this
+improve user productivity.
 
+In term of editor, Isabelle has default user interface and Prover IDE called
+\emph{Isabelle/jEdit} which is based on jEdit and Isabelle/Scala.
 
-talk about isabelle readability
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{related-work-isabelle}
+    \caption{Screenshot of Isabelle (using Isabelle/jEdit, Credit:
+      \cite{isabelle-official-website}) --- The top-left pane shows file content
+      and the right pane shows content structure.}
+\label{fig:related-work-isabelle}
+\end{figure}
 
-\subsection{Lean}
-Lean\supercite{lean-offical-website} is a relatively new theorem
-prover\footnote{The Lean project was launched by Leonardo de Moura at Microsoft
-  Research in 2013} TODO:
+% \subsection{Lean}
+
+% Lean\supercite{lean-offical-website} is a relatively new interactive theorem
+% prover\footnote{The Lean project was launched by Leonardo de Moura at Microsoft
+%   Research in 2013}, because of this it can borrow some
 
 \section{Visualised Proof Assistant}
-TODO:
+Visualised proof assistants show proofs and related contents in graphical way,
+it also allow user interact with proofs mainly by clicking which make them
+easier to use by newcomers, nevertheless, user cannot fully manipulate the proof
+as they have limited choices of input method, this makes it is harder have
+some advance features.
+
+There are so visualised proof assistants so there, I will show a few of them to
+illustrate what visualised proof assistants look like.
 
 \subsection{Logitext}
-http://logitext.mit.edu/tutorial
-TODO:
+Logitext\supercite{logitext-official-website} is a web-based proof assistant for
+\emph{first-order classical logic} using the \emph{sequent calculus}. The main
+intention is to teach students about \emph{Gentzen trees} which one of a way to
+struct derivation system. Logitext uses Coq internally to check validity of
+proof steps.
+
+Logitext is very easy use, user usually only need to click a logical connector
+on the goal itself to construct a derivation tree. However, it only supports
+sequent calculus for first-order classical logic or propositional intuitionistic
+logic and user cannot extend the system.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{related-work-logitext-1}
+    \includegraphics[width=0.6\textwidth]{related-work-logitext-2}
+    \caption{Screenshots of Logitext --- You can see that a rule could be invoke
+      by just clicking a logical connector.}
+\label{fig:related-work-logitext}
+\end{figure}
 
 \subsection{Panda}
-https://www.irit.fr/panda/
-TODO:
+Panda\supercite{panda-official-website}\supercite{Gasquet2011} (\textbf{P}roof
+\textbf{A}ssistant for \textbf{N}atural \textbf{D}eduction for \textbf{A}ll) is
+graphical proof assistant that can be used to prove first order logic using
+Gentzen style's natural deduction.
+
+User will interact with it mainly by drag and drop. The main advantage is its
+tutorial which is well integrate with the actual program itself.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{related-work-panda}
+    \caption{Screenshots of Panda --- User can expand the current tree by
+      selecting a rule on the left pane and can drag and drop formula around to
+      connect it to another one.}
+\label{fig:related-work-panda}
+\end{figure}
+
+\newpage
 
 \subsection{Pandora}
-http://www.doc.ic.ac.uk/pandora/newpandora/
-TODO:
+Pandora\supercite{pandora-official-website}\supercite{Broda2007PandoraAR}
+(\textbf{P}roof \textbf{A}ssistant for \textbf{N}atural \textbf{D}eduction using
+\textbf{O}rganised \textbf{R}ectangular \textbf{A}reas) is graphical proof
+assistant that can be used to prove first order logic using Fetch style's
+natural deduction.
 
-\subsection{PeaCoq}
-http://goto.ucsd.edu/peacoq/
-TODO:
+The usage is quite similar to Panda, but it use boxes (Fetch style) rather than
+derivation tree (Gentzen style). It also have a comprehensive document for
+newcomer as well.
 
-\subsection{Why3}
-http://why3.lri.fr/
-TODO:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{related-work-pandora}
+    \caption{Screenshots of Pandora (Credit: \cite{Broda2007PandoraAR}) ---
+      The left pane shows current proof, user can use a rule by clicking on the
+      upper pane.}
+\label{fig:related-work-pandora}
+\end{figure}
 
 \end{document}

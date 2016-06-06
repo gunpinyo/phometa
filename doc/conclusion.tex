@@ -17,7 +17,7 @@ during this project. I learnt that tasks are always take time twice or thrice
 longer than expectation so it is vital to spare plenty of time before the
 deadline. More importantly, I learnt that better idea of feature always come
 after we start to implement something. It is quite hard to decide whether
-Phometa should include some curtain feature or not. It is about a tread off
+Phometa should include some certain feature or not. It is about a tread off
 between usefulness of the feature and the risk of the project being not finish
 in time. This kind of features usually came near the end of implementation where
 I knew exactly what Phometa should be. This is bad because if I accepted the
@@ -42,25 +42,38 @@ sure.
 
 \section{Future Works}
 
-Although Phometa designed and implement up to satisfactory level. There are
-still plenty of room for improvement as the following
-
-TODO: paraphrase these
+Although Phometa has been designed and implemented up to satisfactory level.
+There are still plenty of room for improvement. For example,
 \begin{itemize}
-  \item Make Grammars and Rules extensible
-  \item Make proving technique more autometics
-  \item Importation between Modules
-  \item Copy, Move, and Renaming on Packages and Modules
-  \item Implement traditional derivation rule and derivation tree view for
-    rules and theorems respectively
-  \item Export Grammars, Rules and Theorems to \LaTeX\
-  \item Repository Verification on Loading
-  \item Adding new Formal Systems to Standard Library
-  \item Make Messages become more informative
-  e.g.\ if pattern match when applying rule fails, it should tell why it falls
-  \item Implement a proper server for Phometa
-  \item Make Interface to be more mobile friendly
-  \item User preference
+\item \textbf{Making Grammars extensible} --- Grammars should be able to extend another
+  grammar in similar manner to how class in Object Oriented Programming extend
+  other classes, for example, grammar of proposition in First Order Logic could
+  extend grammar of proposition in Propositional Logic. This allows polymorphism
+  where a term of extending grammar could be proven using rules or lemmas
+  related based grammar.
+\item \textbf{Plain-text as alternative term input method} --- When constructing a term,
+  user should be able to write some term in plain-text and Phometa will try to
+  parse it according to formats of that grammar.
+\item \textbf{Making Theorems construction become more automatics} --- When constructing a
+  theorem, Phometa should be able to guess what rules or lemmas should be
+  applied next (similar to Isabelle).
+\item \textbf{Importation between Modules} --- Modules should be able to import some
+  nodes from other modules, this improve scalability since a formal system can
+  be expand across multiple modules.
+\item \textbf{Exportation to \LaTeX} --- Grammars, Rules, and Theorem should be
+  exportable to \LaTeX\ source code. So it can be used further other document
+  such as report or presentation.
+\item \textbf{Repository Verification on Loading} --- Creating a function that check
+  whether the repository is in valid state or not. Normally, it is not necessary
+  as Phometa will always be in consistent state, but when the you want use other
+  people formal system by obtaining \texttt{repository.json}, it is not a
+  grantee that someone will not modify that repository directly. So it is better
+  to have mechanism to check consistency of the repository anyway.
 \end{itemize}
+
+There are also other minor improvements such as adding new formal systems to
+standard library, making notification message become more informative, deploy
+phometa to a proper server, making user interface become more mobile friendly,
+and making a theme and keyboard shortcut become configurable.
 
 \end{document}

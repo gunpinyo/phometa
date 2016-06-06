@@ -852,8 +852,6 @@ vars_dict_to_pattern_matching_info module_path model vars_dict =
         , substitution_list = subst_list
         }) maybe_subst_list
 
--- if `allow_target_substitution` is true, then accept pattern matching that
---   require target substitution i.e. substitution_list != []
 -- if matched, return 1. dict that map pattern variables to
 --   corresponded goal root terms 2. sequence of goal variables that needed
 --   to be substituted by the corresponded root term in order to make matching
