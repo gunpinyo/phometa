@@ -22,6 +22,7 @@ import Models.ModelUtils exposing (init_auto_complete, focus_record_mode_repo)
 import Models.Grid exposing (Grid(..), focus_grid)
 import Models.Model exposing (Command)
 import Updates.CommonCmd exposing (cmd_nothing, cmd_reset_mode)
+import Updates.Cursor exposing (cmd_change_pane_cursor)
 import Updates.Message exposing (cmd_send_message)
 import Updates.KeymapUtils exposing (empty_keymap, build_keymap, merge_keymaps,
                                      keymap_auto_complete)
@@ -64,6 +65,7 @@ cmd_select_module module_path model =
         |> Focus.set pane_cursor_ pane_cursor
         |> Focus.set (grids_ => focus_grid pane_cursor) grid
         |> cmd_reset_mode
+        |> cmd_change_pane_cursor pane_cursor
 
 cmd_select_node : NodePath -> Command
 cmd_select_node node_path model =
@@ -74,6 +76,7 @@ cmd_select_node node_path model =
         |> Focus.set pane_cursor_ pane_cursor
         |> Focus.set (grids_ => focus_grid pane_cursor) grid
         |> cmd_reset_mode
+        |> cmd_change_pane_cursor pane_cursor
 
 cmd_package_fold_unfold : PackagePath -> Command
 cmd_package_fold_unfold package_path =

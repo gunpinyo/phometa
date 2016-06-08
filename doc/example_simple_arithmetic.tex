@@ -14,7 +14,7 @@ powerful as the actual one.
 
 \section{First time with Phometa}
 
-You can download complied version of Phometa at
+You can download the complied version of Phometa at
 
 {\centering\url{https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz}}
 
@@ -39,20 +39,20 @@ The program will look like this
 \label{fig:arith-phometa-home-window}
 \end{figure}
 
-Phometa has a repository which consists of packages and modules that store
-formal systems and its proofs. The left pane of figure
-\ref{fig:arith-phometa-home-window} shows global structure of a repository. The
-current repository has one package named ``Standard Library'' which consists of
-three modules named ``Propositional Logic'', ``Simple Arithmetic'', and ``Typed
-Lambda Calculus''.
+Phometa has a proofs repository which consists of packages and modules that
+store formal systems and its proofs. The left pane (package pane) of figure
+\ref{fig:arith-phometa-home-window} shows global structure of a proofs
+repository. The current repository has one package named ``Standard Library''
+which consists of three modules named ``Propositional Logic'', ``Simple
+Arithmetic'', and ``Typed Lambda Calculus''.
 
 Module in Phometa are analogous to text file. It consists of nodes that could
 depend on one another. There are four types of node which are \emph{Comment},
 \emph{Grammar} (Backus-Naur Form), \emph{Rule} (Derivation Rule), and
-\emph{Theorem} (Derivation Tree). If you click at a module on the repository
+\emph{Theorem} (Derivation Tree). If you click at a module on the package
 pane e.g. ``Simple Arithmetic'', you will see the whole content of the module
 appear on the centre pane. Alternatively, you can click on each node on the
-repository pane directly to focus on particular node.
+package pane directly to focus on particular node.
 
 \begin{figure}[H]
     \centering
@@ -164,7 +164,7 @@ You can see that the theorem still preserve tree-like structure but the width
 doesn't grow exponentially like derivation.
 
 Next, I will show you that how was the theorem above constructed. Once we click
-module ``Simple Arithmetic'' on the repository pane, we will see the whole
+module ``Simple Arithmetic'' on the package pane, we will see the whole
 context similar to figure \ref{fig:arith-phometa-arith-window}, you will also
 see that there are adding panel intersperse among each node
 
@@ -187,9 +187,9 @@ like this
 \end{center}
 
 The keymap pane told us that there are 4 grammars available, we can either press
-\pkbd{Alt-{1..4}} or click on the row in keymap pane directly to select grammar.
-Alternatively, you can search a grammars by type faction on it is input box e.g.
-``eq''
+\pkbd{Alt-\{1..4\}} or click on the row in keymap pane directly to select
+grammar. Alternatively, you can search a grammars by type faction on it is input
+box e.g. ``eq''
 
 \begin{center}
 \includegraphics[width=0.4\textwidth]{arith-thm-ex-4}

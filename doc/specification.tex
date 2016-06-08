@@ -4,31 +4,308 @@
 \chapter{Specification}
 \label{chap:specification}
 
-In this chapter, we will the full detail of phometa.
-\section{Overview}
-mainly talk about phometa UI structure, grids, keymap pane, mode menu, and messages panel
+After gaining some familiarity on the last chapter, this chapter provides a
+complete reference of phometa. After you read this chapter, you should be able
+to use Phometa in full efficiently.
 
-\section{Repository}
-structure of repository
+\section{Installation}
+
+You can download the complied version of Phometa at
+
+{\centering\url{https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz}}
+
+Once you unzip this file, you see several files as the following
+
 \begin{itemize}
-\item add new sub-package or module inside a package (using package pane)
-\item load/save repository using textarea in home pane + also talk about stdlib
-\item add/swap nodes inside module
-\item dedicate view for each node (using package pane)
+\item \texttt{\textbf{phometa.html}} --- the main file containing Phometa
+  web-based application.
+\item \texttt{\textbf{style.css \& style.css.map}} --- control the layout and
+  theme of \texttt{\textbf{phometa.html}}
+\item \texttt{\textbf{naive.js}} --- JavaScript code that will be injected to
+  \texttt{\textbf{phometa.html}}
+\item \texttt{\textbf{repository.json}} --- contain proofs repository, can be
+  loaded or saved by \texttt{\textbf{phometa.html}}
+\item \texttt{\textbf{logo.png}} --- image that will be used as favicon in
+  \texttt{\textbf{phometa.html}}
+\item \texttt{\textbf{phometa-server.py}} --- python script that can be executed
+  as local server.
+\item \texttt{\textbf{phometa-doc.pdf}} --- this report, included here as the
+  tutorial and reference.
 \end{itemize}
 
-\section{Auto Complete}
-autocomplete in general
+You can start Phometa server by execute
 
-define its param i.e.\ return call back
+\texttt{./phometa-server.py 8080}
 
-how to do autocomplete
+where \texttt{8080} is port number, you can change this to another port number
+if you like. Please note that Python is required for this server.
 
-\section{Node Comment}
+Then open your favourite web-browser\footnote{but Google Chrome is recommended}
+and enter
 
-\section{Node Grammar}
+\texttt{http://localhost:8080/phometa.html}
 
-\section{Root Term}
+
+The program will look like this
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{arith-phometa-home-window}
+    \caption{Screenshot of Phometa when you open it from web-browser.}
+\label{fig:specification-phometa-home-window}
+\end{figure}
+
+\section{User Interface Overview}
+
+According to figure \ref{fig:specification-phometa-home-window}, user interface
+of Phometa is divided in to 4 panes as the following
+
+\begin{itemize}
+\item\textbf{Package Pane (left)} --- shows and let user interact with the
+  global structure of proofs repository.
+\item\textbf{Keymap Pane (right)} --- shows every possible key-binding on the
+  current state of the program, user can also click any row directly to get the
+  same effect as pressing the corresponded key-blinding.
+\item\textbf{Grids Pane (centre)} --- show and let user interact with the
+  current content, grids pane can be split into several sub-panes using mode
+  menu explained below.
+\item\textbf{Messages Pane (upper-centre)} --- show incoming notifications such
+  as success or user exception notification, if there isn't any notification,
+  this pane will disappear.
+\end{itemize}
+
+On any state of the program, user can click \pkbd{Alt-x} to jump to menu,
+this will change keymap pane to display the following key-bindings
+
+\begin{itemize}
+\item \pkbd{l} --- reload proofs repository from \texttt{repository.json}
+\item \pkbd{s} --- save proofs repository to \texttt{repository.json}
+\item \pkbd{1} --- reform grids pane to display just 1 sub-pane
+\item \pkbd{2} --- reform grids pane to display 2 sub-panes aligned
+  horizontally.
+\item \pkbd{3} --- reform grids pane to display 3 sub-panes aligned
+  horizontally.
+\item \pkbd{4} --- reform grids pane to display 4 sub-panes as $2 \times 2$
+  grids.
+\item \pkbd{8} --- reform grids pane to display 2 sub-panes aligned
+  vertically.
+\item \pkbd{9} --- reform grids pane to display 3 sub-panes aligned
+  vertically.
+\item \pkbd{h} --- make focused sub-pane of grids pane display home page
+\item \pkbd{p} --- toggle (show / hide) the package pane
+\item \pkbd{k} --- toggle (show / hide) the keymap pane
+\end{itemize}
+
+For example, in any state of the program, we can split grids pane into two
+horizontally sub-panes by pressing \pkbd{Alt-x} followed by \pkbd{2} to get a
+result similar to this
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{spec-1x2-grids}
+    \caption{Screenshot of Phometa when you split grids pane into $1 \times 2$
+      grids.}
+\label{fig:specification-1x2-grids}
+\end{figure}
+
+In fact, splitting grids is recommended when you construct a proof, this is
+because it will let you use one of sub-panes to look up relevant grammars and
+rules without losing concentration on a theorem that is on another sub-pane.
+
+\section{Auto-Complete Input Box}
+Although user will interact with Phometa mainly by clicking a button and
+pressing a keyboard shortcut, there are several places that might require user
+to type something, and in order make this as convenient as possible, every input
+box\footnote{Except textarea in comment node.} will have \emph{auto-complete}
+functionality.
+
+An (auto-complete) input box will internally have a list of choices, which will
+be mapped to key-blinding \pkbd{Alt-{1..9}}. Because these choices are keyboard
+shortcut hence they will be visible in keymap pane so user can see all of this.
+
+\begin{figure}[H]
+    \centering
+
+\begin{minipage}{0.40\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{spec-autocomplete-1}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.40\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{spec-autocomplete-2}
+\end{flushright}
+\end{minipage}
+\caption{Key-blinding of an example of auto-complete before and after pressing \pkbd{Alt-]}}
+\label{fig:specification-autocomplete-choices}
+\end{figure}
+If there are more than 9 choices, it will map just the first 9 choices to
+\pkbd{Alt-\{1..9\}} and provide \pkbd{Alt-[} and \pkbd{Alt-]} that can navigate to
+previous and next page of choices respectively.
+
+Another way to access further choices is to type some sub-strings (separated by
+space) in the input box. This will filter only choices that are still match with
+those sub-string. For example, according to the choices in figure
+\ref{fig:specification-autocomplete-choices}. If we type \texttt{``dd''}, it
+will match just 4 rules which are \prule{add-intro}, \prule{add-assoc},
+\prule{add-comm}, \prule{add-identity} since this has \texttt{``dd''} as
+sub-string. Now, if we type \texttt{``dd in''} it will match just
+\prule{add-intro} since it is the only one that has \texttt{``dd''} \emph{and}
+\texttt{``in''} as sub-string. In addition, if there is just one choice left, we
+can hit ``Return'' for that choice alternative to \pkbd{Alt-1} for convenient.
+
+\begin{figure}[H]
+    \centering
+
+\begin{minipage}{0.40\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{spec-autocomplete-3}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.40\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{spec-autocomplete-4}
+\end{flushright}
+\end{minipage}
+\caption{Keymap pane of figure \ref{fig:specification-autocomplete-choices}
+  after be filtered by \texttt{``dd''} and \texttt{``dd in''}.}
+\label{fig:specification-autocomplete-choices-filtered}
+\end{figure}
+
+When typing something into input box, it also appear on the top of keymap pane
+as well (example as in figure
+\ref{fig:specification-autocomplete-choices-filtered}). Although it is not
+related to keyboard shortcut but that position is closer to the keymap table,
+hence user can type the filter then look at the remaining choices easier.
+
+Some input box can accept newly created string as well e.g.\ input box waiting
+for the name of a new node. If this is the case, you can write the string
+directly into the input box then hit \pkbd{Return} to complete it. Please note
+that the written string still be used to filter choices out (if exists), but
+\pkbd{Return} as alternative to \pkbd{Alt-1} will no longer work as it
+contradict with this new key-blinding.
+
+Auto-complete is also capable for unicode input method as well, if you want to
+add a unicode character, just press \pkbd{Alt-u} then the keymap pane will look
+like this.
+
+\begin{figure}[H]
+    \centering
+
+\begin{minipage}{0.40\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{spec-autocomplete-5}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.40\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{spec-autocomplete-6}
+\end{flushright}
+\end{minipage}
+\caption{Key-blinding after entering unicode input method.}
+\label{fig:specification-autocomplete-choices-unicode}
+\end{figure}
+
+In unicode input method, we have choices that map to each unicode character
+using its name in \LaTeX math mode, these choices can be manipulated by
+\pkbd{Alt-[} and \pkbd{Alt-]} and filtering method similar to normal choices
+above. Once a choice is selected, it will be appended to the end in input box
+and return to normal input method. However, if you enter unicode input method by
+accident you can press \pkbd{Escape} to return to normal input method with
+appending any unicode character.
+
+To conclude this section, originally, auto-complete was designed for an input
+box that is used to select choice e.g.\ selecting grammar for a term or
+selecting rule for a step of a theorem, but now it is extended to other types
+input box that doesn't have choice e.g.\ input box the name of a new node. This
+is because it is easier for user to memorise and non-choice input box can use
+unicode functionality as well.
+
+\section{The proofs repository}
+
+Phometa has a repository which consists of packages and modules. Analogously,
+you can imagine packages as directories and modules as files, therefore the
+proofs repository is similar to a real repository that contains directories and
+files.
+
+Package pane represents the global structure as the following example,
+
+\begin{figure}[H]
+    \centering
+
+\begin{minipage}{0.48\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{spec-package-pane-1}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.48\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{spec-package-pane-2}
+\end{flushright}
+\end{minipage}
+
+\caption{Package pane represents the global structure of proofs repository}
+\label{fig:specification-package-pane}
+\end{figure}
+
+The current repository has one package named ``Standard Library'' which consists
+of three modules named ``Propositional Logic'', ``Simple Arithmetic'', and
+``Typed Lambda Calculus''. Each module of Phometa consists of a sequence of
+nodes, each node can be either comment (grey), grammar (dark green), rule (light
+green), or theorem (blue).
+
+Please note that a package contain its elements alphabetically whereas a modules
+contains its nodes using an explicit ordering that user can swap among them
+later.
+
+Each package and module can be folded or unfolded by clicking a triangle in
+front of it. You can also delete them by clicking close button on the right hand
+side, then the conformation notification will appear in messages pane like this
+
+\includegraphics[width=\textwidth]{spec-delete-confirmation.png}
+
+You can add sub-package or sub-module in any package by clicking ``Add
+Package'' or ``Add Module'' respectively, the clicked button will transform to
+an input box that you can enter the name.
+
+To read or edit a module, you can click at the module label directly, this will
+make the focused sub-pane\footnote{If there isn't a focus one, use the first
+  sub-pane.} of grids pane to display the content of that module, this will also
+allow you to add, delete, or change ordering of nodes in that module.
+Alternatively, you can concentrate on particular node (rather than showing the
+whole module) by clicking the label of that node directly.
+
+The current proofs repository can be loaded or saved with
+\texttt{repository.json} by using \pkbd{Alt-x l} and \pkbd{Alt-x s} as we
+mention before. This allows user to manipulated the proofs repository directly
+for example,
+\begin{itemize}
+\item User can backup the current state of proofs repository by copy
+  \texttt{repository.json} to somewhere else. If user accidentally delete some node
+  or something else gone wrong, user can just replace it with the backup one.
+\item Users can working in group on the same repository by passing
+  \texttt{repository.json} around.
+\item User can distribute their formal systems to other by publishing their
+  \texttt{repository.json}
+\end{itemize}
+However, manually modify \texttt{repository.json} without using Phometa
+interface is strongly discourages as it will make the repository in the
+inconstant state.
+
+Alternative to \texttt{repository.json}, user can copy / paste the repository
+directly from the text-area in the home page.
+
+\section{Mode Module}
+
+\section{Mode Comment}
+
+\section{Mode Grammar}
+
+\section{Mode Root Term}
 
 State that root term input method use lots of autocomplete and explain more on
 extended feature
@@ -143,8 +420,8 @@ make sure that we include EVERY key binding and generated messages
 % In this mode, you can just view the term and nothing else.
 
 
-\section{Node Rule}
-\section{Node Theorem}
+\section{Mode Rule}
+\section{Mode Theorem}
 
 % \section{Placeholders}
 

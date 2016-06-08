@@ -9,7 +9,8 @@ import Models.Cursor exposing (PaneCursor(..), init_cursor_info)
 import Models.Grid exposing (Grids(..), Grid(..))
 import Models.RepoModel exposing (Node(..))
 import Models.RepoUtils exposing (get_node)
-import Models.Model exposing (MicroModeModule(..),
+import Models.Model exposing (Mode(..),
+                              MicroModeModule(..),
                               MicroModeComment(..),
                               MicroModeGrammar(..),
                               MicroModeRule(..),
@@ -64,7 +65,9 @@ show_grids_pane model =
 
 show_grid_pane : PaneCursor -> Grid -> View
 show_grid_pane pane_cursor grid model =
-  let has_cursor = model.pane_cursor == pane_cursor
+  let raw_has_cursor = model.pane_cursor == pane_cursor
+      has_cursor = raw_has_cursor &&
+        not (List.member model.mode [ModeNothing, ModeMenu])
       cursor_func int_cursor_path = init_cursor_info has_cursor
                                       int_cursor_path pane_cursor
       (content, on_click_cmd) = case grid of
@@ -115,7 +118,7 @@ show_grid_pane pane_cursor grid model =
            in -- if it is not `GridHome` use div inside flex_div to detach flex
               -- since its elements doesn't depend on monitor height anymore
               (div [style [("width", "100%")]] [node_content], on_click_cmd')
-      attrs  = [ classList [("pane", True), ("pane-on-cursor", has_cursor)]
+      attrs  = [ classList [("pane", True), ("pane-on-cursor", raw_has_cursor)]
                , on_click address
                    (ActionCommand <| cmd_change_pane_cursor pane_cursor
                                        >> on_click_cmd) ]
