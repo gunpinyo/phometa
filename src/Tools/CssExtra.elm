@@ -42,7 +42,7 @@ css_inline_str_tokenise css_inline_str =
 
 css_inline_str_compile : CssInlineStr -> List Html
 css_inline_str_compile css_inline_str =
-  let err_msg = "bug in function Tools.CssExtra.css_inline_str_complie"
+  let err_msg = "bug in function Tools.CssExtra.css_inline_str_compile"
       tokens = css_inline_str_tokenise css_inline_str
       -- this function operate with reverse order
       -- this play well with list representation
