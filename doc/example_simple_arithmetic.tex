@@ -5,10 +5,10 @@
 \label{chap:example_simple_arithmetic}
 
 As in \hyperref[chap:background]{background chapter}, Simple Arithmetic is
-used as example to explain basic concept of formal systems and its derivations.
+used as example to explain basic concepts of formal systems and its derivations.
 In order to make the transition goes smoother, this chapter aims to encode
 Simple Arithmetic and explain basic features and usability of \emph{Phometa} at
-the same time. Please note that this is just a faction of
+the same time. Please note that this is just a fraction of
 actual arithmetic modified to make it easier to understand, so it is not as
 powerful as the actual one.
 
@@ -41,18 +41,18 @@ The program will look like this
 
 Phometa has a proofs repository which consists of packages and modules that
 store formal systems and its proofs. The left pane (package pane) of figure
-\ref{fig:arith-phometa-home-window} shows global structure of a proofs
+\ref{fig:arith-phometa-home-window} shows the global structure of a proofs
 repository. The current repository has one package named ``Standard Library''
 which consists of three modules named ``Propositional Logic'', ``Simple
 Arithmetic'', and ``Typed Lambda Calculus''.
 
-Module in Phometa are analogous to text file. It consists of nodes that could
+Modules in Phometa are analogous to text files. It consists of nodes that could
 depend on one another. There are four types of node which are \emph{Comment},
 \emph{Grammar} (Backus-Naur Form), \emph{Rule} (Derivation Rule), and
 \emph{Theorem} (Derivation Tree). If you click at a module on the package
 pane e.g. ``Simple Arithmetic'', you will see the whole content of the module
 appear on the centre pane. Alternatively, you can click on each node on the
-package pane directly to focus on particular node.
+package pane directly to focus on a particular node.
 
 \begin{figure}[H]
     \centering
@@ -62,15 +62,15 @@ package pane directly to focus on particular node.
 \end{figure}
 
 In order to improve productivity, Phometa has several key-bindings specific to
-certain state of program. Fortunately, user don't need to remember any of this
-since the right pane (i.e. keymap pane) shows every possible key-binding with
-its description on current state. This also allow new-comer to explore new
-features during using it
+certain states of the program. Fortunately, users don't need to remember any of
+this since the right pane (i.e.\ keymap pane) shows every possible key-binding
+with its description on current state. This also allow newcomers to explore new
+features during using it.
 
 \section{Grammars}
 
 The Backus-Naur Form of Simple Arithmetic in figure \ref{fig:background-bnf}
-could be transformed in to this four following grammars
+could be transformed in to four following grammars
 \begin{figure}[H]
     \centering
 \begin{minipage}{0.7\textwidth}
@@ -84,7 +84,7 @@ could be transformed in to this four following grammars
 \label{fig:arith-grammars}
 \end{figure}
 
-We take advantage of visualisation by replacing brackets with underlines, this
+We take advantage of visualisation by replacing brackets with underlines. This
 should improve readability because reader can see a whole term in a compact
 way but still able check how they are bounded when needed, for example,
 \begin{itemize}
@@ -96,9 +96,9 @@ way but still able check how they are bounded when needed, for example,
 \item \texttt{<Equation>} $(5 + 7) = 12$ is transformed to
   \pgmr{Equation} \term{arith-term-equation}
 \end{itemize}
-These underline patterns coincide with diagram in figures \ref{fig:background-digit},
-\ref{fig:background-number}, \ref{fig:background-expr-2}, and
-\ref{fig:background-equation} respectively.
+These underline patterns coincide with diagrams in figures
+\ref{fig:background-digit}, \ref{fig:background-number},
+\ref{fig:background-expr-2}, and \ref{fig:background-equation} respectively.
 
 \kMetaVarRegex\ is used to control the name meta variables of each grammar. If
 this property is omitted, the corresponding grammar cannot instantiate meta
@@ -137,11 +137,12 @@ can be transformed as the following
 \label{fig:arith-rules}
 \end{figure}
 
-Most of rules here are self explain but in rule \prule{eq-tran}, there is an
-additional property named \kParameter{}(s) which is a meta veritable that appear
-in premises but not in conclusion, hence user need to give a term when the rule
-is applied. Please note that \kParameter{} is automatic i.e.\ when user define
-they own rule, it will change automatically depending on premises and conclusion
+Most of the rules here are self explanatory but in rule \prule{eq-tran}, there
+is an additional property named \kParameter{}(s) which is a meta veritable that
+appears in premises but not in conclusion, hence user need to give a term when
+the rule is applied. Please note that \kParameter{} is automatic i.e.\ when user
+define they own rule, it will change automatically depending on premises and
+conclusion.
 
 \pthm{dist-right} is not defined here but it will be defined as \emph{lemma}
 in the next section.
@@ -161,26 +162,26 @@ The first example of derivation tree (figure
 \label{fig:arith-theorem-example-theorem-1}
 \end{figure}
 
-You can see that the theorem still preserve tree-like structure but the width
+You can see that the theorem still preserves a tree-like structure but the width
 doesn't grow exponentially like derivation.
 
-Next, I will show you that how was the theorem above constructed. Once we click
+Next, I will show you how the theorem above was constructed. Once we click
 module ``Simple Arithmetic'' on the package pane, we will see the whole
 context similar to figure \ref{fig:arith-phometa-arith-window}, you will also
-see that there are adding panel intersperse among each node
+see that there are adding panels interspersed among each node.
 
 \includegraphics[width=\textwidth]{arith-thm-ex-1}
 
 Now, click ``Add Theorem'', the button will change to input box where you can
-specify theorem name. Type ``tutorial-theorem-1'', can you will get empty
-theorem as the following
+specify a theorem name. Type ``tutorial-theorem-1'', you will get empty theorem
+as the following
 
 \includegraphics[width=\textwidth]{arith-thm-ex-2}
 
 The first thing that we can do is to construct the goal that will be proven. On
 the picture above you will see button labelled ``Choose Grammar'' which is, in
 fact, a term that doesn't know its grammar. We can specify grammar by click the
-button, which in-tern, will change to input box. Now the keymap pane will look
+button, which in turn, will change to input box. Now the keymap pane will look
 like this
 
 \begin{center}
@@ -199,23 +200,24 @@ box e.g. ``eq''
 Now, it is only \pgmr{Equation} available because it is the only one that has
 ``eq'' as (case-insensitively) sub-string. And since it is the only one, you can
 select it by press \pkbd{Return}, even though in this case we don't have too
-many options but still benefit from it in auto complete favour. Please note that
-this input box support multiple matching separated by space e.g. ``eq ti'' still
-match \pgmr{Equation} because both of ``eq'' and ``ti'' are sub-string of it.
+many options but still benefit from it in auto-complete mode. Please note that
+this input box supports multiple matching separated by space e.g. ``eq ti''
+still match \pgmr{Equation} because both of ``eq'' and ``ti'' are sub-string of
+it.
 
 Once you select a grammar, the box will change to green colour and waiting for a
 term of that grammar. In this case, we select \pgmr{Equation} since it has just
 one choice and doesn't have meta variable or literal\footnote{literal is similar
   to meta-variable but only match to itself, will be explained in later
-  chapter} so Phometa automatically click such a choice and the theorem will
+  chapter} so Phometa automatically clicks such a choice and the theorem will
 look like this
 
 \begin{center}
 \includegraphics[width=\textwidth]{arith-thm-ex-5}
 \end{center}
 
-You may notice that the goal term as grey background rather than white as
-before. This indicate that the term is still modifiable.
+You may notice that the goal term has a grey background rather than white as
+before. This indicates that the term is still modifiable.
 
 Next, we will continue on the \pgmr{Expr} term on the left hand side of
 ``$=$''. When the cursor is in it, the keymap will look like this
@@ -224,38 +226,38 @@ Next, we will continue on the \pgmr{Expr} term on the left hand side of
 \includegraphics[width=0.4\textwidth]{arith-thm-ex-6}
 \end{center}
 
-Again, there are 3 choice available which can be selected similar manner when we
-select grammar. At the this stage you might wonder how to type ``$\times$''
-since it is unicode character. Well, we can go to unicode mode by press
-\pkbd{Alt-u} as keymap pane suggest. Then keymap pane will look like this
+Again, there are three choices available which can be selected in a similar
+manner when we select a grammar. At the this stage you might wonder how to type
+``$\times$'' since it is unicode character. Well, we can go to unicode mode by
+press \pkbd{Alt-u} as keymap pane suggest. Then keymap pane will look like this
 
 \begin{center}
 \includegraphics[width=0.3\textwidth]{arith-thm-ex-7}
 \end{center}
 
-This allow us to search unicode character by using its \LaTeX{}'s math-mode
-name. Now type ``times'' in the input box, you should see ``$\times$'' appear on
-keymap. Once you select it, the unicode mode disappear and put ``$\times$'' in
-the input box, which in-tern, filter other choices out so you can hit
-\pkbd{Return} for multiplication. The goal will transform to
+This allows us to search for a unicode character by using its \LaTeX{}'s
+math-mode name. Now type ``times'' in the input box, you should see ``$\times$''
+appear on keymap. Once you select it, the unicode mode disappear and put
+``$\times$'' in the input box, which in turn, filter other choices out so you
+can hit \pkbd{Return} for multiplication. The goal will transform to
 
 \begin{center}
-\includegraphics[width=0.2\textwidth]{arith-thm-ex-8}
+\includegraphics[width=0.3\textwidth]{arith-thm-ex-8}
 \end{center}
 
 \hspace{1ex}
 
-Next we will focus middle \pgmr{Expr}. If we type string and hit \pkbd{Return}
-here it will assume that we enter meta variable or literal (to avoid conflict
-auto complete similar to choose grammar is disabled here). E.g.\ if we type ``a''
-and press enter it will become like this
+Next we will focus a middle \pgmr{Expr}. If we type string and hit \pkbd{Return}
+, it will assume that we enter meta variable or literal (to avoid conflict
+auto complete similar to choose grammar is disabled here). E.g.\ if we type
+``a'' and press enter it will become like this
 
 \begin{center}
-\includegraphics[width=0.2\textwidth]{arith-thm-ex-9}
+\includegraphics[width=0.3\textwidth]{arith-thm-ex-9}
 \end{center}
 
-If we enter the name that that doesn't comply to regular expression, it will
-do nothing and prompt error message above main pane as the following
+If we enter the name that that doesn't comply to a regular expression, it will
+do nothing and prompt an exception message above the main pane as the following
 
 \begin{center}
 \includegraphics[width=\textwidth]{arith-thm-ex-10}
@@ -269,12 +271,12 @@ combine with \pkbd{Alt-t} i.e.\ you can reset parent term only by keystrokes
 rather than clicking. You also be able to jump to previous todo or next todo by
 pressing \pkbd{LEFT} or \pkbd{RIGHT} respectively.
 
-By recursively fill the the goal, eventually it will become like this
+By recursively filling the the goal, eventually it will become like this
 
 \includegraphics[width=\textwidth]{arith-thm-ex-11}
 
 Since the goal is complete, it is ready to be proven. You can select a rule by
-clicking ``Proof By Rule'' and select \prule{mult-intro} similar manner to
+clicking ``Proof By Rule'' and select \prule{mult-intro} in a similar manner to
 choose grammar. Then the theorem will look like this
 
 \includegraphics[width=\textwidth]{arith-thm-ex-12}
@@ -283,7 +285,7 @@ choose grammar. Then the theorem will look like this
 
 Once the rule is applied, it will generate further sub-goals.
 
-Please notice that the goal background changes to white colour as we can longer
+Please notice that the goal background changes to white as we can no longer
 modify the goal. However if you made a mistake and want to go back, you can
 click \closeButton\ on the bottom right corner of current proof (or press
 \pkbd{Alt-t}) to reset current proof then you can modify it again. Ultimately,
@@ -298,15 +300,15 @@ process above i.e.\ select rule \prule{add-comm} for first sub goal and
 \includegraphics[width=\textwidth]{arith-thm-ex-13}
 \end{center}
 
-Once the theorem is complete, you can claim validity of the goal. More over you
-can convert it to lemma that can be used in later theorem by clicking
+Once the theorem is complete, you can claim validity of the goal. Moreover you
+can convert it to a lemma that can be used in a later theorem by clicking
 \lockButton\ on top-right corner of theorem
 
 \begin{center}
 \includegraphics[width=\textwidth]{arith-thm-ex-14}
 \end{center}
 
-Because other theorem can use this lemma so it is no longer modifiable, as you
+Because other theorems can use this lemma it is no longer modifiable, as you
 can see that \closeButton\ of each sub-proof and \resetButton\ button of the
 main theorem are gone.
 
@@ -328,15 +330,15 @@ Similarly, we can can create lemma \pthm{dist-right} as the following
 \hspace{1ex}
 
 It is a good practice to create lots of small lemmas rather than a big theorem.
-This is because it is easier to read and you can use a lemma multiple time i.e.
-no need to duplicate sub-proof.
-
+This is because it is easier to read and you can use a lemma multiple times i.e.
+there is no need to duplicate sub-proof.
 
 \section{More complex theorem}
 \label{sec:arith-complex-theorem}
 
-To gain more familiarly on theorem, here is more complex theorem corresponded
-the second example of derivation tree on figure \ref{fig:background-derivation-tree-2}
+To gain more familiarity on theorem, here is more complex theorem corresponding
+to the second example of derivation tree on figure
+\ref{fig:background-derivation-tree-2}
 
 \begin{figure}[H]
     \centering
@@ -347,15 +349,15 @@ the second example of derivation tree on figure \ref{fig:background-derivation-t
 \label{fig:arith-theorem-example-theorem-2}
 \end{figure}
 
-Sub-proofs become more complex and premises of the main proof are far away which
-is harder to read, to avoid this kind of problem, we introduce a focus button
-(\focusButton) that will fold sub-proof of corresponding proof. For example, if
-we click \focusButton\ on the main proof it will look like this
+Sub-proofs have become more complex and premises of the main proof are far away
+which is harder to read. To avoid this kind of problem, we introduce a focus
+button (\focusButton) that will fold sub-proof of corresponding proof. For
+example, if we click \focusButton\ on the main proof it will look like this
 
 \includegraphics[width=\textwidth]{arith-thm-ex-focus-1}
 
-Two sub-proofs of the main theorem are folded, this allow us to read rule
-instance of \prule{eq-tran} easily. You can unfolded sub-proofs by clicking
+Two sub-proofs of the main theorem are folded, which allows us to read rule
+instance of \prule{eq-tran} easily. You can unfold sub-proofs by clicking
 unfocus button (\unfocusButton) at the same position that \focusButton\ was there
 before. And the theorem will look the same as figure
 \ref{fig:arith-theorem-example-theorem-2} again.
@@ -390,8 +392,9 @@ we want \term{arith-thm-ex-aux-1} so put it there
 
 \includegraphics[width=\textwidth]{arith-thm-ex-17}
 
-Now, let focus on the second sub-goal, we can apply \prule{eq-tran} again but
-with \\ \pvar{z} = \term{arith-thm-ex-aux-2}. Then, apply \prule{mult-intro} in the second its sub-goal.
+Now, let's focus on the second sub-goal, we can apply \prule{eq-tran} again but
+with \\ \pvar{z} = \term{arith-thm-ex-aux-2}. Then, apply \prule{mult-intro} in
+the second its sub-goal.
 
 \includegraphics[width=\textwidth]{arith-thm-ex-18}
 
@@ -413,24 +416,4 @@ will look like this
 
 The remaining step is easy enough.
 
-\newpage
-\section{Exercises}
-
-\begin{itemize}
-\item Create a theorem and proof each of the following
-  \begin{itemize}
-  \item \term{arith-ex-1-1}
-  \item \term{arith-ex-1-2}
-  \item \term{arith-ex-1-3}
-  \end{itemize}
-\item Create a theorem of your own choice and proof it.
-\item (Challenge) Extend Simple Arithmetic to support the following
-  \begin{itemize}
-  \item addition and multiplication identity.
-  \item addition and multiplication idempotent.
-  \item inequality.
-  \end{itemize}
-  You may need to create a new grammar or rules for this, please see section
-  \ref{sec:how_to_built_grammars_and_rules} in the next chapter.
-\end{itemize}
 \end{document}

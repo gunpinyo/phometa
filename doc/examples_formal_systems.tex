@@ -275,11 +275,33 @@ $$
 \vspace{3ex}
 \caption{Derivation trees show that $\epsilon, p, (q \vee r) \vdash ((p \wedge q) \vee (p \wedge
 r))$ and $\Gamma \vdash (A \vee (\neg A))$ are valid \texttt{<Judgement>}.}
-\label{fig:background-derivation-tree-2}
 \end{sidewaysfigure}
 
 \section{Typed Lambda Calculus}
 
-TODO:
+Credit: Some of material here modified from lecture note of ``382 --- Type
+Systems for Programming Languages'' (third year course), Department of
+Computing, Imperial College London. Thank you Dr Steffen van Bakel for this.
+
+Lambda Calculus stimulates computational model in functional manner. Basically,
+it will have a grammar \texttt{<Term>} which can be either a
+\texttt{<Variable>}, an anonymous function, or an application between a function
+with another term. It can be described in Backus-Naur Form like this
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[style=bnf]
+<Variable> ::= literal comply with regex /[a-z]([1-9][0-9]*|'*)/
+
+<Term>     ::= <Variable>
+             | <Variable> `$\mapsto$' <Term>
+             | <Term> `$\cdot$' <Term>
+             | <Term> `[' <Term> `/' <Term> `]'
+             | meta variable comply with regex /[L-Z]([1-9][0-9]*|'*)/
+\end{lstlisting}
+\end{framed}
+\caption{Backus-Naur Form of \texttt{<Variable>} and \texttt{<Term>}}
+\end{figure}
+
 
 \end{document}

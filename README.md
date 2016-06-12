@@ -13,7 +13,7 @@ For full report of this project, please read
 
 ## Usage
 
-Phometa can be installed by downloading complied version
+Phometa can be installed by downloading compiled version
 [here](https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz
 "https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz")
 and unzip it.

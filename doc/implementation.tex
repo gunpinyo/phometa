@@ -3,38 +3,38 @@
 \chapter{Implementation}
 \label{chap:implementation}
 
-This chapter aims to illustrate high-level implementation of Phometa. Reader
-will get a roughly idea on how does Phometa works.
+This chapter aims to illustrate the high-level implementation of Phometa. So
+that the reader will get a rough idea on how Phometa works.
 
 \section{Decision on programming language}
 Elm\supercite{elm-official-website} is a functional reactive programming
-language. It allows programmer to create web application by declaratively coding
-in Haskell-like language then compile the program to JavaScript.
+language. It allows programmers to create web applications by declaratively
+coding in Haskell-like language then compiling the program to JavaScript.
 
-One of the most attractive feature of Elm is its reactivity. This idea
+One of the most attractive features of Elm is its reactivity. This idea
 introduces a new data type called ``Signal''\footnote{Signal has been removed
   from Elm version 0.17 recently, however, Phometa uses Elm version 0.16 so it
   is fine to talk about Signal.} which is a data type that can change over time.
-For example, \elmtt{Mouse.isDown : Signal Bool} represents Boolean that holds
+For example, \elmtt{Mouse.isDown : Signal Bool} represents a Boolean that holds
 ``True'' when the mouse is pressed, \elmtt{Window.dimensions : Signal (Int,
-  Int)} represents a pair of integers that holds current width and height of the
+  Int)} represents a pair of integers that hold current width and height of the
 window respectively. Custom Signal can be created using higher order functions
-as this example,
+as in this example,
 \begin{lstlisting}[language=elm]
 Signal.map  : (a -> b) -> Signal a -> Signal b
 
 window_area : Signal Int
 window_area = Signal.map (\(w, h) -> w * h) Window.dimensions
 \end{lstlisting}
-\elmtt{window_area} is a signal that represents the area of current window, if
+\elmtt{window_area} is a signal that represents the area of current window. If
 you resize the window, this value will change on real time. This is bacause when
 the dimensions of the window is changed, it will notify
-\elmtt{Window.dimensions} to updated its value, \elmtt{Window.dimensions} in
-tern, notify \elmtt{window_area} to update it value as well.
+\elmtt{Window.dimensions} to update its value, \elmtt{Window.dimensions} in
+turn, notifies \elmtt{window_area} to update its value as well.
 
 These Signals can link together to form a dependency graph, eventually we will
 create \elmtt{main : Signal Html} which is a HTML representation that can change
-over time, Elm will detect this \elmtt{main} and render it in web-browser. For
+over time, Elm will detect this \elmtt{main} and render it in a web-browser. For
 example,
 
 \begin{lstlisting}[language=elm]

@@ -13,12 +13,12 @@ explained below.
 \section{Formal Systems}
 
 A formal system is any well-defined system of abstract thought based on
-mathematical model\supercite{formal-system-wiki}. Each formal system has a
+a mathematical model\supercite{formal-system-wiki}. Each formal system has a
 formal language composed of primitive symbols\footnote{Phometa will assume that
   primitive symbols are any Unicode character.} acted by certain
 formation\supercite{formal-system-britannica}.
 
-Informally, is an abstract system that has precise structures and can be
+Informally, it is an abstract system that has precise structures and can be
 reasoned about. For example, numbers (base 10) and their arithmetic (using $+$
 and $\times$) could form a formal system. This is because every term (e.g. $5$,
 $(3 + 1)$, $(3 \times 4)$) has explicit structure and we can argue something
@@ -30,7 +30,7 @@ like ``\emph{does $12$ equal to $(3 \times 4)$}'' or ``\emph{for any integers
 \section{Backus-Naur Form}
 
 Backus-Naur Form (BNF) is a way to construct a term, for example, grammars of
-formal system above can be defined as the following
+the formal system above can be defined as the following
 
 \hspace{1ex}
 
@@ -61,7 +61,7 @@ formal system above can be defined as the following
 \begin{framed}
   \centering $2$ is \texttt{<Digit>} ($3^{rd}$ choice)
 \end{framed}
-    \caption{This diagram explains that why $2$ is a term of \texttt{<Digit>}}
+    \caption{This diagram explains why $2$ is a term of \texttt{<Digit>}}
 \label{fig:background-digit}
 \end{figure}
 
@@ -70,7 +70,7 @@ formal system above can be defined as the following
 \item A term of \texttt{<Number>} can be either
 \begin{itemize}
 \item \texttt{<Digit>}
-\item another \texttt{<Number>} concatenate with \texttt{<Digit>}
+\item another \texttt{<Number>} concatenated with \texttt{<Digit>}
 \end{itemize}
 
 \begin{figure}[H]
@@ -79,22 +79,22 @@ formal system above can be defined as the following
   [.{$2$ is \texttt{<Number>} ($1^{st}$ choice)} {$2$ is \texttt{<Digit>} ($3^{rd}$ choice)} ] {$5$ is
     \texttt{<Digit>} ($6^{th}$ choice)} ] {$0$ is \texttt{<Digit>} ($1^{st}$ choice)} ]
 \end{framed}
-    \caption{This diagram explains that why $250$ is a term of \texttt{<Number>}}
+    \caption{This diagram explains why $250$ is a term of \texttt{<Number>}}
 \label{fig:background-number}
 \end{figure}
 
 \item A term of \texttt{<Expr>} can be either
 \begin{itemize}
 \item \texttt{<Number>}
-\item other two \texttt{<Expr>}s concatenate using `$($' `$+$' `$)$'
-\item other two \texttt{<Expr>}s concatenate using `$($' `$\times$' `$)$'
+\item two \texttt{<Expr>}s concatenated using `$($' `$+$' `$)$'
+\item two \texttt{<Expr>}s concatenated using `$($' `$\times$' `$)$'
 \end{itemize}
 
 Please note that we need brackets around `$+$' and `$\times$' to avoid
 ambiguity. If we don't have these brackets, $3 + 4 + 5$ could be interpreted as
 either $(3 + 4) + 5$ or $3 + (4 + 5)$ which is not precise. Moreover, $12 + 0
 \times 6$ will be interpreted as $12 + (0 \times 6)$ due to priority of $\times$
-over $+$ and it is impossible to encode some thing like $(12 + 0) \times 6$.
+over $+$ and it is impossible to encode something like $(12 + 0) \times 6$.
 
 \begin{figure}[H]
 \begin{framed}
@@ -107,7 +107,7 @@ over $+$ and it is impossible to encode some thing like $(12 + 0) \times 6$.
            \texttt{<Number>}} {$4$ is \texttt{<Digit>}} ] ] ]
        [.{$5$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$5$ is \texttt{<Number>}} {$5$ is \texttt{<Digit>}} ] ] ]
 \end{framed}
-    \caption{This diagram explains that why $((3 + 4) + 5)$ is a term of \texttt{<Expr>}}
+    \caption{This diagram explains why $((3 + 4) + 5)$ is a term of \texttt{<Expr>}}
 \label{fig:background-expr}
 \end{figure}
 
@@ -123,12 +123,12 @@ over $+$ and it is impossible to encode some thing like $(12 + 0) \times 6$.
          [.{$0$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$0$ is \texttt{<Number>}} {$0$ is \texttt{<Digit>}} ] ]
          [.{$6$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$6$ is \texttt{<Number>}} {$6$ is \texttt{<Digit>}} ] ]]]
 \end{framed}
-    \caption{This diagram explains that why $(12 + (0 \times 6))$ is a term of \texttt{<Expr>}}
+    \caption{This diagram explains why $(12 + (0 \times 6))$ is a term of \texttt{<Expr>}}
 \label{fig:background-expr-2}
 \end{figure}
 
 
-\item A term of \texttt{<Equation>} can be only two \texttt{<Expr>}s concatenate using
+\item A term of \texttt{<Equation>} can be only two \texttt{<Expr>}s concatenated using
 `$=$'
 
 \begin{figure}[H]
@@ -144,7 +144,7 @@ over $+$ and it is impossible to encode some thing like $(12 + 0) \times 6$.
          [.{$12$ is \texttt{<Number>}} [.{$1$ is \texttt{<Number>}} {$1$ is \texttt{<Digit>}} ]
       {$2$ is \texttt{<Digit>}} ] ] ]
 \end{framed}
-    \caption{This diagram explains that why $(5 + 7) = 12$ is a term of \texttt{<Equation>}}
+    \caption{This diagram explains why $(5 + 7) = 12$ is a term of \texttt{<Equation>}}
 \label{fig:background-equation}
 \end{figure}
 
@@ -160,7 +160,7 @@ over $+$ and it is impossible to encode some thing like $(12 + 0) \times 6$.
        [.{$5$ is \texttt{<Expr>} ($1^{st}$ choice)} [.{$5$ is \texttt{<Number>}} {$5$ is
          \texttt{<Digit>}} ] ] ]
 \end{framed}
-    \caption{This diagram explains that why $(2 \times 3) = 5$ is a term of
+    \caption{This diagram explains why $(2 \times 3) = 5$ is a term of
       \texttt{<Equation>}. Please note that this construction is purely
       syntactic so wrong equation is acceptable.}
 \label{fig:background-equation-2}
@@ -172,26 +172,27 @@ over $+$ and it is impossible to encode some thing like $(12 + 0) \times 6$.
 
 \section{Meta Variables and Pattern Matching}
 
-\emph{Meta variables} are arbitrary sub-terms embedded inside root term. For
+\emph{Meta variables} are arbitrary sub-terms embedded inside a root term. For
 example, an \texttt{<Expr>} $(x + y)$ represents two arbitrary \texttt{<Expr>}
 joined by `$+$'.
 
 But if we have an \texttt{<Equation>} $(x + 7) = 12$, shouldn't $x$ be an unknown
-variable that needed to be solve rather than being arbitrary \texttt{<Expr>}?
+variable that needed to be solve rather than being arbitrary \texttt{<Expr>} ?
 Well, $x$ still represents arbitrary \texttt{<Expr>} but in order make this
 equation hold, $x$ must be $5$. Hence ``\emph{variable needed to be solve}'' is
-just spacial form of ``\emph{variable as arbitrary term}''.
+just a special form of ``\emph{variable as arbitrary term}''.
 
-Meta variables help us to represents statement in more general manner. For
-example, ``\emph{the same expressions plus together is the same as 2 times that
-  expression}'' could be represented by $(x + x) = (2 \times x)$ rather than $(0 + 0)
-= (2 \times 0)$ and $(1 + 1) = (2 \times 1)$ and $(2 + 2) = (2 \times 2)$ and so on.
+Meta variables help us to represent statements in a more general manner. For
+example, ``\emph{the same expressions added together is the same as 2 times that
+  expression}'' could be represented by $(x + x) = (2 \times x)$ rather than $(0
++ 0) = (2 \times 0)$ and $(1 + 1) = (2 \times 1)$ and $(2 + 2) = (2 \times 2)$
+and so on.
 
-But if we know that $(x + x) = (2 \times x)$, how could we derive its instance e.g.
-$(1 + 1) = (2 \times 1)$ or even $(y \times z) + (y \times z) = (2 \times (y \times z))$ ?
-The solution for this is to use \emph{Pattern Matching} which is algorithm that
-try to substitute pattern's meta variables into more specific form, in order to
-make pattern identical to target, for example
+But if we know that $(x + x) = (2 \times x)$, how could we derive its instance
+e.g. $(1 + 1) = (2 \times 1)$ or even $(y \times z) + (y \times z) = (2 \times
+(y \times z))$ ? The solution for this is to use \emph{Pattern Matching} which
+is an algorithm to substitute pattern's meta variables into more specific form,
+in order to make pattern identical to target, for example
 \begin{itemize}
 \item $(x + x) = (2 \times x)$ is pattern matchable with $(1 + 1) = (2 \times 1)$ by
   substitute $x$ with$1$
@@ -207,7 +208,7 @@ make pattern identical to target, for example
 \item $(x + x) = (2 \times x)$ is pattern matchable to itself by substitute $x$ with $x$
 \end{itemize}
 
-If pattern matching is successful then the target is instance of the pattern.
+If pattern matching is successful then the target is an instance of the pattern.
 
 \section{Derivation of Formal Systems}
 
@@ -215,7 +216,7 @@ So far, we construct any term based on Backus-Naur Form, this doesn't prevent
 invalid term, for example, $(2 \times 3) = 5$ is perfectly a term of
 \texttt{<Equation>}. Thus, we need some mechanism to verify a term i.e.
 \emph{prove} that the particular term holds. One way to deal with this is to use
-derivation system, first, we have a set of derivation rules that has format as
+a derivation system. First, we have a set of derivation rules that has format as
 the following
 
 \begin{figure}[H]
@@ -228,12 +229,12 @@ $$
 \end{figure}
 \newpage
 
-This say that if we know that $Premise_1$ and $Premise_2$ and $Premise_3$ and
-$\ldots$ and $Premise_n$ hold then $Conclusion$ holds. In another word, if
-we want to prove $Conclusion$ then we can use this derivation rule then proof
-its premises.
+This says that if we know that $Premise_1$ and $Premise_2$ and $Premise_3$ and
+$\ldots$ and $Premise_n$ hold then $Conclusion$ holds. In another word, if we
+want to prove $Conclusion$ then we can use this derivation and then proof its
+premises.
 
-Derivation rules of current example formal system could be shown as the
+Derivation rules of the current example formal system could be shown as the
 following
 
 \begin{figure}[H]
@@ -271,10 +272,13 @@ $$
 \end{figure}
 
 In order to use a derivation rule, first the conclusion of the rule is pattern
-match against current goal, if it is pattern matchable then meta variables in
-premises are substituted respect to the pattern matching (if some meta variables
-of premises doesn't exist in substitution list then we are free to substitute by
-anything). These substituted premises will become next goals that we need to prove.
+matched against the current goal. If it is pattern matchable then meta variables
+in premises are substituted respect to the pattern matching\footnote{If some
+  meta variables of premises doesn't exist in substitution list then we are free
+  to substitute by anything e.g.\ in \rulename{eq-tran}, we can replace $z$ with
+  arbitrary \texttt{<Expr>}, this free substitution gives a better control over
+  premises, which is important when we apply rules to sub-goals.}. These
+substituted premises will become next goals that we need to prove.
 
 For example if we want to prove $((3 + 4) * 5) = ((4 + 3) * 5)$ we could use
 rule \rulename{mult-intro} to prove it since $(u \times v) = (x \times y)$ is
@@ -309,14 +313,17 @@ $$ \derivTree{mult-intro}{((3 + 4) * 5) = ((4 + 3) * 5)}
 \end{figure}
 
 Some rules in figure \ref{fig:background-derivation-rules} don't have any
-premises. This is necessary, otherwise, applying rule always generate further
-sub goals and never terminate. These rules can be seen as \emph{axiom} which is
-a term that valid by assumption i.e.\ so need to prove such a term.
+premises. This is necessary, otherwise, applying a rule always generates further
+sub goals and the process would never terminate. These rules can be seen as
+\emph{axioms} which is a term that is valid by assumption i.e.\ so need to prove
+such a term.
 
-For better understanding about derivation system, here is a more complex
-derivation tree which prove $(((w \times x) + (w \times y)) \times z) = (w \times ((x \times z) + (y
-\times z)))$. Reader is encouraged to explore that why this derivation tree is
-correct.
+For better understanding about a derivation system, here is a more complex
+derivation tree which proves $(((w \times x) + (w \times y)) \times z) = (w
+\times ((x \times z) + (y \times z)))$. The reader is encouraged to explore that
+why this derivation tree is correct.
+
+\vspace{-1em}
 
 \begin{figure}[H]
 \centering
