@@ -1,7 +1,8 @@
 \documentclass[master.tex]{subfiles}
 \begin{document}
 
-\chapter{Evaluation}
+\chapter{Evaluation and Conclusion}
+\label{chap:evaluation_conclusion}
 
 \section{Users Feedback --- discuss with friends}
 
@@ -115,19 +116,22 @@ past.
 
 \section{Limitation}
 
+\newcommand{\hrefFutureWork}{\hyperref[sec:future_work]{future work}}
+
 \begin{itemize}
 \item It is hard to extend a formal system at the moment because Phometa doesn't
   allow grammar to inherit choices from another grammar. If user want to extend
   a formal system, they need to create a new one from scratch. For example,
   first order logic cannot be built from an existing propositional logic. If
   user build grammars of first order logic from scratch, existing propositional
-  logic rules cannot be extended to support first order logic anyway.
+  logic rules cannot be extended to support first order logic anyway. This can
+  be solved by making grammars extensible as described in \hrefFutureWork.
 \item Phometa doesn't support automation well i.e.\ when user construct a proof,
   they need to tell which rule or which lemma will be used explicitly. Guessing
   each step and automating the tree is possible, mainstream proof assistants
   such as Coq and Isabelle have done it, however, it requires lots of heuristics
   and cleaver tricks, this is unrealistic to implement due to project time
-  frame but it is good consideration for future work.
+  frame but it is a good consideration for \hrefFutureWork.
 \item Each web-browser supports different set of keyboard shortcuts. It is very
   hard for Phometa to find such keystrokes that are not visible characters and
   not keyboard shortcuts of any web-browser. So I end-up using \pkbd{Alt}
@@ -137,22 +141,28 @@ past.
   the window containing Phometa have only one tab, so it will not suffer from
   \pkbd{Alt-{1..9}} are using for switch tab. However, this is not such a
   serious problem since user can always click a command in keymap pane directly.
+  Alternatively, this can be solved completely by making the keyboard shortcut
+  customisable e.g.\ if some keyboard shortcut crash and user really want to use
+  it, they can bind this command to another keystroke. Again, it is a good
+  consideration for \hrefFutureWork.
 \item The entire repository must be loaded into Phometa when it starts. This
   impacts scalability where repository is large since JavaScript can run out of
   memory. This is not usually a problem of text-based proof assistants since it
   verify a theorems one by one and doesn't need to put everything in memory at
   once.
 \item Phometa required user to start a local server for individual use. It
-  doesn't have a proper server where user can enter a link use it directly. To
-  implement such a proper server, it requires user accounts and database to
+  doesn't have a proper server where user can enter a link and use it directly.
+  To implement such a proper server, it requires user accounts and database to
   manage users repositories, although it is possible to implement but it seems
   to overkill method and doesn't match project objective, hence it has lower
-  priority than other feature and hasn't been done.
+  priority than other feature and can be considered as \hrefFutureWork.
 \item Directly modify \texttt{repository.json} before it is loaded into Phometa
   could result in undefined behaviour. This is because Phometa currently doesn't
   have mechanism to verify consistency of repository before it will be loaded.
   This shouldn't cause any problem if user only interact with repository via
-  Phometa interface and not try to hack repository file directly.
+  Phometa interface and not try to hack repository file directly. To solved this
+  problem, we can write a function to verify consistency of loading repository
+  as discussed further in \hrefFutureWork.
 \end{itemize}
 
 \end{document}

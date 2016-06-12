@@ -4,6 +4,7 @@
 
 \usepackage[a4paper]{geometry}
 \usepackage[utf8]{inputenc}
+\usepackage{textcomp}
 \usepackage[english]{babel}
 \usepackage{hyperref}
 
@@ -44,6 +45,14 @@
 \usepackage{float}
 \graphicspath{ {images/} }
 \newcommand{\term}[1]{$\vcenter{\hbox{\includegraphics[scale=0.50]{#1.png}}}$}
+\newcommand{\closeButton}{\term{close-button}}
+\newcommand{\resetButton}{\term{reset-button}}
+\newcommand{\lockButton}{\term{lock-button}}
+\newcommand{\swapButton}{\term{swap-button}}
+\newcommand{\focusButton}{\term{focus-button}}
+\newcommand{\unfocusButton}{\term{unfocus-button}}
+
+\usepackage[toc,page]{appendix}
 
 \usepackage[backend=biber]{biblatex}
 \addbibresource{bibliography.bib}
@@ -167,83 +176,7 @@
     }
 }
 
-\newlength\lunderset
-\newlength\rulethick
-\lunderset=1.5pt\relax
-\rulethick=1.0pt\relax
-% \def\stackalignment{l}
-% \newcommand\nunderline[3][1]{\setbox0=\hbox{#2}%
-%   \stackunder[#1\lunderset-\rulethick]{\strut#2}{\color{#3}\rule{\wd0}{\rulethick}}}
-
-% \newcommand{\bat}[1]{
-%     \nunderline{#1}{batColor}
-% }
-
-% block as term
-\definecolor{batColor}{HTML}{888888}
-\def\bat#1{\ThisStyle{%
-  \setbox0=\hbox{#1}%
-  \stackengine{\lunderset-\rulethick}{\strut#1}{\color{batColor}\rule{\wd0}{\rulethick}}{U}{c}{F}{F}{S}%
-}}
-
 \def\arraystretch{0.1}%  1 is the default, change whatever you need
-
-\definecolor{blockBackColor}{HTML}{eeeeee}
-\definecolor{termBackColor}{HTML}{dddddd}
-\definecolor{defaultFrameColor}{HTML}{888888}
-\definecolor{titleBackColor}{HTML}{cccccc}
-
-\newmdenv[
-    style=defaultoptions,
-    backgroundcolor = blockBackColor, % metablockColor,
-    topline = false, rightline = false, leftline = false, bottomline = false,
-    innerleftmargin = 5pt, innerrightmargin = 5pt,
-    innertopmargin = 2pt, innerbottommargin = 2pt,
-    frametitleaboveskip = 3pt, frametitlebelowskip = 3pt,
-    roundcorner = 7pt,
-    frametitlebackgroundcolor=titleBackColor, % metablockTitleColor
-    nobreak=true
-]{metablock}
-
-\newcommand{\node}[2]{
-    \vspace{0.2cm}
-    \begin{metablock}[frametitle={#1}]
-        \begin{tabular}{l l}
-            #2
-        \end{tabular}
-    \end{metablock}
-    \vspace{0.3cm}
-}
-
-% block as node
-\newcommand{\ban}[1]{
-    \multicolumn{1}{l}{
-        \begin{tcolorbox} [
-             skin=enhancedmiddle jigsaw,
-             colback = blockBackColor,
-             colframe = defaultFrameColor,
-             left=0mm,
-             top=0mm,
-             bottom=0mm,
-             boxrule=0mm,
-             leftrule=1mm,
-             rightrule=-1mm
-        ]
-        \begin{tabular}{l}
-            #1
-        \end{tabular}
-        \end{tcolorbox}
-    } \\
-}
-
-% block as sequence - identify the term to be a sequence
-\newcommand{\bas}[1]{
-    \nunderline{#1}{defaultFrameColor}
-}
-
-\newcommand{\nCommentNoHead}[1]{
-    \node{\kComment}{#1 & \\}
-}
 
 \newcommand{\kComment}{\pkw{comment}}
 \newcommand{\kGrammar}{\pkw{grammar}}
@@ -255,6 +188,7 @@
 \newcommand{\kChoice}{\pkw{choice}}
 
 \newcommand{\kPremise}{\pkw{premise}}
+\newcommand{\kCascade}{\pkw{cascade}}
 \newcommand{\kExactMatch}{\pkw{exact\_match}}
 \newcommand{\kConclusion}{\pkw{conclusion}}
 \newcommand{\kParameter}{\pkw{parameter}}

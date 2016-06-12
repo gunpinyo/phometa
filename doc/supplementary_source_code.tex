@@ -1,0 +1,241 @@
+\documentclass[master.tex]{subfiles}
+\begin{document}
+
+\chapter{Supplementary Source Code}
+\label{chap:supplementary_source_code}
+
+Source code is important for implementation chapter yet it make the chapter hard
+to read, so we cut some of them in order to make the implementation chapter
+easier to read and paste it here so you can look at it if you are curious.
+
+\section{Pattern Matching and Unification}
+All codes inside this section come from \texttt{src/Models/RepoUtils.elm}.
+
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[language=elm,basicstyle=\footnotesize\ttfamily]
+pattern_match : ModulePath -> Model -> RootTerm -> RootTerm
+                  -> Maybe PatternMatchingInfo
+pattern_match module_path model pattern target =
+  pattern_match_get_vars_dict pattern target
+    |> (flip Maybe.andThen)
+         (vars_dict_to_pattern_matching_info module_path model)
+
+pattern_match_multiple : ModulePath -> Model
+               -> List (RootTerm, RootTerm) -> Maybe PatternMatchingInfo
+pattern_match_multiple module_path model list =
+  let vars_dict_maybe_list =
+        List.map (uncurry pattern_match_get_vars_dict) list
+   in if List.any ((==) Nothing) vars_dict_maybe_list then
+        Nothing
+      else
+        vars_dict_maybe_list
+          |> List.filterMap identity
+          |> merge_pattern_variables_list
+          |> vars_dict_to_pattern_matching_info module_path model
+\end{lstlisting}
+\end{framed}
+\caption{Functions \elmtt{pattern\_match} and \elmtt{pattern\_match\_multiple}.}
+\label{fig:supp-pattern-matching-info}
+\end{figure}
+
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[language=elm]
+pattern_match_get_vars_dict : RootTerm -> RootTerm ->
+                       Maybe (Dict VarName (List RootTerm))
+pattern_match_get_vars_dict pattern target =
+  if pattern.grammar /= target.grammar then Nothing else
+  case (pattern.term, target.term) of
+    (TermTodo, $\mathunderscore$) -> Nothing
+    ($\mathunderscore$, TermTodo) -> Nothing
+    (TermVar var_name, $\mathunderscore$) -> Just (Dict.singleton
+                                    var_name [target])
+    ($\mathunderscore$, TermVar $\mathunderscore$) -> Nothing
+    (TermInd pat_mixfix pat_sub_terms,
+        TermInd tar_mixfix tar_sub_terms) ->
+      if pat_mixfix /= tar_mixfix then Nothing else
+        let maybe_result_list = List.map2
+              pattern_match_get_vars_dict
+              (get_sub_root_terms pat_mixfix pat_sub_terms)
+              (get_sub_root_terms tar_mixfix tar_sub_terms)
+         in if List.any ((==) Nothing) maybe_result_list then
+              Nothing
+            else
+              maybe_result_list
+                |> List.filterMap identity
+                |> merge_pattern_variables_list
+                |> Just
+\end{lstlisting}
+\end{framed}
+\caption{Function \elmtt{pattern\_match\_get\_vars\_dict}.}
+\label{fig:supp-pattern-pattern-match-get-vars-dict}
+\end{figure}
+
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[language=elm,basicstyle=\footnotesize\ttfamily]
+vars_dict_to_pattern_matching_info : ModulePath -> Model
+                                       -> Dict VarName (List RootTerm)
+                                       -> Maybe PatternMatchingInfo
+vars_dict_to_pattern_matching_info module_path model vars_dict =
+  let subst_list_func var_name root_term_list maybe_acc_subst_list =
+        let grammar_name = (.grammar) (list_get_elem 0 root_term_list)
+         in case get_variable_type module_path model
+                var_name grammar_name of
+              Nothing             -> Nothing
+              Just VarTypeMetaVar -> case root_term_list of
+                []              -> Nothing
+                root_term :: [] -> maybe_acc_subst_list
+                fst_root_term :: other_root_terms ->
+                  let fold_func root_term maybe_acc =
+                    let maybe_partial_subst_list =
+                      Maybe.andThen maybe_acc (\acc ->
+                       unify module_path model
+                        (multiple_root_substitute acc fst_root_term)
+                        (multiple_root_substitute acc root_term))
+                     in Maybe.map2 (++) maybe_acc
+                          maybe_partial_subst_list
+                   in List.foldl fold_func
+                        maybe_acc_subst_list other_root_terms
+              Just VarTypeLiteral ->
+                if List.all ((==) ({ grammar = grammar_name
+                                   , term = TermVar var_name
+                                   })) root_term_list
+                  then maybe_acc_subst_list else Nothing
+      maybe_subst_list = Dict.foldl subst_list_func
+                           (Just []) vars_dict
+   in Maybe.map (\subst_list ->
+        { pattern_variables =
+            Dict.map (\var_name root_term_list ->
+              multiple_root_substitute subst_list <|
+                list_get_elem 0 root_term_list) vars_dict
+        , substitution_list = subst_list
+        }) maybe_subst_list
+\end{lstlisting}
+\end{framed}
+\caption{Function \elmtt{vars\_dict\_to\_pattern\_matching\_info}.}
+\label{fig:supp-vars-dict-to-pattern-matching-info}
+\end{figure}
+
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[language=elm,basicstyle=\footnotesize\ttfamily]
+unify : ModulePath -> Model -> RootTerm -> RootTerm
+          -> Maybe (SubstitutionList)
+unify module_path model a b =
+  if a.grammar /= b.grammar then Nothing else
+  case (a.term, b.term) of
+    (TermTodo, $\mathunderscore$) -> Nothing
+    ($\mathunderscore$, TermTodo) -> Nothing
+    (TermVar a_var_name, $\mathunderscore$) ->
+      case get_variable_type module_path model a_var_name a.grammar of
+        Nothing -> Nothing
+        Just VarTypeMetaVar -> Just ([{ old_var = a_var_name
+                                      , new_root_term = b}])
+        Just VarTypeLiteral -> case b.term of
+          TermVar b_var_name ->
+            case get_variable_type module_path model
+                   b_var_name b.grammar of
+              Nothing -> Nothing
+              Just VarTypeMetaVar -> Just ([{ old_var = b_var_name
+                                            , new_root_term = a}])
+              Just VarTypeLiteral -> if a_var_name == b_var_name
+                                       then Just [] else Nothing
+          $\mathunderscore$                  -> Nothing
+    ($\mathunderscore$, TermVar b_var_name) ->
+      case get_variable_type module_path model b_var_name b.grammar of
+        Nothing -> Nothing
+        Just VarTypeMetaVar -> Just ([{ old_var = b_var_name
+                                      , new_root_term = a}])
+        Just VarTypeLiteral -> Nothing
+    (TermInd a_mixfix a_sub_terms, TermInd b_mixfix b_sub_terms) ->
+      if a_mixfix /= b_mixfix then Nothing else
+        let fold_func (a_root_sub_term, b_root_sub_term)
+                maybe_acc_subst_list =
+              let maybe_partial_subst_list =
+                    Maybe.andThen maybe_acc_subst_list
+                      (\subst_list -> unify module_path model
+                         (multiple_root_substitute
+                           subst_list a_root_sub_term)
+                         (multiple_root_substitute
+                           subst_list b_root_sub_term))
+               in Maybe.map2 List.append maybe_acc_subst_list
+                                         maybe_partial_subst_list
+         in List.foldl fold_func (Just []) <|
+              List.map2 (,) (get_sub_root_terms a_mixfix a_sub_terms)
+                            (get_sub_root_terms b_mixfix b_sub_terms)
+\end{lstlisting}
+\end{framed}
+\caption{Function \elmtt{unify}.}
+\label{fig:supp-unify}
+\end{figure}
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[language=elm,basicstyle=\scriptsize\ttfamily]
+substitute : VarName -> Term -> Term -> Term
+substitute old_var new_term top_term =
+  case top_term of
+    TermTodo -> TermTodo
+    TermVar var_name -> if var_name == old_var
+                          then new_term else TermVar var_name
+    TermInd grammar_choice sub_terms ->
+      TermInd grammar_choice <|
+        List.map (substitute old_var new_term) sub_terms
+
+multiple_root_substitute : SubstitutionList -> RootTerm -> RootTerm
+multiple_root_substitute list top_root_term =
+  let fold_func record acc =
+        substitute record.old_var record.new_root_term.term acc
+      update_func top_term = List.foldl fold_func top_term list
+   in Focus.update term_ update_func top_root_term
+
+pattern_substitute : Dict VarName RootTerm -> Term -> Term
+pattern_substitute dict top_term =
+  case top_term of
+    TermTodo -> TermTodo
+    TermVar var_name -> case Dict.get var_name dict of
+                          Nothing            -> TermVar var_name
+                          Just new_root_term -> new_root_term.term
+    TermInd grammar_choice sub_terms ->
+      TermInd grammar_choice <|
+        List.map (pattern_substitute dict) sub_terms
+
+pattern_root_substitute : Dict VarName RootTerm -> RootTerm -> RootTerm
+pattern_root_substitute dict top_root_term =
+  Focus.update term_ (pattern_substitute dict) top_root_term
+
+pattern_matching_info_substitute : PatternMatchingInfo -> SubstitutionList
+                                     -> PatternMatchingInfo
+pattern_matching_info_substitute pm_info substitution_list =
+  { pattern_variables = Dict.map (\ $\mathunderscore$ ->
+      multiple_root_substitute substitution_list) pm_info.pattern_variables
+  , substitution_list = List.append pm_info.substitution_list
+                          substitution_list }
+
+pattern_matchable : ModulePath -> Model -> RootTerm -> RootTerm -> Bool
+pattern_matchable module_path model pattern target =
+  pattern_match module_path model pattern target /= Nothing
+
+merge_pattern_variables_list : List (Dict VarName (List RootTerm)) ->
+                                 Dict VarName (List RootTerm)
+merge_pattern_variables_list main_list =
+  let dict_fold_func key target_val acc =
+        let old_val = Maybe.withDefault [] (Dict.get key acc)
+            new_val = List.append target_val old_val
+         in Dict.insert key new_val acc
+      list_fold_func dict acc = Dict.foldl dict_fold_func dict acc
+   in List.foldl list_fold_func Dict.empty main_list
+       |> Dict.map (\ $\mathunderscore$ list -> list_remove_duplication list)
+\end{lstlisting}
+\end{framed}
+\caption{Other auxiliary functions for pattern matching.}
+\label{fig:supp-auxiliary}
+\end{figure}
+
+\end{document}

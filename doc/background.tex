@@ -10,7 +10,7 @@ explained below.
 
 \hspace{1ex}
 
-\section{Formal System}
+\section{Formal Systems}
 
 A formal system is any well-defined system of abstract thought based on
 mathematical model\supercite{formal-system-wiki}. Each formal system has a
@@ -288,7 +288,7 @@ as the following
 
 \begin{figure}[H]
 \centering
-$$ \derivTree{add-intro}{((3 + 4) * 5) = ((4 + 3) * 5)}{(3 + 4) = (4 + 3) \\ 5 = 5} $$
+$$ \derivTree{mult-intro}{((3 + 4) * 5) = ((4 + 3) * 5)}{(3 + 4) = (4 + 3) \\ 5 = 5} $$
 \caption{Example of instance of derivation rule.}
 \end{figure}
 
@@ -301,7 +301,7 @@ write the entire proof using \emph{derivation tree} as the following
 
 \begin{figure}[H]
 \centering
-$$ \derivTree{add-intro}{((3 + 4) * 5) = ((4 + 3) * 5)}
+$$ \derivTree{mult-intro}{((3 + 4) * 5) = ((4 + 3) * 5)}
      {\derivTree{add-comm}{(3 + 4) = (4 + 3)}{ } \\ \\ \\
       \derivTree{eq-refl}{5 = 5}{ }} $$
 \caption{Example of derivation tree.}

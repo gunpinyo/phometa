@@ -147,6 +147,7 @@ they own rule, it will change automatically depending on premises and conclusion
 in the next section.
 
 \section{Theorems and Lemmas}
+\label{sec:arith-theorems-lemmas}
 
 The first example of derivation tree (figure
 \ref{fig:background-derivation-tree-1}) could be transformed to theorem
@@ -284,9 +285,9 @@ Once the rule is applied, it will generate further sub-goals.
 
 Please notice that the goal background changes to white colour as we can longer
 modify the goal. However if you made a mistake and want to go back, you can
-click close button on the bottom right corner of current proof (or press
+click \closeButton\ on the bottom right corner of current proof (or press
 \pkbd{Alt-t}) to reset current proof then you can modify it again. Ultimately,
-you can click reset button on the top right corner of the theorem (or press
+you can click \resetButton\ on the top right corner of the theorem (or press
 \pkbd{Alt-r}) to reset entire theorem.
 
 Two remaining sub-goals that have been generated can be proven similar to the
@@ -298,16 +299,16 @@ process above i.e.\ select rule \prule{add-comm} for first sub goal and
 \end{center}
 
 Once the theorem is complete, you can claim validity of the goal. More over you
-can convert it to lemma that can be used in later theorem by clicking lock
-button on top-right corner of theorem
+can convert it to lemma that can be used in later theorem by clicking
+\lockButton\ on top-right corner of theorem
 
 \begin{center}
 \includegraphics[width=\textwidth]{arith-thm-ex-14}
 \end{center}
 
 Because other theorem can use this lemma so it is no longer modifiable, as you
-can see that close button of each sub-proof and reset button of the main theorem
-are gone.
+can see that \closeButton\ of each sub-proof and \resetButton\ button of the
+main theorem are gone.
 
 \newpage
 
@@ -332,6 +333,7 @@ no need to duplicate sub-proof.
 
 
 \section{More complex theorem}
+\label{sec:arith-complex-theorem}
 
 To gain more familiarly on theorem, here is more complex theorem corresponded
 the second example of derivation tree on figure \ref{fig:background-derivation-tree-2}
@@ -345,30 +347,30 @@ the second example of derivation tree on figure \ref{fig:background-derivation-t
 \label{fig:arith-theorem-example-theorem-2}
 \end{figure}
 
-Sub-proofs become more complex and premises of main proof are far away which
+Sub-proofs become more complex and premises of the main proof are far away which
 is harder to read, to avoid this kind of problem, we introduce a focus button
-that will fold sub-proof of corresponding proof. For example, if we click
-focus button on the main proof it will look like this
+(\focusButton) that will fold sub-proof of corresponding proof. For example, if
+we click \focusButton\ on the main proof it will look like this
 
 \includegraphics[width=\textwidth]{arith-thm-ex-focus-1}
 
 Two sub-proofs of the main theorem are folded, this allow us to read rule
 instance of \prule{eq-tran} easily. You can unfolded sub-proofs by clicking
-unfocus button at the same position that focus button was there before. And the
-theorem will look the same as figure \ref{fig:arith-theorem-example-theorem-2}
-again.
+unfocus button (\unfocusButton) at the same position that \focusButton\ was there
+before. And the theorem will look the same as figure
+\ref{fig:arith-theorem-example-theorem-2} again.
 
 When you read some proof in Phometa, it is a good idea to click focus on the
 main proof first so you can read the main rule instance easily. Once you
-understand main proof you can read one of sub proof by clicking focus button
-that correspond to that sub-proof. If you click focus button on the first
+understand main proof you can read one of sub proof by clicking \focusButton\
+that correspond to that sub-proof. If you click \focusButton\ on the first
 sub-proof it will look like this
 
 \includegraphics[width=\textwidth]{arith-thm-ex-focus-2}
 
 This process automatically unfold the previous one before folding sub-proof
 of this proof again. Please note that some of deeper proofs might not have
-focus button at all, this is because its sub-proofs cannot reduce further than
+\focusButton\ at all, this is because its sub-proofs cannot reduce further than
 original one.
 
 The next thing that I will show are how to use rule parameters and lemma. This

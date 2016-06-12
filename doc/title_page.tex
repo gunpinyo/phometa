@@ -58,8 +58,8 @@
 
 \HRule\ \\ [0.4cm]
 
-{ \huge \bfseries Phometa --- a visualised proof assistant}\\[0.4cm] % Title of your document
-{ \huge \bfseries that build a formal system and prove }\\[0.4cm] % Title of your document
+{ \huge \bfseries Phometa --- a visualised proof assistant }\\[0.4cm] % Title of your document
+{ \huge \bfseries that builds a formal system and proves }\\[0.4cm] % Title of your document
 { \huge \bfseries its theorems using derivation trees }\\[0.4cm] % Title of your document
 
 \HRule\ \\ [1.5cm]
@@ -105,65 +105,5 @@ Prof. Alessio \textsc{R. Lomuscio} \\ % Second Marker's Name
 \vfill % Fill the rest of the page with whitespace
 
 \end{titlepage}
-
-\thispagestyle{empty}
-
-\begin{abstract}
-  Manually drawing a derivation tree usually takes many iterations to be
-  completed due to its layout (its width grows exponentially to its height) and
-  variables being rewrite (by unification when derivation rule is applied). Even
-  when the tree is completed, there are nothing to guarantee that the tree is
-  error free.
-
-  This thesis describes \emph{Phometa} which is a proof assistant that
-  allows user to create a formal system and prove its theorems using derivation
-  trees. Fundamentally, Phometa consists of three kinds of node which are
-  \emph{Grammar} (Backus-Naur Form), \emph{Rule} (derivation rule), and
-  \emph{Theorem} (derivation tree).
-
-  It can be used as educational platform for students to learn certain formal
-  systems provided in standard library. Alternatively, it also can be used as
-  experimental sandbox where user implements their own formal system and try to
-  reason about it.
-
-  Phometa is a web application so components such as terms and derivation trees
-  can be rendered nicely in web browser and users can interact with these
-  components directly by clicking button or pressing keyboard shortcut.
-  Visualisation also allows Phometa to have certain features that text-based
-  proof assistants couldn't have, for example, nested underlines can be used to
-  group terms instead of brackets, input method of terms can be controlled in
-  such a way that ill-from terms couldn't be created, and so on.
-
-  Phometa has been designed and been implemented in such a way that it is
-  powerful enough to completely replace derivation-tree's manually-drawing, and
-  easy enough to be used by anyone. Its standard library also include famous
-  formal systems such as \emph{Simple Arithmetic}, \emph{Propositional Logic},
-  and \emph{Typed Lambda Calculus}. This shows that Phometa is generic enough to
-  handle most of formal systems out there.
-
-\end{abstract}
-
-\renewcommand{\abstractname}{Acknowledgements}
-\begin{abstract}
-
-  First and most importantly, I would like to thank my supervisor, Dr Krysia
-  Broda, for her constant dedication to supporting me on both project skill and
-  mental advise.
-
-I also would like to thank my second marker, Prof. Alessio R. Lomuscio, for his
-invaluable advice on interim report.
-
-I also would like to thank many of Imperial's computing students, for their
-feedback on my project.
-
-I also would like to thank Evan Czaplicki and the rest of Elm community, for
-their ambition and effort to develop Elm --- a wonderful front-end functional
-reactive language that Phometa is built on top of.
-
-And finally, I also would like to thank my parents for their unconditional love
-and continuous support on everything since I was born.
-
-\end{abstract}
-
 
 \end{document}

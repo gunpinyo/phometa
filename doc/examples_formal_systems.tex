@@ -1,0 +1,285 @@
+\documentclass[master.tex]{subfiles}
+\begin{document}
+
+\chapter{Further Examples of Formal Systems}
+\label{chap:examples_formal_systems}
+
+The last chapter successfully encoded a formal system named ``Simple
+Arithmetic'', this chapter aims to show that other formal systems such as
+Propositional Logic and Typed Lambda Calculus can be define in the same way,
+therefore Phometa can encode them.
+
+For the actual encoding and deeper explanation, please see appendix chapter
+\ref{chap:example_propositional_logic} for Propositional Logic and appendix
+chapter \ref{chap:example_lambda_calculus} for Typed Lambda Calculus.
+
+\section{Propositional Logic}
+
+Propositional Logic lets us manipulate a statement that has a truth value. For
+example ``it is raining'', ``today is Monday'', ``it is raining and today is
+Monday'', ``if today is Monday then it is not raining'', and so on.
+
+The most primitive unit is \texttt{<Atom>} where a truth statement cannot be
+broken down further e.g. ``it is raining'', ``today is Monday''. Formally
+\texttt{<Atom>} can be written in Backus-Naur Form like this
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[style=bnf]
+<Atom> ::= literal comply with regex
+             /[a-z][a-zA-Z]*([1-9][0-9]*|'*)/
+\end{lstlisting}
+\end{framed}
+\caption{Backus-Naur Form of \texttt{<Atom>}}
+\end{figure}
+
+Basically, \texttt{<Atom>} is just a set of string that the first letter must be
+lower case and end with either number or ``\textquotesingle'' sign. For
+simplicity will use just $p$, $q$, $r$, $\ldots$ for \texttt{<Atom>}.
+
+Literal is used there is the same as meta variables but only be able to
+substitute for itself, e.g. $p$ represent only $p$, not $q$ or $r$ or other
+terms of \texttt{<Atom>}.
+
+Next we want to construct more general from of truth statement called
+\texttt{<Prop>} which lets \texttt{<Atom>}s combined to each other using
+connector such as ``and ($\wedge$)'', ``or ($\vee$)'', ``not ($\neg$)'', ``if
+... then ... ($\rightarrow$)'', and ``if and only if ($\leftrightarrow$)''.
+\texttt{<Prop>} can be defined as the following
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[style=bnf]
+<Prop> ::= `$\top$' | `$\bot$' | <Atom>
+         | `('<Prop> `$\wedge$' <Prop>`)'
+         | `('<Prop> `$\vee$' <Prop>`)'
+         | `( $\neg$' <Prop>`)'
+         | `('<Prop> `$\rightarrow$' <Prop>`)'
+         | `('<Prop> `$\leftrightarrow$' <Prop>`)'
+         | meta-variables comply with regex
+             /[A-Z][a-zA-Z]*([1-9][0-9]*|'*)/
+\end{lstlisting}
+\end{framed}
+\caption{Backus-Naur Form of \texttt{<Prop>}}
+\end{figure}
+
+For example ``it is raining and today is Monday'' and ``if today is Monday then
+it is not raining'' can be defined as $(r \wedge m)$ and $(m \rightarrow (\neg
+r))$ respectively where $r$ is ``it is raining'' and $m$ ``today is Monday''.
+
+\texttt{<Prop>} is similar to \texttt{<Expr>} in the way that it has meta
+variables e.g. $(A \vee (\neg A))$ represent any term of \texttt{<Prop>} that
+has ``$\vee$'' as the main connector and the right sub-term is the same as the
+left sub-term but has ``$\neg$'' cover again.
+
+The difference between \texttt{<Atom>} and meta variables of \texttt{<Prop>} is
+that \texttt{<Atom>} represent a specific unbreakable proposition whereas meta
+variables of \texttt{<Prop>} represent any term of \texttt{<Prop>}. If we can
+proof that $(A \vee (\neg A))$ we can derive $(B \vee (\neg B))$, $((m
+\rightarrow (\neg r)) \vee (\neg (m \rightarrow (\neg r))))$ immediately.
+However if we can proof $(r \vee (\neg r))$ we might not want to share this to
+$(m \vee (\neg m))$ as it is irrelevant. This also explain why \texttt{<Atom>}
+use literal and but \texttt{<Prop>} use meta variables.
+
+Now we could start to prove something with \texttt{<Prop>}, however, this is not
+so useful as the validity of \texttt{<Prop>} means ``holds in every
+circumstance'' but most of \texttt{<Prop>} only holds under curtain assumptions
+so we need a way to define set of assumptions (\texttt{<Context>}) and the bigger
+(meta) proposition that include assumptions (\texttt{<Judgement>}) which can be
+defined as the following
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[style=bnf]
+<Context>     ::= `$\epsilon$'
+                | <Context> `,' <Prop>
+                | meta-variables comply with regex
+                    /[$\Gamma\Delta$]([1-9][0-9]*|'*)/
+
+<Judgement>   ::= <Context> `$\vdash$' <Prop>
+\end{lstlisting}
+\end{framed}
+\caption{Backus-Naur Form of \texttt{<Context>} and \texttt{<Judgement>}}
+\end{figure}
+
+For example, ``$\epsilon, p, (q \vee r) \vdash ((p \wedge q) \vee (p \wedge
+r))$'' means ``assume that $p$ and $(q \vee r)$ hold then $((p \wedge q) \vee (p
+\wedge r))$ also holds''.
+
+We represent \texttt{<Context>} using a list but it is actually a set, hence
+ordering and duplication among propositions doesn't matter so we could define
+some term to be ``equal by definition'' as the following
+\begin{itemize}
+\item $\Gamma, A, B$ is definitionally equal to $\Gamma, B, A$
+\item $\Gamma, A$ is definitionally equal to $\Gamma, A, A$
+\end{itemize}
+For example, ``$\epsilon, p, q$'' is definitionally equal to ``$\epsilon, q, p,
+q, q, p$'', which in turn, makes ``$\epsilon, p, q \vdash q$'' become
+definitionally equal to ``$\epsilon, q, p, q, q, p \vdash q$''.
+
+In order to prove any judgement, we want ability to state that for any
+proposition that is in assumptions, it can be conclusion i.e. $\epsilon, A_1,
+A_2, \ldots, A_n \vdash A_i$ where $i \in {1..n}$. This is achievable by the
+following rule
+
+\begin{figure}[H]
+\begin{framed}
+\centering
+$$
+\derivRule{hypothesis}{\Gamma, A \vdash A}{ }
+$$
+\end{framed}
+\caption{Rule \rulename{hypothesis}}
+\end{figure}
+
+For example, ``$\epsilon, q, p, q, q, p \vdash r$'' provable using
+\rulename{hypothesis}, this because we can change the goal implicitly to
+``$\epsilon, p, q \vdash q$'' (by definition) then apply \rulename{hypothesis}
+using $\Gamma$ as $\epsilon, p$ and $A$ as $q$. \rulename{hypothesis} doesn't
+have any further premise so it is finished.
+
+In the actual encoding of Propositional Logic in Phometa, \rulename{hypothesis}
+will automatically search the usable assumption by itself using an additional
+feature of Phometa called \emph{cascade premise} which can be seen in appendix
+section \ref{sec:hypothesis_rules}.
+
+\newpage
+
+The rest of the rules can be defined as the following
+
+\begin{figure}[H]
+\centering
+\begin{framed}
+$$ \qquad  \qquad  \qquad
+\derivRule{top-intro}{\Gamma \vdash \top}{ } \qquad  \qquad  \qquad  \qquad \qquad  \qquad
+\derivRule{bottom-elim}{\Gamma \vdash A}{\Gamma \vdash \bot}
+$$
+
+$$ \qquad \qquad
+\derivRule{and-intro}{\Gamma \vdash (A \wedge B)}{\Gamma \vdash A \\ \Gamma
+  \vdash B} \qquad \qquad \qquad \qquad  \qquad
+\derivRule{or-intro-left}{\Gamma \vdash (A \vee B)}{\Gamma \vdash A}
+$$
+
+$$ \qquad \qquad  \qquad
+\derivRule{and-elim-left}{\Gamma \vdash
+  A}{\Gamma \vdash (A \wedge B)} \qquad \qquad \qquad  \qquad \qquad
+\derivRule{or-intro-right}{\Gamma \vdash (A \vee B)}{\Gamma \vdash B}
+$$
+
+$$ \qquad  \qquad  \qquad  \qquad
+\derivRule{and-elim-right}{\Gamma \vdash B}{\Gamma \vdash (A \wedge B)} \qquad
+\qquad \qquad
+\derivRule{or-elim}{\Gamma \vdash C}{\Gamma \vdash (A \vee B) \\
+  \Gamma, A \vdash C \\
+  \Gamma, B \vdash C}
+$$
+
+$$ \qquad \qquad \qquad
+\derivRule{not-intro}{\Gamma \vdash (\neg A)}{\Gamma, A \vdash \bot}
+  \qquad  \qquad  \qquad  \qquad  \qquad  \qquad  \qquad \qquad
+\derivRule{proof-by-contradiction}{\Gamma \vdash A}{\Gamma, (\neg A) \vdash \bot}
+$$
+
+$$
+\qquad  \qquad
+\derivRule{not-elim}{\Gamma \vdash \bot}{\Gamma \vdash (\neg A) \\ \Gamma \vdash
+  A}
+\qquad  \qquad  \qquad \qquad
+\derivRule{iff-intro}{\Gamma \vdash (A \leftrightarrow B)}{\Gamma, A \vdash B
+  \\ \Gamma, B \vdash A}
+$$
+
+$$
+\qquad \qquad \qquad
+\derivRule{imply-intro}{\Gamma \vdash (A \rightarrow B)}{\Gamma, A \vdash B}
+\qquad \qquad \qquad  \qquad \qquad  \qquad
+\derivRule{iff-elim-forward}{\Gamma \vdash B}{\Gamma \vdash (A \leftrightarrow B) \\
+  \Gamma \vdash A}
+$$
+
+$$ \qquad  \qquad
+\derivRule{imply-elim}{\Gamma \vdash B}{\Gamma \vdash (A \rightarrow B) \\
+  \Gamma \vdash A}
+\qquad  \qquad  \qquad \qquad  \qquad
+\derivRule{iff-elim-backward}{\Gamma \vdash A}{\Gamma \vdash (A \leftrightarrow B) \\
+  \Gamma \vdash B}
+$$
+\end{framed}
+\caption{Derivation rules of Propositional Logic.}
+\end{figure}
+
+Now we are ready to build derivation trees,
+
+
+\begin{sidewaysfigure}
+\centering
+$$
+\derivTree{or-elim, leftskip=6em}{\epsilon, p, (q \vee r)
+                    \vdash ((p \wedge q) \vee (p \wedge r))}
+{ \derivTree{hypothesis}{\epsilon, p, (q \vee r) \vdash (q \vee r)}{ }
+\\ \\ \\
+  \derivTree{or-intro-left}{\epsilon, p, (q \vee r), q
+                            \vdash ((p \wedge q) \vee (p \wedge r))}
+  { \derivTree{and-intro}{\epsilon, p, (q \vee r), q
+                            \vdash (p \wedge q)}
+    { \derivTree{hypothesis, rightskip=2em, vdots=2em}{\epsilon, p, (q \vee r), q \vdash p} { }
+      \derivTree{hypothesis}{\epsilon, p, (q \vee r), q \vdash q} { }
+    }
+  }
+\\ \\ \\ \\
+  \derivTree{or-intro-right}{\epsilon, p, (q \vee r), r
+                             \vdash ((p \wedge q) \vee (p \wedge r))}
+  { \derivTree{and-intro}{\epsilon, p, (q \vee r), r
+                            \vdash (p \wedge r)}
+    { \derivTree{hypothesis, rightskip=2em,vdots=2em}{\epsilon, p, (q \vee r), r \vdash p} { }
+      \derivTree{hypothesis}{\epsilon, p, (q \vee r), r \vdash r} { }
+    }
+  }
+}
+$$
+\vspace{7ex}
+$$
+\derivTree{proof-by-contradiction, leftskip=6em}{\Gamma \vdash (A \vee (\neg A))}
+{ \derivTree{not-elim}{\Gamma, (\neg (A \vee (\neg A))) \vdash \bot}
+  { \\
+    \derivTree{not-intro, leftskip=10em, rightskip=40em, vdots=7em}{\Gamma, (\neg (A \vee (\neg A))) \vdash (\neg A)}
+    { \derivTree{not-elim}{\Gamma, (\neg (A \vee (\neg A))), A \vdash \bot}
+      { \derivTree{hypothesis}{\Gamma, (\neg (A \vee (\neg A))), A
+                               \vdash (\neg (A \vee (\neg A)))} { }
+      \\ \\ \\
+        \derivTree{or-intro-left}{\Gamma, (\neg (A \vee (\neg A))), A
+                                  \vdash (A \vee (\neg A))}
+        { \derivTree{hypothesis}{\Gamma, (\neg (A \vee (\neg A))), A
+                                  \vdash A} { }
+        }
+      }
+    }
+  \\
+    \derivTree{proof-by-contradiction}{\Gamma, (\neg (A \vee (\neg A))) \vdash A}
+    { \derivTree{not-elim}{\Gamma, (\neg (A \vee (\neg A))), (\neg A)
+                           \vdash \bot}
+      { \derivTree{hypothesis}{\Gamma, (\neg (A \vee (\neg A))), (\neg A)
+                               \vdash (\neg (A \vee (\neg A)))} { }
+      \\ \\ \\
+        \derivTree{or-intro-right}{\Gamma, (\neg (A \vee (\neg A))), (\neg A)
+                                   \vdash (A \vee (\neg A))}
+        { \derivTree{hypothesis}{\Gamma, (\neg (A \vee (\neg A))), (\neg A)
+                                 \vdash (\neg A)} { }
+        }
+      }
+    }
+  }
+}
+$$
+\vspace{3ex}
+\caption{Derivation trees show that $\epsilon, p, (q \vee r) \vdash ((p \wedge q) \vee (p \wedge
+r))$ and $\Gamma \vdash (A \vee (\neg A))$ are valid \texttt{<Judgement>}.}
+\label{fig:background-derivation-tree-2}
+\end{sidewaysfigure}
+
+\section{Typed Lambda Calculus}
+
+TODO:
+
+\end{document}

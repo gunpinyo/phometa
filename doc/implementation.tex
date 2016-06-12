@@ -1,6 +1,7 @@
 \documentclass[master.tex]{subfiles}
 \begin{document}
 \chapter{Implementation}
+\label{chap:implementation}
 
 This chapter aims to illustrate high-level implementation of Phometa. Reader
 will get a roughly idea on how does Phometa works.
@@ -135,7 +136,7 @@ main = Signal.map view model_signal
 
 By using \elmtt{Signal.foldp} together with \elmtt{update : Action -> Model ->
   Model}, we achieve \elmtt{model_signal} which is a Signal represented the
-current global state of Phometa, which, in tern, can be transformed using
+current global state of Phometa, which, in turn, can be transformed using
 \elmtt{Signal.foldp} together with \elmtt{view : Model -> Html} to achieve
 \elmtt{main} which represented the current HTML page.
 
@@ -255,7 +256,7 @@ to ``\elmtt{ActionCommand cmd}'' where \elmtt{cmd} is an instance of
 
 \elmtt{Signal.foldp} will detect change in \elmtt{action_signal} so it applies
 function \elmtt{update} with ``\elmtt{ActionCommand cmd}'' to
-\elmtt{model_signal}. The function \elmtt{update}, in tern, will apply command
+\elmtt{model_signal}. The function \elmtt{update}, in turn, will apply command
 \elmtt{cmd} to current model and this is how model can be updated.
 
 Again, \elmtt{Signal.map} will detect change in \elmtt{action_model} so it
@@ -270,43 +271,10 @@ Another way to interact with Phometa is to press some keystroke, this will make
 
 \elmtt{Signal.foldp} will detect change in \elmtt{action_signal} so it applies
 function \elmtt{update} with ``\elmtt{ActionKeystroke keystroke}'' to
-\elmtt{model_signal}. The function \elmtt{update}, in tern, will search a
+\elmtt{model_signal}. The function \elmtt{update}, in turn, will search a
 command that corresponded to this keystroke from \elmtt{model.root_keymap} to
 apply such a command with current model. Now, the remaining process is the same
 as when we click button.
-
-% \section{Modes}
-% Phometa as several internal modes to deal with non-global key-blindings as are
-% in keymap pane. For example if user is inputting a term, there will be
-% key-blindings that allow user to select several choices, if user click somewhere
-% else, these key-blindings will be replaced by new key-blindings of corresponded
-% mode.
-
-% \elmtt{Mode} is defined in \texttt{src/Models/Model.elm} as the following
-
-% \begin{figure}[H]
-% \begin{framed}
-% \begin{lstlisting}[language=elm]
-% type Mode
-%   = ModeNothing
-%   | ModeMenu
-%   | ModeRepo RecordModeRepo
-%   | ModeModule RecordModeModule
-%   | ModeComment RecordModeComment
-%   | ModeGrammar RecordModeGrammar
-%   | ModeRootTerm RecordModeRootTerm
-%   | ModeRule RecordModeRule
-%   | ModeTheorem RecordModeTheorem
-% \end{lstlisting}
-% \end{framed}
-% \caption{Declaration of \elmtt{Mode}}
-% \label{fig:implementation-mode}
-% \end{figure}
-
-% It is defined
-% The main usage of mode TODO:
-
-% \elmtt{model.mode}
 
 \section{Structure of Proofs Repository}
 In this section, we will show the complete internal representation of a proofs
@@ -595,51 +563,29 @@ only one term, this make it possible to create a dictionary
 \elmtt{pattern\_variables} that map these pattern variables to the corresponded
 terms.
 
-\section{Samples of code --- Pattern Matching}
-Although it is impossible to show all of codes written for Phometa, but there is
-a faction of code related to \emph{Pattern Matching} that is small to be shown
-entirely, it is one of the most interesting part as well. All codes inside this
-section come from \texttt{src/Models/RepoUtils.elm}.
+\section{Pattern Matching and Unification}
+Although it is impossible to show all of codes written in Phometa, there is a
+faction of code related to \emph{Pattern Matching} that is small enough to be
+described entirely, it is also one of the most interesting part as well.
 
-Let start with the most important, \elmtt{pattern\_match} is a function that
-pattern match \elmtt{pattern} against \elmtt{target}, if success, it will the
-return pattern matching information as described in previous section. Another
-function is \elmtt{pattern\_match\_multiple} which is the same as previous
-function but and receive list of pair of \elmtt{(pattern, target)}
+Please note that this section only described how pattern matching works. For the
+supplementary source code, please see appendix chapter
+\ref{chap:supplementary_source_code}.
 
-\begin{figure}[H]
-\begin{framed}
-\begin{lstlisting}[language=elm]
-pattern_match : ModulePath -> Model -> RootTerm -> RootTerm
-                  -> Maybe PatternMatchingInfo
-pattern_match module_path model pattern target =
-  pattern_match_get_vars_dict pattern target
-    |> (flip Maybe.andThen)
-         (vars_dict_to_pattern_matching_info module_path model)
+Let start with the most important function, \elmtt{pattern\_match} is a function
+that pattern match \elmtt{pattern} against \elmtt{target}, if success, it will
+the return pattern matching information as described in previous section.
+Another function is \elmtt{pattern\_match\_multiple} which is the same as
+previous function but receive a list of pair of \elmtt{(pattern, target)} rather
+than just one \elmtt{pattern} and one \elmtt{target}. These two are shown in
+figure \ref{fig:supp-pattern-matching-info}.
 
-pattern_match_multiple : ModulePath -> Model
-                           -> List (RootTerm, RootTerm)
-                           -> Maybe PatternMatchingInfo
-pattern_match_multiple module_path model list =
-  let vars_dict_maybe_list =
-        List.map (uncurry pattern_match_get_vars_dict) list
-   in if List.any ((==) Nothing) vars_dict_maybe_list then
-        Nothing
-      else
-        vars_dict_maybe_list
-          |> List.filterMap identity
-          |> merge_pattern_variables_list
-          |> vars_dict_to_pattern_matching_info
-               module_path model
-\end{lstlisting}
-\end{framed}
-\caption{Functions \elmtt{pattern\_match} and \elmtt{pattern\_match\_multiple}.}
-\label{fig:implementation-repo-pattern-matching-info}
-\end{figure}
+\newpage
 
 Both of functions above call function \elmtt{pattern\_match\_get\_vars\_dict} that
 perform the actual pattern matching and return a dictionary that map each
-pattern variable to a list of terms. The the pattern match process can be
+pattern variable to a list of terms. The the pattern match process is shown in
+figure \ref{fig:supp-pattern-pattern-match-get-vars-dict} and can be
 described as the following
 \begin{itemize}
 \item If the grammar of pattern and target is not the same, fail immediately.
@@ -662,40 +608,9 @@ described as the following
   \end{itemize}
 \end{itemize}
 
-\begin{figure}[H]
-\begin{framed}
-\begin{lstlisting}[language=elm]
-pattern_match_get_vars_dict : RootTerm -> RootTerm ->
-                       Maybe (Dict VarName (List RootTerm))
-pattern_match_get_vars_dict pattern target =
-  if pattern.grammar /= target.grammar then Nothing else
-  case (pattern.term, target.term) of
-    (TermTodo, $\mathunderscore$) -> Nothing
-    ($\mathunderscore$, TermTodo) -> Nothing
-    (TermVar var_name, $\mathunderscore$) -> Just (Dict.singleton
-                                    var_name [target])
-    ($\mathunderscore$, TermVar $\mathunderscore$) -> Nothing
-    (TermInd pat_mixfix pat_sub_terms,
-        TermInd tar_mixfix tar_sub_terms) ->
-      if pat_mixfix /= tar_mixfix then Nothing else
-        let maybe_result_list = List.map2
-              pattern_match_get_vars_dict
-              (get_sub_root_terms pat_mixfix pat_sub_terms)
-              (get_sub_root_terms tar_mixfix tar_sub_terms)
-         in if List.any ((==) Nothing) maybe_result_list then
-              Nothing
-            else
-              maybe_result_list
-                |> List.filterMap identity
-                |> merge_pattern_variables_list
-                |> Just
-\end{lstlisting}
-\end{framed}
-\caption{Function \elmtt{pattern\_match\_get\_vars\_dict}.}
-\end{figure}
-
 After \elmtt{pattern\_match\_get\_vars\_dict} produces matching dictionary. \\
-\elmtt{vars\_dict\_to\_pattern\_matching\_info} will try to fit this into
+\elmtt{vars\_dict\_to\_pattern\_matching\_info} as shown in figure
+\ref{fig:supp-vars-dict-to-pattern-matching-info} will try to fit this into
 \elmtt{PatternMatchingInfo}. This can be done by finding a
 \elmtt{SubstitutionList} that can eliminate all of ambiguity among terms which
 are the value of matching dictionary. This \elmtt{SubstitutionList} can be found
@@ -712,175 +627,15 @@ Then we can substitute this \elmtt{SubstitutionList} to the matching directly to
 get \elmtt{pattern\_variables}, hence be able to return
 \elmtt{PatternMatchingInfo} as expected.
 
-\begin{figure}[H]
-\begin{framed}
-\begin{lstlisting}[language=elm,basicstyle=\footnotesize\ttfamily]
-vars_dict_to_pattern_matching_info : ModulePath -> Model
-                                       -> Dict VarName (List RootTerm)
-                                       -> Maybe PatternMatchingInfo
-vars_dict_to_pattern_matching_info module_path model vars_dict =
-  let subst_list_func var_name root_term_list maybe_acc_subst_list =
-        let grammar_name = (.grammar) (list_get_elem 0 root_term_list)
-         in case get_variable_type module_path model
-                var_name grammar_name of
-              Nothing             -> Nothing
-              Just VarTypeMetaVar -> case root_term_list of
-                []              -> Nothing
-                root_term :: [] -> maybe_acc_subst_list
-                fst_root_term :: other_root_terms ->
-                  let fold_func root_term maybe_acc =
-                    let maybe_partial_subst_list =
-                      Maybe.andThen maybe_acc (\acc ->
-                       unify module_path model
-                        (multiple_root_substitute acc fst_root_term)
-                        (multiple_root_substitute acc root_term))
-                     in Maybe.map2 (++) maybe_acc
-                          maybe_partial_subst_list
-                   in List.foldl fold_func
-                        maybe_acc_subst_list other_root_terms
-              Just VarTypeLiteral ->
-                if List.all ((==) ({ grammar = grammar_name
-                                   , term = TermVar var_name
-                                   })) root_term_list
-                  then maybe_acc_subst_list else Nothing
-      maybe_subst_list = Dict.foldl subst_list_func
-                           (Just []) vars_dict
-   in Maybe.map (\subst_list ->
-        { pattern_variables =
-            Dict.map (\var_name root_term_list ->
-              multiple_root_substitute subst_list <|
-                list_get_elem 0 root_term_list) vars_dict
-        , substitution_list = subst_list
-        }) maybe_subst_list
-\end{lstlisting}
-\end{framed}
-\caption{Function \elmtt{vars\_dict\_to\_pattern\_matching\_info}.}
-\end{figure}
+Function \elmtt{unify} as described in figure \ref{fig:supp-unify} receives term
+\elmtt{a} and \elmtt{b} then try to build most general unifier (mgu) which is
+the most general substitution list that is specific enough to make term
+\elmtt{a} and \elmtt{b} identical. This unification process is similar to
+pattern matching in \elmtt{pattern\_match\_get\_vars\_dict} but this is two way
+matching and it is aware whether a variable is meta variable or literal.
 
-Function \elmtt{unify} receives term \elmtt{a} and \elmtt{b} then try to build
-most general unifier (mgu) which is the most general substitution list that is
-specific enough to make term \elmtt{a} and \elmtt{b} identical.
-
-Unification process is similar to pattern matching in
-\elmtt{pattern\_match\_get\_vars\_dict} but this is this is two wat matching and
-it is aware whether a variable is meta variable or literal.
-
-\begin{figure}[H]
-\begin{framed}
-\begin{lstlisting}[language=elm,basicstyle=\footnotesize\ttfamily]
-unify : ModulePath -> Model -> RootTerm -> RootTerm
-          -> Maybe (SubstitutionList)
-unify module_path model a b =
-  if a.grammar /= b.grammar then Nothing else
-  case (a.term, b.term) of
-    (TermTodo, $\mathunderscore$) -> Nothing
-    ($\mathunderscore$, TermTodo) -> Nothing
-    (TermVar a_var_name, $\mathunderscore$) ->
-      case get_variable_type module_path model a_var_name a.grammar of
-        Nothing -> Nothing
-        Just VarTypeMetaVar -> Just ([{ old_var = a_var_name
-                                      , new_root_term = b}])
-        Just VarTypeLiteral -> case b.term of
-          TermVar b_var_name ->
-            case get_variable_type module_path model
-                   b_var_name b.grammar of
-              Nothing -> Nothing
-              Just VarTypeMetaVar -> Just ([{ old_var = b_var_name
-                                            , new_root_term = a}])
-              Just VarTypeLiteral -> if a_var_name == b_var_name
-                                       then Just [] else Nothing
-          $\mathunderscore$                  -> Nothing
-    ($\mathunderscore$, TermVar b_var_name) ->
-      case get_variable_type module_path model b_var_name b.grammar of
-        Nothing -> Nothing
-        Just VarTypeMetaVar -> Just ([{ old_var = b_var_name
-                                      , new_root_term = a}])
-        Just VarTypeLiteral -> Nothing
-    (TermInd a_mixfix a_sub_terms, TermInd b_mixfix b_sub_terms) ->
-      if a_mixfix /= b_mixfix then Nothing else
-        let fold_func (a_root_sub_term, b_root_sub_term)
-                maybe_acc_subst_list =
-              let maybe_partial_subst_list =
-                    Maybe.andThen maybe_acc_subst_list
-                      (\subst_list -> unify module_path model
-                         (multiple_root_substitute
-                           subst_list a_root_sub_term)
-                         (multiple_root_substitute
-                           subst_list b_root_sub_term))
-               in Maybe.map2 List.append maybe_acc_subst_list
-                                         maybe_partial_subst_list
-         in List.foldl fold_func (Just []) <|
-              List.map2 (,) (get_sub_root_terms a_mixfix a_sub_terms)
-                            (get_sub_root_terms b_mixfix b_sub_terms)
-\end{lstlisting}
-\end{framed}
-\caption{Function \elmtt{unify}.}
-\end{figure}
-
-Lastly, we can implement the remaining auxiliary functions of pattern matching
-as the following,
-
-\begin{figure}[H]
-\begin{framed}
-\begin{lstlisting}[language=elm,basicstyle=\scriptsize\ttfamily]
-substitute : VarName -> Term -> Term -> Term
-substitute old_var new_term top_term =
-  case top_term of
-    TermTodo -> TermTodo
-    TermVar var_name -> if var_name == old_var
-                          then new_term else TermVar var_name
-    TermInd grammar_choice sub_terms ->
-      TermInd grammar_choice <|
-        List.map (substitute old_var new_term) sub_terms
-
-multiple_root_substitute : SubstitutionList -> RootTerm -> RootTerm
-multiple_root_substitute list top_root_term =
-  let fold_func record acc =
-        substitute record.old_var record.new_root_term.term acc
-      update_func top_term = List.foldl fold_func top_term list
-   in Focus.update term_ update_func top_root_term
-
-pattern_substitute : Dict VarName RootTerm -> Term -> Term
-pattern_substitute dict top_term =
-  case top_term of
-    TermTodo -> TermTodo
-    TermVar var_name -> case Dict.get var_name dict of
-                          Nothing            -> TermVar var_name
-                          Just new_root_term -> new_root_term.term
-    TermInd grammar_choice sub_terms ->
-      TermInd grammar_choice <|
-        List.map (pattern_substitute dict) sub_terms
-
-pattern_root_substitute : Dict VarName RootTerm -> RootTerm -> RootTerm
-pattern_root_substitute dict top_root_term =
-  Focus.update term_ (pattern_substitute dict) top_root_term
-
-pattern_matching_info_substitute : PatternMatchingInfo -> SubstitutionList
-                                     -> PatternMatchingInfo
-pattern_matching_info_substitute pm_info substitution_list =
-  { pattern_variables = Dict.map (\ $\mathunderscore$ ->
-      multiple_root_substitute substitution_list) pm_info.pattern_variables
-  , substitution_list = List.append pm_info.substitution_list
-                          substitution_list }
-
-pattern_matchable : ModulePath -> Model -> RootTerm -> RootTerm -> Bool
-pattern_matchable module_path model pattern target =
-  pattern_match module_path model pattern target /= Nothing
-
-merge_pattern_variables_list : List (Dict VarName (List RootTerm)) ->
-                                 Dict VarName (List RootTerm)
-merge_pattern_variables_list main_list =
-  let dict_fold_func key target_val acc =
-        let old_val = Maybe.withDefault [] (Dict.get key acc)
-            new_val = List.append target_val old_val
-         in Dict.insert key new_val acc
-      list_fold_func dict acc = Dict.foldl dict_fold_func dict acc
-   in List.foldl list_fold_func Dict.empty main_list
-       |> Dict.map (\ $\mathunderscore$ list -> list_remove_duplication list)
-\end{lstlisting}
-\end{framed}
-\caption{Other auxiliary functions for pattern matching.}
-\end{figure}
+There are also other several auxiliary functions for pattern matching as
+described in figure \ref{fig:supp-auxiliary}.
 
 
 \section{Building a Complied Version}
@@ -914,7 +669,7 @@ download and upload local files directly in the server.
 
 This server template, with some modification, allows us to create a local server
 to serve \texttt{phometa.html} which is the main application that user will
-interact with. \texttt{phometa.html}, in tern, will load further resource such
+interact with. \texttt{phometa.html}, in turn, will load further resource such
 as \texttt{naive.js} (for naive code that can't be done directly in Elm) and
 \texttt{style.css} (for theme of Phometa).
 
