@@ -274,7 +274,7 @@ $$
 $$
 \vspace{3ex}
 \caption{Derivation trees show that $\epsilon, p, (q \vee r) \vdash ((p \wedge q) \vee (p \wedge
-r))$ and $\Gamma \vdash (A \vee (\neg A))$ are valid \texttt{<Judgement>}.}
+r))$ and $\Gamma \vdash (A \vee (\neg A))$ are valid \texttt{<Judgement>}s.}
 \end{sidewaysfigure}
 
 \section{Typed Lambda Calculus}
@@ -283,25 +283,320 @@ Credit: Some of material here modified from lecture note of ``382 --- Type
 Systems for Programming Languages'' (third year course), Department of
 Computing, Imperial College London. Thank you Dr Steffen van Bakel for this.
 
+Please note that the following formal system is just a faction of what Lambda
+Calculus could be. To be precise, this formal system includes $\beta$-reduction
+and simply types of Lambda Calculus.
+
+\vspace{-1em}
+\subsection{Terms and Variables}
+
 Lambda Calculus stimulates computational model in functional manner. Basically,
 it will have a grammar \texttt{<Term>} which can be either a
-\texttt{<Variable>}, an anonymous function, or an application between a function
-with another term. It can be described in Backus-Naur Form like this
+\texttt{<Variable>}, an anonymous function, an application, or a substitution.
+It can be described in Backus-Naur Form like this
 
 \begin{figure}[H]
 \begin{framed}
 \begin{lstlisting}[style=bnf]
-<Variable> ::= literal comply with regex /[a-z]([1-9][0-9]*|'*)/
+<Variable> ::= meta variable comply with regex /[a-z]([1-9][0-9]*|'*)/
 
 <Term>     ::= <Variable>
              | <Variable> `$\mapsto$' <Term>
              | <Term> `$\cdot$' <Term>
-             | <Term> `[' <Term> `/' <Term> `]'
+             | <Term> `[' <Term> `/' <Variable> `]'
              | meta variable comply with regex /[L-Z]([1-9][0-9]*|'*)/
 \end{lstlisting}
 \end{framed}
 \caption{Backus-Naur Form of \texttt{<Variable>} and \texttt{<Term>}}
 \end{figure}
+\vspace{-1em}
+The first choice of \texttt{<Term>} represents variable which you can think as a
+mark point that other terms can refer to.
+
+The second choice of \texttt{<Term>} represents an anonymous function i.e.\ $(x
+\mapsto M)$ means a function that get a variable $x$ and return a term $M$ where
+$M$ might contain $x$. From now on, I will call  as ``blinder''
+
+An anonymous function is usually represented by $(\lambda x . M)$ but I use $(x
+\mapsto M)$ since it works better with underlines when we implement it in
+Phometa.
+
+The third choice of \texttt{<Term>} represents an application i.e. $(M \cdot
+N)$ means apply term $M$ to term $N$ where $M$ usually be an anonymous
+function\footnote{Or will become anonymous function after evaluate the term.}.
+
+The fourth choice of \texttt{<Term>} represents a substitution i.e.\ ($M [ N / x
+]$) means a term $M$ that every occurrence of free variable $x$ will be replaced
+by a term $N$.
+
+A variable $x$ is free variable if it doesn't live inside an anonymous function
+that has $x$ as blinder\footnote{Blinder is a variable on the left hand side
+of $\mapsto$ of an anonymous function}, otherwise, it is bounded variable.
+
+\subsection{Side Conditions}
+
+Sometime we want to build a simple formal system but its dependency relies on
+more complex formal system, for example, $\beta$ reduction (will be defined
+later) needs to check whether a variable is a free variable of a curtain term or
+not, and checking free variable require knowledge of sets. Normally we should
+build a formal system regarding to set, then we can build $\beta$ reduction,
+however this is overkill as formal system of set is much larger than $\beta$
+reduction. To solve this problem, we can build a grammar that construct a
+statement that need to be judge by the user as the following
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[style=bnf]
+<SideCondition> ::= <Variable> `$\neq$' <Variable>
+                  | <Variable> `$=$' <Variable>
+                  | <Variable> `$\in fv($' <Term> `)'
+                  | <Variable> `$\notin fv($' <Term> `)'
+                  | <Variable> `$\in bv($' <Term> `)'
+                  | <Variable> `$\notin bv($' <Term> `)'
+                  | <Variable> `$\in fv($' <Context> `)'
+                  | <Variable> `$\notin fv($' <Context> `)'
+\end{lstlisting}
+\end{framed}
+\caption{Backus-Naur Form of \texttt{<SideCondition>}}
+\end{figure}
+
+Then write a single rule that allow to prove any side condition.
+
+\begin{figure}[H]
+\begin{framed}
+\centering
+$$
+\derivRule{side-condition}{SideCondition}{ }
+$$
+\end{framed}
+\caption{Rule \rulename{side-condition}}
+\end{figure}
+
+Every time when \texttt{SideCondition} appear in a derivation tree, user needs
+extra care and determine whether that side condition holds or not. If it holds
+then apply \rulename{side-condition} and it is done. Please note that there is no
+mechanism to prevent user to apply \rulename{side-condition} on a false
+\texttt{SideCondition} and it will result in inconsistency, in another word, by
+using side condition technique, we \emph{trust} user to do the right thing.
+
+\subsection{$\beta$ Reduction}
+
+Since \texttt{<Term>} represents computational model, so it can be
+\emph{evaluated}. A step of evaluation in Lambda Calculus is called
+\texttt{$\beta$-Reduction} which can be defined as the following
+
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[style=bnf]
+<$\beta$-Reduction> ::= <Term> `$\rightarrow_{\beta}$' <Term>
+\end{lstlisting}
+\end{framed}
+\caption{Backus-Naur Form of \texttt{<$\beta$-Reduction>}}
+\end{figure}
+
+$M \rightarrow_{\beta} N$ means $M$ can reduce to $N$ in one step, the rules to
+control this can be defined as the following
+
+
+\begin{figure}[H]
+\begin{framed}
+\centering
+$$\qquad\qquad
+\derivRule{reduction-base}{((x \mapsto M) \cdot N) \rightarrow_{\beta} (M [ N / x ])}{ }
+$$
+
+$$\qquad\qquad\qquad\qquad\quad
+\derivRule{reduction-app-left}{(M \cdot L) \rightarrow_{\beta} (N \cdot L)}{M \rightarrow_{\beta} N}
+\qquad\qquad\qquad\qquad\qquad
+\derivRule{reduction-app-right}{(L \cdot M) \rightarrow_{\beta} (L \cdot N)}{M \rightarrow_{\beta} N}
+$$
+$$\qquad\qquad
+\derivRule{reduction-abs}{(x \mapsto M) \rightarrow_{\beta} (x \mapsto N)}{M \rightarrow_{\beta} N}
+$$
+$$\qquad\qquad\qquad\qquad
+\derivRule{reduction-subst-left}{(M [ L / x ]) \rightarrow_{\beta} (N [ L / x ])}{M \rightarrow_{\beta} N}
+$$
+$$\qquad\qquad\qquad\qquad
+\derivRule{reduction-subst-right}{(L [ M / x ]) \rightarrow_{\beta} (L [ N / x ])}{M \rightarrow_{\beta} N}
+$$
+
+$$\qquad\qquad\qquad\quad
+\derivRule{subst-same-var}{(x [ N / x ]) \rightarrow_{\beta} N}{ }
+\qquad\qquad\quad
+\derivRule{subst-app}{((P \cdot Q) [ N / x ]) \rightarrow_{\beta} ((P [ N / x ]) \cdot (Q [ N / x ]))}{ }
+$$
+$$\qquad\qquad\qquad
+\derivRule{subst-diff-var}{(y [ N / x ]) \rightarrow_{\beta} y}{y \neq x}
+\qquad\qquad\qquad
+\derivRule{subst-abs}{((y \mapsto M) [ N / x ]) \rightarrow_{\beta} (y \mapsto (M [ N / x ]))}{y \notin fv( N ) \\ y \neq x}
+$$
+
+$$\qquad\qquad\qquad
+\derivRule{subst-abs-renaming}{((y \mapsto M) [ N / x ]) \rightarrow_{\beta} ((z
+  \mapsto (M [ z / y ])) [ N / x ])}{y \in fv( N ) \\ y \neq x}
+$$
+$$\qquad\qquad\qquad
+\derivRule{subst-abs-discard}{((x \mapsto M) [ N / x ]) \rightarrow_{\beta} (x
+  \mapsto M)}{ }
+$$
+\end{framed}
+\caption{Rules related to \texttt{<$\beta$-Reduction>}}
+\end{figure}
+
+There is also \texttt{$\beta$-ManyReduction} which reflexive transitive closure
+of \texttt{$\beta$-Reduction}.
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[style=bnf]
+<$\beta$-ManyReduction> ::= <Term> `$\rightarrow^*_{\beta}$' <Term>
+\end{lstlisting}
+$$\qquad\qquad\qquad\qquad\qquad
+\derivRule{many-reduction-base}{M \rightarrow^*_{\beta} M}{ }
+\qquad\qquad\qquad\qquad\qquad\qquad
+\derivRule{many-reduction-next}{M \rightarrow^*_{\beta} N}{M \rightarrow_{\beta}
+  L \\ L \rightarrow^*_{\beta} N}
+$$
+\end{framed}
+\caption{Backus-Naur Form of \texttt{<$\beta$-ManyReduction>} and its rules.}
+\end{figure}
+
+Now we are ready to build a derivation tree,
+
+\begin{figure}[H]
+\centering
+$$
+\derivTree{many-reduction-next, leftskip=9em}{((x \mapsto x) \cdot (y \mapsto y))
+  \rightarrow^*_{\beta} (y \mapsto y)}
+{ \derivTree{reduction-base}{((x \mapsto x) \cdot (y \mapsto y))
+  \rightarrow_{\beta} (x [ (y \mapsto y) / x ])} { }
+\\ \\ \\
+  \derivTree{many-reduction-next, leftskip=20em, vdots=3em}{(x [ (y \mapsto y) / x ])
+  \rightarrow^*_{\beta} (y \mapsto y)}
+  { \derivTree{subst-same-var}{(x [ (y \mapsto y) / x ])
+    \rightarrow_{\beta} (y \mapsto y)} { }
+  \\ \\ \\ \\ \\
+    \derivTree{many-reduction-base}{(y \mapsto y)
+    \rightarrow^*_{\beta} (y \mapsto y)}
+  { }
+  }
+}
+$$
+\caption{Derivation tree shows that $((x \mapsto x) \cdot (y \mapsto y))
+  \rightarrow^*_{\beta} (y \mapsto y)$ \\ is valid a \texttt{<$\beta$-ManyReduction>}.}
+\end{figure}
+
+\subsection{Simply Types}
+
+Some terms can be reduced infinitely many times e.g. \\
+$((x \mapsto (x \cdot x)) \cdot (x \mapsto (x \cdot x))) \rightarrow_{\beta}$
+$((x \cdot x) [ (x \mapsto (x \cdot x)) / x ]) \rightarrow_{\beta}$ \\
+$((x [ (x \mapsto (x \cdot x)) / x ]) \cdot (x [ (x \mapsto (x \cdot x)) / x
+])) \rightarrow_{\beta}$
+$((x \mapsto (x \cdot x)) \cdot (x [ (x \mapsto (x \cdot x)) / x
+])) \rightarrow_{\beta}$ \\
+$((x \mapsto (x \cdot x)) \cdot (x \mapsto (x \cdot x))) \rightarrow_{\beta} \cdots$
+
+This is not desirable as it implies a program that will never terminate. To
+solve this problem we can try to find a type of a term, if found, we know that
+the term as finite number of reductions. \texttt{<Type>} can be defined as the following
+
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[style=bnf]
+<Type> ::= <Type> `$\rightarrow$' <Type>
+         | meta variable comply with regex /[A-K]([1-9][0-9]*|'*)/
+         | literal comply with regex /[$\alpha$-$\omega$]([1-9][0-9]*|'*)/
+\end{lstlisting}
+\end{framed}
+\caption{Backus-Naur Form of \texttt{<Type>}}
+\end{figure}
+
+\texttt{<Type>} can be instantiated as
+\begin{itemize}
+\item meta variable --- for generic type which can be used in another place.
+\item literal --- for constant type similarly to Int, Bool, Char, etc.
+\item $(A \rightarrow B)$ --- a type of anonymous function that receive input
+  of type $A$ and return output of type $B$.
+\end{itemize}
+
+To state that a term has the particular type we can use \texttt{<Statement>},
+and in order to prove a that \texttt{<Statement>} holds under certain
+assumptions, we need \texttt{<Context>} and \texttt{<Judgement>}. These three
+grammars can be defined as the following
+
+\begin{figure}[H]
+\begin{framed}
+\begin{lstlisting}[style=bnf]
+<Statement>   ::= <Term> `:' <Type>
+
+<Context>     ::= `$\epsilon$'
+                | <Context> `,' <Prop>
+                | meta-variables comply with regex
+                    /[$\Gamma\Delta$]([1-9][0-9]*|'*)/
+
+<Judgement>   ::= <Context> `$\vdash$' <Statement>
+\end{lstlisting}
+\end{framed}
+\caption{Backus-Naur Form of \texttt{<Statemeny>}, \texttt{<Context>}, and \texttt{<Judgement>}}
+\end{figure}
+
+The rules regarding to type can be defined as the following,
+
+
+\begin{figure}[H]
+\begin{framed}
+$$
+\derivRule{assumption}{\Gamma, (M : A) \vdash (M : A)}{ }
+$$
+
+$$
+\derivRule{arrow-intro}{\Gamma \vdash ((x \mapsto M) : (A \rightarrow B))}
+   {\Gamma, (x : A) \vdash (M : B) \\ x \notin fv( \Gamma )}
+$$
+
+$$
+\derivRule{arrow-elim}{\Gamma \vdash ((M \cdot N) : B)}
+   {\Gamma \vdash (M : (A $$\rightarrow$$ B)) \\ \Gamma \vdash (N : A)}
+$$
+\end{framed}
+\caption{Rules related to \texttt{<Type>}.}
+\end{figure}
+
+The \rulename{assumption} is very similar to \rulename{hypothesis} in
+Propositional Logic. It also has cascade premise and context manipulation.
+
+Now we are ready to build a derivation tree,
+
+\begin{sidewaysfigure}
+\centering
+$$
+\derivTree{arrow-intro, leftskip=5em}{\epsilon \vdash ((f \mapsto (x \mapsto (f
+  \cdot x))) : ((A \rightarrow A) \rightarrow (A \rightarrow A)))}
+{
+  \derivTree{arrow-intro}{\epsilon, (f : (A \rightarrow A)) \vdash ((x \mapsto
+    (f \cdot x)) : (A \rightarrow A))}
+  { \derivTree{arrow-elim, rightskip=25em, vdots=3em}{\epsilon, (f : (A \rightarrow A)), (x : A) \vdash (
+    (f \cdot x) : A)}
+    { \derivTree{assumption}{\epsilon, (f : (A \rightarrow A)), (x : A) \vdash (
+    f : (A \rightarrow A))}{ }
+      \\ \\ \\ \\ \\
+      \derivTree{assumption}{\epsilon, (f : (A \rightarrow A)), (x : A) \vdash (
+    x : A)}{ }
+    }
+  \\ \\ \\ \\
+    \derivTree{side-condition}{f \notin fv( \epsilon, (f : (A \rightarrow A)) )}{ }
+  }
+\\ \\ \\ \\
+  \derivTree{side-condition}{f \notin fv( \epsilon )}{ }
+}
+$$
+\caption{Derivation tree shows that $\epsilon \vdash ((f \mapsto (x \mapsto (f
+  \cdot x))) : ((A \rightarrow A) \rightarrow (A \rightarrow A)))$ is valid a
+  \texttt{<Judgement>}.}
+\end{sidewaysfigure}
 
 
 \end{document}
