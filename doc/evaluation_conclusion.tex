@@ -1,0 +1,253 @@
+\documentclass[master.tex]{subfiles}
+\begin{document}
+
+\chapter{Evaluation and Conclusion}
+\label{chap:evaluation_conclusion}
+
+\vspace{-1em}
+
+\section{Users Feedback --- discuss with friends}
+
+On the $25^{th}$ of May 2016, it was the first day of a project fair where
+students can demonstrate their work to other students to get a feedback so I
+went there and discuss about my project. At this stage, the implementation was
+finished with Simple Arithmetic and Propositional Logic included in the standard
+library.
+
+I started showing my project by explaining about Phometa background and Simple
+Arithmetic using chapter \ref{chap:background} and
+\ref{chap:example_simple_arithmetic} on this report. Then I asked them do to
+exercises on chapter \ref{chap:example_simple_arithmetic} by having me as
+helper. All of them understood Phometa and was able to prove a theorem. Finally,
+I asked them to try Propositional Logic, some of them showed interest but not
+all of them wanted to.
+
+From my observation, all of them were comfortable to prove by clicking options
+from keymap pane rather than using keyboard shortcut. They also forgot to use
+searching pattern to select options faster.
+
+There were a few parts of user interface that were not trivial enough, they
+needed to ask me what to do next, this should be fine if user had time to read
+the whole tutorial.
+
+On the bright side, most of them said that they really liked the way that
+underlines was use to group sub-terms rather than brackets (although they needed
+some time to familiar with it), they also said that the proofs are quite easy to
+read and they will benefit newcomers.
+
+There were several improvements that they suggested. Some suggestions
+were easy to change (e.g.\ theorems should state its goal on header as well) so
+I changed it already. Some of other suggestions were quite big (e.g.\ make it
+mobile friendly and have a proper server) which can be considered as future
+works. We also managed to find some bugs\footnote{These bug are
+  related Html and CSS rendering i.e.\ they are not related to Phometa internal.} that I never found before,
+this gave me an opportunity to fix it in time.
+
+\section{Users Feedback --- discuss with junior students}
+
+The project fair happened again on the $1^{st}$ of June. This time, I gave a
+demonstration to the first and second year students who study here.
+
+The process was the same as last week. I started the demonstration by giving a
+Phometa overview using background and Simple Arithmetic chapters and let them
+try natural deduction in Propositional Logic. At first, they usually
+made mistakes especially on how to construct a term, for example,
+\begin{itemize}
+\item One student wrote a whole propositional formula in plain-text because he
+  thought that is how Phometa accept a term.
+\item A few student students forgot to hit \pkbd{Return} when finish entering
+  a meta variable. Actually, this should be fine but I disabled such a feature
+  because it has a problem with Phometa's internal mode.
+\item One group of students accidentally clicked theorem reset button
+  (\resetButton) because they thought that was an undo button. This reset button
+  there was quite dangerous as it was nearly equivalent to delete button.
+\end{itemize}
+These problem occur only for the first time, and once they understood more of
+the tool, they could use it easily. In fact, the tutorial that I have written
+already covered most of these mistake, but I didn't ask students to read though
+the entire tutorial due to time constraints.
+
+On the other hand, I was surprised at how fast first year students\footnote{Most
+  of them were tutees in Personal Mathematics Tutorial (PMT) group that I took a
+  role as Undergraduate Teaching Assistant (UTA) in this academic year.} can
+construct Gentzen style's natural deduction in Phometa given that they know how
+to do Fitch style's natural deduction in Pandora represented in the first year
+Logic course. Moreover, one of second students told me that he didn't
+particularly like derivation trees\footnote{Second year students had studied
+  derivation tree in the class already.} but Phometa managed to make him enjoy
+constructing this derivation tree.
+
+In conclusion, everybody who tries Phometa in the project fair was able to use
+Phometa properly when they got a proper guidance. Some students really enjoyed
+proving things in Phometa and some students believe that Phometa could have
+helped them during their coursework that require constructing derivation trees
+in the past.
+
+\section{Strengths}
+
+\begin{itemize}
+\item Phometa specification itself is more powerful than traditional derivation
+  systems because it has extra features such as cascade premise and
+  meta-reduction. Thus, it is able to support more formal systems than
+  traditional one.
+\item It has a less steep learning curve than mainstream proof assistants
+  because the specification is small enough for a user to learn in a short time
+  and all of components are diagram based which is easier to understand than
+  sequences of characters.
+\item If a term can be constructed, it is guaranteed to be well formed. And if
+  it is a goal of a proved theorem (or lemma) it is definitely valid based on
+  soundness of rules on that formal systems.
+\item The repository of phometa is always in a consistent state. Phometa is
+  quite cautious when the repository is being modified. For example, theorem can
+  apply only a rule or a lemma that has been locked i.e.\ it is impossible that
+  its dependencies will be changed. Another example is that when a node is
+  deleted, Phometa will delete all of the nodes that depend on it as
+  well\footnote{Of course, it will ask for confirmation first whether user want
+    delete all of these or not.}. This is opposite to text-based proof
+  assistants where user has full control over the repository, and if the
+  repository is an inconsistent, the compiler will raise an error and user would
+  fix it.
+\item Lemmas allow reuse of proofs so there is no need for duplication. Users
+  can select to do forward style proving (lots of small lemmas as steps of a
+  proof) or backward style proving (a few big theorems).
+\item It supports unicode input method and doesn't have reserved words so formal
+  systems can be constructed in a more mathematical friendly environment.
+\item It is a web-application so it can run on any machine that supports a
+  web-browser. One might argue that it required Python for the back-end but most
+  machines support Python out of the box anyway.
+\end{itemize}
+
+\vspace{1em}
+
+\section{Limitation}
+
+\newcommand{\hrefFutureWork}{\hyperref[sec:future_work]{future work}}
+
+\begin{itemize}
+\item It is hard to extend formal systems at the moment because Phometa doesn't
+  allow grammar to inherit choices from another grammar. If a user wanted to
+  extend a formal system, they would need to create a new one from scratch. For
+  example, first order logic cannot be built from the existing propositional
+  logic. This can be solved by making grammars extensible as described in
+  \hrefFutureWork.
+\item Phometa doesn't support automation well i.e.\ when a user constructs a
+  proof, they need to say which rule or which lemma should be used. Guessing
+  each step and automating the tree is possible. Mainstream proof assistants
+  such as Coq and Isabelle have done it, however, it requires lots of heuristics
+  and cleaver tricks, this is unrealistic to implement due to project time frame
+  but it is a good consideration for \hrefFutureWork.
+\item Each web-browser supports different sets of keyboard shortcuts. It is very
+  hard for Phometa to find such keystrokes that are not visible characters and
+  not keyboard shortcuts of any web-browser. So I ended-up using \pkbd{Alt}
+  combined with a visible character to create a Phometa shortcut. This might
+  have unwanted side effects but at least it work reasonably well with Google
+  Chrome\footnote{To be precise, Chromium web-browser.} under a condition that
+  the window containing Phometa has only one tab, so it will not suffer from
+  \pkbd{Alt-\{1..9\}} which are used for switching tabs. However, this is not
+  such a serious problem since user can always click a command in the keymap
+  pane directly. Alternatively, this can be solved completely by making the
+  keyboard shortcut customisable e.g.\ if some keyboard shortcut crash and user
+  really want to use it, they can bind this command to another keystroke. Again,
+  it is a good consideration for \hrefFutureWork.
+\item The entire repository must be loaded into Phometa when it starts. This
+  impacts scalability where repository is large since JavaScript can run out of
+  memory. This is not usually a problem of text-based proof assistants since it
+  verify a theorems one by one and doesn't need to put everything in memory at
+  once.
+\item Phometa requires a user to start a local server for individual use. It
+  doesn't have a proper server where user can enter a link to and use it
+  directly. To implement such a proper server, it requires user accounts and a
+  database to manage users repositories, although it is possible to implement
+  but it seems to overkill method and doesn't match project objective. It had
+  lower priority than other features and can be considered as \hrefFutureWork.
+\item Directly modifying \texttt{repository.json} before it is loaded into
+  Phometa could result in undefined behaviour. This is because Phometa currently
+  doesn't have any mechanism to verify consistency of repository before it will
+  be loaded. This shouldn't cause any problem if user only interacts with
+  repository via Phometa interface and does not try to hack the repository file
+  directly. To solved this problem, we can write a function to verify
+  consistency of loading repository as discussed further in \hrefFutureWork.
+\end{itemize}
+
+\section{Lesson Learnt}
+
+Time management for a research project is one of the many things that I have
+learnt during this project. I learnt that tasks always take time twice or thrice
+longer than expected so it is vital to leave plenty of time before the deadline.
+More importantly, I learnt that a better idea of feature always comes after we
+start to implement something. It is quite hard to decide whether Phometa should
+include some certain feature or not. It is about a trade-off between usefulness
+of the feature and the risk of the project not being finished in time. These
+kind of features usually came near the end of implementation where I knew
+exactly what Phometa should be. This is bad because if I accepted the feature,
+this would take sometime to implement and to edit the related part of this
+report, which in turn, would impact the entire schedule of the plan. So I
+usually took it as future work as described in next section.
+
+I also learnt to believe in myself being capable to build something I dream of.
+Formal proof always was my favourite topic since I studied Logic in the first
+year. One day, I was drawing a derivation tree for a coursework, I had the idea
+of this project. At the first time it seemed too scary because it is about
+building a proof assistant from scratch, however after evaluated proof of
+concept, it turned out to be feasible. So I decided to start it and approached
+my supervisor.
+
+Most importantly, I learnt many thing regarding to formal proof from this
+project which is relevant to the topic that I want to do for PhD (Dependent Type
+Theory). This gave me more familiarity and confidence in that field. Oppositely,
+the curiosity on the field motivated me to work on this project better since I
+know that this kind of knowledge gained during the project will be useful later
+for sure.
+
+\section{Future Works}
+\label{sec:future_work}
+
+Although Phometa has been designed and implemented up to a satisfactory level,
+there is still plenty of room for improvements. For example,
+\begin{itemize}
+\item \textbf{Making Grammars extensible} --- Grammars should be able to extend another
+  grammar in similar manner to how class in Object Oriented Programming extend
+  other classes. For example, grammar of proposition in First Order Logic could
+  extend grammar of proposition in Propositional Logic. This allows polymorphism
+  where a term of extending grammar could be proven using rules or lemmas
+  related to the base grammar.
+\item \textbf{Plain-text as alternative term input method} --- When constructing
+  a term, user should be able to write some terms in plain-text and Phometa will
+  try to parse it according to formats of that grammar.
+\item \textbf{Making Theorems construction become more automatics} --- When
+  constructing a theorem, Phometa should be able to guess what rules or lemmas
+  could be applied next (similar to Isabelle).
+\item \textbf{Importation between Modules} --- Modules should be able to import some
+  nodes from other modules, this improving scalability since a formal system can
+  be expanded across multiple modules.
+\item \textbf{Exportation to \LaTeX} --- Grammars, Rules, Theorems, and Proofs
+  should be exportable to \LaTeX\ source code. So it can be used further in
+  other documents such as reports or presentations.
+\item \textbf{Repository Verification on Loading} --- Creating a function that
+  checks whether the repository is in a valid state or not. Normally, it is not
+  necessary as Phometa will always be in a consistent state, but when you want
+  other people to use a formal system by obtaining \texttt{repository.json}, it
+  is not guaranteed that someone will not modify that repository directly. So it
+  is better to have a mechanism to check consistency of the repository anyway.
+\end{itemize}
+
+There are also other minor improvements such as
+\begin{itemize}
+\item Adding new formal systems to the standard library.
+\item Making undo buttons.
+\item Making notification message become more informative.
+\item Deploy phometa to a proper server.
+\item Making user interface become more mobile friendly.
+\item Making a theme and keyboard shortcut become configurable.
+\end{itemize}
+
+\section{Conclusion}
+
+At the end of this project. Phometa has been designed and been implemented up to
+the level that is ready to use by anybody with a decent standard library and
+tutorial. This, in turn, satisfies all of the objectives stated in the
+introduction chapter. In addition, I also believe that Phometa on this state can
+be a potential replacement for derivation-tree's manual-drawing so people don't
+have to suffer from it tedious process and error prone anymore.
+
+\end{document}

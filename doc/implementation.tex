@@ -1,39 +1,40 @@
 \documentclass[master.tex]{subfiles}
 \begin{document}
 \chapter{Implementation}
+\label{chap:implementation}
 
-This chapter aims to illustrate high-level implementation of Phometa. Reader
-will get a roughly idea on how does Phometa works.
+This chapter aims to illustrate the high-level implementation of Phometa. So
+that the reader will get a rough idea on how Phometa works.
 
 \section{Decision on programming language}
 Elm\supercite{elm-official-website} is a functional reactive programming
-language. It allows programmer to create web application by declaratively coding
-in Haskell-like language then compile the program to JavaScript.
+language. It allows programmers to create web applications by declaratively
+coding in Haskell-like language then compiling the program to JavaScript.
 
-One of the most attractive feature of Elm is its reactivity. This idea
+One of the most attractive features of Elm is its reactivity. This idea
 introduces a new data type called ``Signal''\footnote{Signal has been removed
   from Elm version 0.17 recently, however, Phometa uses Elm version 0.16 so it
   is fine to talk about Signal.} which is a data type that can change over time.
-For example, \elmtt{Mouse.isDown : Signal Bool} represents Boolean that holds
+For example, \elmtt{Mouse.isDown : Signal Bool} represents a Boolean that holds
 ``True'' when the mouse is pressed, \elmtt{Window.dimensions : Signal (Int,
-  Int)} represents a pair of integers that holds current width and height of the
+  Int)} represents a pair of integers that hold current width and height of the
 window respectively. Custom Signal can be created using higher order functions
-as this example,
+as in this example,
 \begin{lstlisting}[language=elm]
 Signal.map  : (a -> b) -> Signal a -> Signal b
 
 window_area : Signal Int
 window_area = Signal.map (\(w, h) -> w * h) Window.dimensions
 \end{lstlisting}
-\elmtt{window_area} is a signal that represents the area of current window, if
-you resize the window, this value will change on real time. This is bacause when
+\elmtt{window_area} is a signal that represents the area of current window. If
+you resize the window, this value will change on real time. This is because when
 the dimensions of the window is changed, it will notify
-\elmtt{Window.dimensions} to updated its value, \elmtt{Window.dimensions} in
-tern, notify \elmtt{window_area} to update it value as well.
+\elmtt{Window.dimensions} to update its value, \elmtt{Window.dimensions} in
+turn, notifies \elmtt{window_area} to update its value as well.
 
 These Signals can link together to form a dependency graph, eventually we will
 create \elmtt{main : Signal Html} which is a HTML representation that can change
-over time, Elm will detect this \elmtt{main} and render it in web-browser. For
+over time, Elm will detect this \elmtt{main} and render it in a web-browser. For
 example,
 
 \begin{lstlisting}[language=elm]
@@ -52,15 +53,15 @@ main : Signal Html
 main = Signal.map view Mouse.isDown
 \end{lstlisting}
 
-Once this code is complied, we will get HTML file (with JavaScript embedded)
-such that if it is opened in web-browser, it will show text ``Please click this
-page.'', if you click somewhere in the page, the text will change to ``Clicked
-!!'' with green background colour, this will change back when you release the
-mouse.
+Once this code is compiled, we will get a HTML file (with JavaScript embedded)
+such that if it is opened in a web-browser, it will show text ``Please click
+this page.''. If you click somewhere in the page, the text will change to
+``Clicked !!'' with green background colour, which will change back when you
+release the mouse.
 
 The example above shows that Elm could replace all of HTML, JavaScript, and even
-CSS. In another word, the entire front-end development could be done in one
-purely functional language. Therefore, Elm is a good candidate to be used as
+CSS. In other words, the entire front-end development could be done in one
+purely functional language. Therefore, Elm is a good candidate to be used as the
 main programming language for web-based application like Phometa.
 
 For more information, please see Elm official website at \url{elm-lang.org}.
@@ -68,8 +69,8 @@ For more information, please see Elm official website at \url{elm-lang.org}.
 \section{Model-Controller-View Architecture}
 
 Recall from the previous example, you could see that the HTML will depend
-directly on corresponding Signal(s) but in real application we need a way to
-store variables, this is achievable by the following function
+directly on corresponding Signal(s) but in real applications we need a way to
+store variables, which is achievable by the following function
 
 \begin{lstlisting}[language=elm]
 Signal.foldp : (a -> b -> b) -> b -> Signal a -> Signal b
@@ -88,18 +89,18 @@ click_total =
 \end{lstlisting}
 
 \elmtt{click_total} is a Signal that store an integers. Initially, it starts
-with $0$. When user click mouse on the page, \elmtt{Mouse.isDown} will notify
+with $0$. When user clicks mouse on the page, \elmtt{Mouse.isDown} will notify
 \elmtt{click_total} to invoke \elmtt{fold_func}, and the value of this Signal
-will updated to $1$. If you click it again it will be $2$, $3$, $4$, and so on.
+will be updated to $1$. If you click it again it will be $2$, $3$, $4$, etc.
 
-In Phometa, an accumulator of \elmtt{Signal.foldp} is \elmtt{Model} represented
+In Phometa, an accumulator of \elmtt{Signal.foldp} is \elmtt{Model} represents
 the global state of the entire program. The third argument (input Signal) of
-\elmtt{Signal.foldp} is \elmtt{Action} represented the Signal that change every
-time when user pressing the keyboard or clicking a button with Phometa. We could
-define the main entry of Phometa program as the following\footnote{Phometa code
-  represented here is just a simplify version, I can't show the real one because
-  MCV architecture is modified to support back-end communication so it is harder
-  to understand.}
+\elmtt{Signal.foldp} is \elmtt{Action} representing the Signal that changes
+every time when user presses the keyboard or clicks a button with Phometa. We
+could define the main entry of Phometa program as the following\footnote{Phometa
+  code represented here is just a simplify version, I can't show the real one
+  because MCV architecture is modified to support back-end communication so it
+  is harder to understand.}
 
 \begin{figure}[H]
 \begin{framed}
@@ -135,73 +136,13 @@ main = Signal.map view model_signal
 
 By using \elmtt{Signal.foldp} together with \elmtt{update : Action -> Model ->
   Model}, we achieve \elmtt{model_signal} which is a Signal represented the
-current global state of Phometa, which, in tern, can be transformed using
+current global state of Phometa, which, in turn, can be transformed using
 \elmtt{Signal.foldp} together with \elmtt{view : Model -> Html} to achieve
-\elmtt{main} which represented the current HTML page.
+\elmtt{main} which represents the current HTML page.
 
 Now, it becomes clear that Model-Controller-View architecture could be separated
 by \elmtt{Model}, \elmtt{update : Action -> Model -> Model}, and \elmtt{view :
   Model -> Html} respectively.
-
-\newpage
-
-\section{The Anatomy of Phometa Repository}
-
-Phometa is been developed using \emph{Git} as the version control and hosted
-at
-
-\url{https://github.com/gunpinyo/phometa}.
-
-The Phometa repository \footnote{Please do not confuse with proofs repository
-  which is the root package of proofs content} has the structure as the
-following
-
-\begin{itemize}
-\item \texttt{\textbf{build/}} --- contains complied version of Phometa and PDF
-  version of this report.
-
-\item \texttt{\textbf{doc/}} --- contains source code and supplementary images
-  of this report.
-
-\item \texttt{\textbf{scripts/}} --- contains scripts that can complie source
-  code, run test suites, etc.
-
-\item \texttt{\textbf{src/}} --- contains the entire source code of Phometa
-  \begin{itemize}
-  \renewcommand{\labelitemii}{$\star$}
-  \item \texttt{\textbf{Naive/}} --- contains naive JavaScript functions that
-    Elm functions can call.
-  \item \texttt{\textbf{Tools/}} --- contains additional functions that are
-    useful in general.
-  \item \texttt{\textbf{Models/}} --- contains dependencies of \elmtt{Model} and
-    its utilities.
-  \item \texttt{\textbf{Updates/}} --- contains dependencies of \elmtt{updates}
-    and its utilities.
-  \item \texttt{\textbf{Views/}} --- contains dependencies of \elmtt{view}
-    and its utilities.
-  \item \texttt{\textbf{Main.elm}} --- the main entry of Phometa that
-    wire up MCV components.
-  \item \texttt{\textbf{repository.json}} --- initial proofs repository that
-    contains standard library.
-  \item \texttt{\textbf{phometa-server.py}} --- a python scripts back-end server.
-  \item \texttt{\textbf{naive.js}} --- JavaScript that will be ship with
-    complied version of Phometa.
-  \item \texttt{\textbf{style.scss}} --- layout and theme of Phometa.
-  \end{itemize}
-\item \texttt{\textbf{tests/}} --- contains tests suites
-\item \texttt{\textbf{.gitignore}} --- specification of files that will be
-  ignored by Git.
-\item \texttt{\textbf{.travis.yml}} --- meta data regarding to Travis continuous
-  integration.
-\item \texttt{\textbf{LICENSE}} --- 3-clause BSD license.
-\item \texttt{\textbf{README.md}} --- summary information for of this repository.
-\item \texttt{\textbf{elm-package.json}} --- meta data regarding to Elm
-  dependencies.
-\item \texttt{\textbf{logo.png}} --- logo that will be used for favicon.
-
-\end{itemize}
-
-Please note that some files are omitted here due to limited space.
 
 \newpage
 
@@ -249,72 +190,40 @@ type Action
 \end{figure}
 
 One way to interact with Phometa is to click some button (or any clickable
-area), when this is clicked, it will update the value of \elmtt{action_signal}
+area). When this is clicked, it will update the value of \elmtt{action_signal}
 to ``\elmtt{ActionCommand cmd}'' where \elmtt{cmd} is an instance of
 \elmtt{Command} injected to that button earlier.
 
-\elmtt{Signal.foldp} will detect change in \elmtt{action_signal} so it applies
-function \elmtt{update} with ``\elmtt{ActionCommand cmd}'' to
-\elmtt{model_signal}. The function \elmtt{update}, in tern, will apply command
-\elmtt{cmd} to current model and this is how model can be updated.
+\elmtt{Signal.foldp} will the detect change in \elmtt{action_signal} so it
+applies function \elmtt{update} with ``\elmtt{ActionCommand cmd}'' to
+\elmtt{model_signal}. The function \elmtt{update}, in turn, will apply command
+\elmtt{cmd} to current model and this is how the model can be updated.
 
-Again, \elmtt{Signal.map} will detect change in \elmtt{action_model} so it
-applies function \elmtt{view} with current model to get latest HTML instance,
-please note that \elmtt{view} might inject further commands to buttons, if
-user click any button, then the entire process will happen again.
+Again, \elmtt{Signal.map} will the detect change in \elmtt{action_model} so it
+applies function \elmtt{view} with current model to get latest HTML instance.
+Please note that \elmtt{view} might inject further commands to buttons; if user
+clicks any button, then the entire process will happen again.
 
 Another way to interact with Phometa is to press some keystroke, this will make
 \elmtt{action_signal} changes to ``\elmtt{ActionKeystroke keystroke}'', where
 \elmtt{keystroke} is a \elmtt{List} of \elmtt{KeyCode} obtained from
 \elmtt{Keyboard.keysDown}.
 
-\elmtt{Signal.foldp} will detect change in \elmtt{action_signal} so it applies
-function \elmtt{update} with ``\elmtt{ActionKeystroke keystroke}'' to
-\elmtt{model_signal}. The function \elmtt{update}, in tern, will search a
-command that corresponded to this keystroke from \elmtt{model.root_keymap} to
-apply such a command with current model. Now, the remaining process is the same
-as when we click button.
-
-% \section{Modes}
-% Phometa as several internal modes to deal with non-global key-blindings as are
-% in keymap pane. For example if user is inputting a term, there will be
-% key-blindings that allow user to select several choices, if user click somewhere
-% else, these key-blindings will be replaced by new key-blindings of corresponded
-% mode.
-
-% \elmtt{Mode} is defined in \texttt{src/Models/Model.elm} as the following
-
-% \begin{figure}[H]
-% \begin{framed}
-% \begin{lstlisting}[language=elm]
-% type Mode
-%   = ModeNothing
-%   | ModeMenu
-%   | ModeRepo RecordModeRepo
-%   | ModeModule RecordModeModule
-%   | ModeComment RecordModeComment
-%   | ModeGrammar RecordModeGrammar
-%   | ModeRootTerm RecordModeRootTerm
-%   | ModeRule RecordModeRule
-%   | ModeTheorem RecordModeTheorem
-% \end{lstlisting}
-% \end{framed}
-% \caption{Declaration of \elmtt{Mode}}
-% \label{fig:implementation-mode}
-% \end{figure}
-
-% It is defined
-% The main usage of mode TODO:
-
-% \elmtt{model.mode}
+\elmtt{Signal.foldp} will detect the change in \elmtt{action_signal} so it
+applies function \elmtt{update} with ``\elmtt{ActionKeystroke keystroke}'' to
+\elmtt{model_signal}. The function \elmtt{update}, in turn, will search a
+command that corresponds to this keystroke from \elmtt{model.root_keymap} to
+apply such a command with the current model. Now, the remaining process is the
+same as when we click button.
 
 \section{Structure of Proofs Repository}
 In this section, we will show the complete internal representation of a proofs
 repository. All codes inside this section come from
 \texttt{src/Models/RepoModel.elm}
 
-Let define some common elements first\footnote{\elmtt{Arguments} depends on
-  \elmtt{RootTerm} which will be defined later in this section}.
+Let's define some common data-types\footnote{\elmtt{Arguments} depends on
+  \elmtt{RootTerm} which will be defined later in this section} which will be
+used by later data-types.
 
 \begin{figure}[H]
 \begin{framed}
@@ -328,12 +237,12 @@ type alias Parameters = List { grammar  : GrammarName
 type alias Arguments = List RootTerm
 \end{lstlisting}
 \end{framed}
-\caption{Representation of common elements that will be used later on}
+\caption{Representation of common data-types that will be used later on}
 \label{fig:implementation-repo-common}
 \end{figure}
 
 Now, we can define a proof repository which is just a big \elmtt{Package} stored
-in global model named \elmtt{model.root\_package} and can be defined as the
+in the global model named \elmtt{model.root\_package} and can be defined as the
 following
 
 \begin{figure}[H]
@@ -352,12 +261,15 @@ type PackageElem
 \label{fig:implementation-repo-package}
 \end{figure}
 
-We could think a \elmtt{Package} roughly as a collection containing other
+We could think of a \elmtt{Package} roughly as a collection containing other
 \elmtt{Package}s and \elmtt{Module}s. We also need \elmtt{PackagePath} to
-reference a package relatively to root package.
+reference a package relative to root package.
 
 \elmtt{Module} is a collection containing nodes. \elmtt{ModulePath} is a
-unique reference from root package to this module.
+unique reference from root package to this module. Please note that
+\elmtt{Module} uses \elmtt{OrderedDict} in contrast to \elmtt{Package} which
+uses \elmtt{OrderedDict}; this is because \elmtt{Module} needs to remember order
+of nodes but \elmtt{Package} simply shows elements alphabetically.
 
 \begin{figure}[H]
 \begin{framed}
@@ -373,11 +285,11 @@ type alias Module = { is_folded : Bool
 \label{fig:implementation-repo-module}
 \end{figure}
 
-There are four types of \elmtt{Node} which are \elmtt{Comment}, \elmtt{Grammar},
+There are four kinds of \elmtt{Node} which are \elmtt{Comment}, \elmtt{Grammar},
 \elmtt{Rule}, and \elmtt{Theorem}\footnote{\elmtt{Bool} that follows
   \elmtt{NodeTheorem} tells whether that theorem has been converted to lemma or
-  not}. \elmtt{NodePath} is a unique reference from root package to this
-node.
+  not.}; each of them will have corresponding data-type which will be defined
+later. \elmtt{NodePath} is a unique reference from root package to this node.
 
 \begin{figure}[H]
 \begin{framed}
@@ -393,7 +305,7 @@ type Node
   = NodeComment String
   | NodeGrammar Grammar
   | NodeRule Rule
-  | NodeTheorem Theorem Bool -- Bool = has_locked
+  | NodeTheorem Theorem Bool
 
 type NodeType
   = NodeTypeComment
@@ -418,7 +330,10 @@ type NodeType
 \label{fig:implementation-repo-node}
 \end{figure}
 
-We could define \elmtt{Grammar} as the following,
+\newpage
+
+We could define \elmtt{Grammar} as the following figure which is coincided to
+\emph{Node Grammar} described in section \ref{spec:node_grammar}.
 
 \begin{figure}[H]
 \begin{framed}
@@ -448,10 +363,11 @@ type alias GrammarChoice = StripedList Format GrammarName
 \label{fig:implementation-repo-grammar}
 \end{figure}
 
+\vspace{-1em}
+
 \elmtt{StripedList Format GrammarName} is just a pair of ``list of
 \elmtt{Format}'' and ``list of \elmtt{GrammarName}'' but it also ensure that
-length of ``list of \elmtt{Format}'' is longer than ``list of
-\elmtt{GrammarName}'' by exactly 1.
+length of the former is longer than the latter by exactly 1.
 
 Next is a term, which can be defined like this,
 
@@ -486,14 +402,16 @@ type VarType
 \end{figure}
 
 We usually use \elmtt{RootTerm} as a term at the top level, this is because it
-know its known grammar. In fact, \elmtt{Term} is just an auxiliary model of
-\elmtt{RootTerm}. Please note that it is possible to fine the grammar of every
+know its own grammar. In fact, \elmtt{Term} is just an auxiliary model of
+\elmtt{RootTerm}. Please note that it is possible to find the grammar of every
 sub-term of a \elmtt{RootTerm}, because we can refer to \elmtt{grammar}
 property of \elmtt{RootTerm} for top level and refer to \elmtt{GrammarChoice}
 of \elmtt{TermInd} for deeper sub-term.
 
 Once \elmtt{RootTerm} has been defined, we can define \elmtt{Rule} and
-\elmtt{Theorem} as the following,
+\elmtt{Theorem} as the following figures which are coincided to \emph{Node Rule}
+and \emph{Node Theorem} described in sections \ref{spec:node_rule} and
+\ref{spec:node_theorem}, respectively.
 
 \begin{figure}[H]
 \begin{framed}
@@ -540,6 +458,7 @@ type alias PremiseCascadeRecord =
 \label{fig:implementation-repo-rule}
 \end{figure}
 
+\vspace{-1.5em}
 
 \begin{figure}[H]
 \begin{framed}
@@ -595,114 +514,80 @@ only one term, this make it possible to create a dictionary
 \elmtt{pattern\_variables} that map these pattern variables to the corresponded
 terms.
 
-\section{Samples of code --- Pattern Matching}
-Although it is impossible to show all of codes written for Phometa, but there is
-a faction of code related to \emph{Pattern Matching} that is small to be shown
-entirely, it is one of the most interesting part as well. All codes inside this
-section come from \texttt{src/Models/RepoUtils.elm}.
+\section{Pattern Matching and Unification}
+Although it is impossible to show all of codes written in Phometa, there is a
+faction of code related to \emph{Pattern Matching} that is small enough to be
+described entirely; it is also one of the most interesting part as well.
 
-Let start with the most important, \elmtt{pattern\_match} is a function that
-pattern match \elmtt{pattern} against \elmtt{target}, if success, it will the
-return pattern matching information as described in previous section. Another
-function is \elmtt{pattern\_match\_multiple} which is the same as previous
-function but and receive list of pair of \elmtt{(pattern, target)}
+Credit: some material in this section inspired from \cite{Bundy:1985:CMM:3720}.
 
-\begin{figure}[H]
-\begin{framed}
-\begin{lstlisting}[language=elm]
-pattern_match : ModulePath -> Model -> RootTerm -> RootTerm
-                  -> Maybe PatternMatchingInfo
-pattern_match module_path model pattern target =
-  pattern_match_get_vars_dict pattern target
-    |> (flip Maybe.andThen)
-         (vars_dict_to_pattern_matching_info module_path model)
+Please note that this section only described how pattern matching works. For the
+supplementary source code, please see appendix chapter
+\ref{chap:supplementary_source_code}.
 
-pattern_match_multiple : ModulePath -> Model
-                           -> List (RootTerm, RootTerm)
-                           -> Maybe PatternMatchingInfo
-pattern_match_multiple module_path model list =
-  let vars_dict_maybe_list =
-        List.map (uncurry pattern_match_get_vars_dict) list
-   in if List.any ((==) Nothing) vars_dict_maybe_list then
-        Nothing
-      else
-        vars_dict_maybe_list
-          |> List.filterMap identity
-          |> merge_pattern_variables_list
-          |> vars_dict_to_pattern_matching_info
-               module_path model
-\end{lstlisting}
-\end{framed}
-\caption{Functions \elmtt{pattern\_match} and \elmtt{pattern\_match\_multiple}.}
-\label{fig:implementation-repo-pattern-matching-info}
-\end{figure}
+Let start with the most important function, \elmtt{pattern\_match} is a function
+that pattern match \elmtt{pattern} against \elmtt{target}, if success, it will
+the return pattern matching information as described in previous section.
+Another function is \elmtt{pattern\_match\_multiple} which is the same as
+previous function but receive a list of pair of \elmtt{(pattern, target)} rather
+than just one \elmtt{pattern} and one \elmtt{target}. These two are shown in
+figure \ref{fig:supp-pattern-matching-info}.
 
 Both of functions above call function \elmtt{pattern\_match\_get\_vars\_dict} that
 perform the actual pattern matching and return a dictionary that map each
-pattern variable to a list of terms. The the pattern match process can be
+pattern variable to a list of terms. The the pattern match process is shown in
+figure \ref{fig:supp-pattern-pattern-match-get-vars-dict} and can be
 described as the following
+
+\newpage
+
 \begin{itemize}
 \item If the grammar of pattern and target is not the same, fail immediately.
 \item If any of pattern or target is unfinished term, fail immediately.
-\item If pattern is a variable, success immediately with that variable
-  map to the target.
-\item If target is a variable but pattern is not, fail immediately, this is
-  one way matching.
+\item If pattern is a variable, succeed immediately with that variable
+  mapped to the target.
+\item If target is a variable but pattern is not, fail immediately (one-way
+  matching only).
 \item the only possibility left is both of them are
-  \elmtt{TermInd}\footnote{A term can be either unfinished, variable, or
+  \elmtt{TermInd}\footnote{A term can be either unfinished (\elmtt{TermTodo}),
+    variable (\elmtt{TermVar}), or
     \elmtt{TermInd}}, so it can process as the following
   \begin{itemize}
-  \item If the grammar choice of pattern and target is not the same, fail
+  \item If the grammar-choice of pattern and target is not the same, fail
     immediately.
-  \item Otherwise, recursively call current function on their sub terms,
+  \item Otherwise, construct $n$ pairs of (sub-pattern, sub-target) where
     \begin{itemize}
-      \item If any of sub-term fail pattern matching, then the entire function fail.
-      \item Otherwise, merge these sub-result together and successfully return it.
+    \item $n$ is the number of sub-term of pattern which must the same as number of sub-term of target.
+    \item $i^{th}$ sub-pattern is constructed from $i^{th}$ sub-term of pattern
+      and $i^{th}$ sub-grammar in the grammar-choice.
+    \item $i^{th}$ sub-target is constructed from $i^{th}$ sub-term of target
+      and $i^{th}$ sub-grammar in the grammar-choice.
     \end{itemize}
+
+    For each pair of (sub-pattern, sub-target), apply
+    \elmtt{pattern\_match\_get\_vars\_dict} then it will return either
+    pattern-to-list-of-terms dictionary or failure.
+
+    \begin{itemize}
+    \item If any of sub-result return as failure, fail immediately
+    \item Otherwise, merge all dictionaries of sub-results together and
+      succesfully return it.
+    \end{itemize}
+
   \end{itemize}
 \end{itemize}
 
-\begin{figure}[H]
-\begin{framed}
-\begin{lstlisting}[language=elm]
-pattern_match_get_vars_dict : RootTerm -> RootTerm ->
-                       Maybe (Dict VarName (List RootTerm))
-pattern_match_get_vars_dict pattern target =
-  if pattern.grammar /= target.grammar then Nothing else
-  case (pattern.term, target.term) of
-    (TermTodo, $\mathunderscore$) -> Nothing
-    ($\mathunderscore$, TermTodo) -> Nothing
-    (TermVar var_name, $\mathunderscore$) -> Just (Dict.singleton
-                                    var_name [target])
-    ($\mathunderscore$, TermVar $\mathunderscore$) -> Nothing
-    (TermInd pat_mixfix pat_sub_terms,
-        TermInd tar_mixfix tar_sub_terms) ->
-      if pat_mixfix /= tar_mixfix then Nothing else
-        let maybe_result_list = List.map2
-              pattern_match_get_vars_dict
-              (get_sub_root_terms pat_mixfix pat_sub_terms)
-              (get_sub_root_terms tar_mixfix tar_sub_terms)
-         in if List.any ((==) Nothing) maybe_result_list then
-              Nothing
-            else
-              maybe_result_list
-                |> List.filterMap identity
-                |> merge_pattern_variables_list
-                |> Just
-\end{lstlisting}
-\end{framed}
-\caption{Function \elmtt{pattern\_match\_get\_vars\_dict}.}
-\end{figure}
-
 After \elmtt{pattern\_match\_get\_vars\_dict} produces matching dictionary. \\
-\elmtt{vars\_dict\_to\_pattern\_matching\_info} will try to fit this into
+\elmtt{vars\_dict\_to\_pattern\_matching\_info} as shown in figure
+\ref{fig:supp-vars-dict-to-pattern-matching-info} will try to fit this into
 \elmtt{PatternMatchingInfo}. This can be done by finding a
 \elmtt{SubstitutionList} that can eliminate all of ambiguity among terms which
 are the value of matching dictionary. This \elmtt{SubstitutionList} can be found
 by using the following method.
 \begin{itemize}
 \item For each pattern variable, check whether it is meta variable or literal.
-\item If it is meta variable, unify corresponded terms to each other then append
+\item If it is meta variable, unify\footnote{Unification process will be
+    explained after this function.} corresponded terms to each other then append
   these unification result to the main \elmtt{SubstitutionList}.
 \item If it is literal, check that each of term is that exact variable as well,
   otherwise, fail.
@@ -712,226 +597,56 @@ Then we can substitute this \elmtt{SubstitutionList} to the matching directly to
 get \elmtt{pattern\_variables}, hence be able to return
 \elmtt{PatternMatchingInfo} as expected.
 
-\begin{figure}[H]
-\begin{framed}
-\begin{lstlisting}[language=elm,basicstyle=\footnotesize\ttfamily]
-vars_dict_to_pattern_matching_info : ModulePath -> Model
-                                       -> Dict VarName (List RootTerm)
-                                       -> Maybe PatternMatchingInfo
-vars_dict_to_pattern_matching_info module_path model vars_dict =
-  let subst_list_func var_name root_term_list maybe_acc_subst_list =
-        let grammar_name = (.grammar) (list_get_elem 0 root_term_list)
-         in case get_variable_type module_path model
-                var_name grammar_name of
-              Nothing             -> Nothing
-              Just VarTypeMetaVar -> case root_term_list of
-                []              -> Nothing
-                root_term :: [] -> maybe_acc_subst_list
-                fst_root_term :: other_root_terms ->
-                  let fold_func root_term maybe_acc =
-                    let maybe_partial_subst_list =
-                      Maybe.andThen maybe_acc (\acc ->
-                       unify module_path model
-                        (multiple_root_substitute acc fst_root_term)
-                        (multiple_root_substitute acc root_term))
-                     in Maybe.map2 (++) maybe_acc
-                          maybe_partial_subst_list
-                   in List.foldl fold_func
-                        maybe_acc_subst_list other_root_terms
-              Just VarTypeLiteral ->
-                if List.all ((==) ({ grammar = grammar_name
-                                   , term = TermVar var_name
-                                   })) root_term_list
-                  then maybe_acc_subst_list else Nothing
-      maybe_subst_list = Dict.foldl subst_list_func
-                           (Just []) vars_dict
-   in Maybe.map (\subst_list ->
-        { pattern_variables =
-            Dict.map (\var_name root_term_list ->
-              multiple_root_substitute subst_list <|
-                list_get_elem 0 root_term_list) vars_dict
-        , substitution_list = subst_list
-        }) maybe_subst_list
-\end{lstlisting}
-\end{framed}
-\caption{Function \elmtt{vars\_dict\_to\_pattern\_matching\_info}.}
-\end{figure}
+Function \elmtt{unify} as described in figure \ref{fig:supp-unify} receives term
+\elmtt{a} and \elmtt{b} then try to build the most general unifier (mgu) which
+is the most general substitution list that is specific enough to make term
+\elmtt{a} and \elmtt{b} identical. This function is similar to pattern matching
+in \elmtt{pattern\_match\_get\_vars\_dict} but this is two way matching and it
+is aware whether a variable is meta variable or literal.
 
-Function \elmtt{unify} receives term \elmtt{a} and \elmtt{b} then try to build
-most general unifier (mgu) which is the most general substitution list that is
-specific enough to make term \elmtt{a} and \elmtt{b} identical.
-
-Unification process is similar to pattern matching in
-\elmtt{pattern\_match\_get\_vars\_dict} but this is this is two wat matching and
-it is aware whether a variable is meta variable or literal.
-
-\begin{figure}[H]
-\begin{framed}
-\begin{lstlisting}[language=elm,basicstyle=\footnotesize\ttfamily]
-unify : ModulePath -> Model -> RootTerm -> RootTerm
-          -> Maybe (SubstitutionList)
-unify module_path model a b =
-  if a.grammar /= b.grammar then Nothing else
-  case (a.term, b.term) of
-    (TermTodo, $\mathunderscore$) -> Nothing
-    ($\mathunderscore$, TermTodo) -> Nothing
-    (TermVar a_var_name, $\mathunderscore$) ->
-      case get_variable_type module_path model a_var_name a.grammar of
-        Nothing -> Nothing
-        Just VarTypeMetaVar -> Just ([{ old_var = a_var_name
-                                      , new_root_term = b}])
-        Just VarTypeLiteral -> case b.term of
-          TermVar b_var_name ->
-            case get_variable_type module_path model
-                   b_var_name b.grammar of
-              Nothing -> Nothing
-              Just VarTypeMetaVar -> Just ([{ old_var = b_var_name
-                                            , new_root_term = a}])
-              Just VarTypeLiteral -> if a_var_name == b_var_name
-                                       then Just [] else Nothing
-          $\mathunderscore$                  -> Nothing
-    ($\mathunderscore$, TermVar b_var_name) ->
-      case get_variable_type module_path model b_var_name b.grammar of
-        Nothing -> Nothing
-        Just VarTypeMetaVar -> Just ([{ old_var = b_var_name
-                                      , new_root_term = a}])
-        Just VarTypeLiteral -> Nothing
-    (TermInd a_mixfix a_sub_terms, TermInd b_mixfix b_sub_terms) ->
-      if a_mixfix /= b_mixfix then Nothing else
-        let fold_func (a_root_sub_term, b_root_sub_term)
-                maybe_acc_subst_list =
-              let maybe_partial_subst_list =
-                    Maybe.andThen maybe_acc_subst_list
-                      (\subst_list -> unify module_path model
-                         (multiple_root_substitute
-                           subst_list a_root_sub_term)
-                         (multiple_root_substitute
-                           subst_list b_root_sub_term))
-               in Maybe.map2 List.append maybe_acc_subst_list
-                                         maybe_partial_subst_list
-         in List.foldl fold_func (Just []) <|
-              List.map2 (,) (get_sub_root_terms a_mixfix a_sub_terms)
-                            (get_sub_root_terms b_mixfix b_sub_terms)
-\end{lstlisting}
-\end{framed}
-\caption{Function \elmtt{unify}.}
-\end{figure}
-
-Lastly, we can implement the remaining auxiliary functions of pattern matching
-as the following,
-
-\begin{figure}[H]
-\begin{framed}
-\begin{lstlisting}[language=elm,basicstyle=\scriptsize\ttfamily]
-substitute : VarName -> Term -> Term -> Term
-substitute old_var new_term top_term =
-  case top_term of
-    TermTodo -> TermTodo
-    TermVar var_name -> if var_name == old_var
-                          then new_term else TermVar var_name
-    TermInd grammar_choice sub_terms ->
-      TermInd grammar_choice <|
-        List.map (substitute old_var new_term) sub_terms
-
-multiple_root_substitute : SubstitutionList -> RootTerm -> RootTerm
-multiple_root_substitute list top_root_term =
-  let fold_func record acc =
-        substitute record.old_var record.new_root_term.term acc
-      update_func top_term = List.foldl fold_func top_term list
-   in Focus.update term_ update_func top_root_term
-
-pattern_substitute : Dict VarName RootTerm -> Term -> Term
-pattern_substitute dict top_term =
-  case top_term of
-    TermTodo -> TermTodo
-    TermVar var_name -> case Dict.get var_name dict of
-                          Nothing            -> TermVar var_name
-                          Just new_root_term -> new_root_term.term
-    TermInd grammar_choice sub_terms ->
-      TermInd grammar_choice <|
-        List.map (pattern_substitute dict) sub_terms
-
-pattern_root_substitute : Dict VarName RootTerm -> RootTerm -> RootTerm
-pattern_root_substitute dict top_root_term =
-  Focus.update term_ (pattern_substitute dict) top_root_term
-
-pattern_matching_info_substitute : PatternMatchingInfo -> SubstitutionList
-                                     -> PatternMatchingInfo
-pattern_matching_info_substitute pm_info substitution_list =
-  { pattern_variables = Dict.map (\ $\mathunderscore$ ->
-      multiple_root_substitute substitution_list) pm_info.pattern_variables
-  , substitution_list = List.append pm_info.substitution_list
-                          substitution_list }
-
-pattern_matchable : ModulePath -> Model -> RootTerm -> RootTerm -> Bool
-pattern_matchable module_path model pattern target =
-  pattern_match module_path model pattern target /= Nothing
-
-merge_pattern_variables_list : List (Dict VarName (List RootTerm)) ->
-                                 Dict VarName (List RootTerm)
-merge_pattern_variables_list main_list =
-  let dict_fold_func key target_val acc =
-        let old_val = Maybe.withDefault [] (Dict.get key acc)
-            new_val = List.append target_val old_val
-         in Dict.insert key new_val acc
-      list_fold_func dict acc = Dict.foldl dict_fold_func dict acc
-   in List.foldl list_fold_func Dict.empty main_list
-       |> Dict.map (\ $\mathunderscore$ list -> list_remove_duplication list)
-\end{lstlisting}
-\end{framed}
-\caption{Other auxiliary functions for pattern matching.}
-\end{figure}
-
-
-\section{Building a Complied Version}
-We can build the complied version of Phometa by go to the top directory of
-Phometa repository then execute \texttt{./scripts/build.sh}. This will process
-as the following
+Recall back to function \elmtt{vars\_dict\_to\_pattern\_matching\_info}, ``unify
+the corresponded terms'' means we will find the most general substitution list
+that can be used to substitute to each corresponded term and make every term
+identical. This achievable by
 \begin{itemize}
-\item create \texttt{build/} (if doesn't exist) or clean it (if doesn't empty)
-\item compile(\LaTeX) the document in \texttt{doc/} and copy the main PDF file to \texttt{build/}
-\item compile(Sass) \texttt{src/style.scss} to \texttt{build/style.css}
-\item copy the following files to \texttt{build/}
-  \begin{itemize}
-  \item \texttt{src/naive.js}
-  \item \texttt{src/repository.json}
-  \item \texttt{src/phometa-server.py}
-  \item \texttt{logo.png}
-  \end{itemize}
-\item compile(Elm) \texttt{src/Main.elm} to \texttt{build/phometa.html}
-\item compress everything in \texttt{build/} to \texttt{build/phometa.tar.gz}
+\item apply function \elmtt{unify} on the $1^{st}$ and $2^{nd}$ term, then we
+  will get the first substitution list.
+\item substitute the first substitution list to the $1^{st}$ and $3^{rd}$ terms,
+  then apply function \elmtt{unify} to it, then append this substitution list to
+  the first one to get the second substitution list.
+\item substitute the second substitution list to the original $1^{st}$ and $4^{th}$
+  terms, then apply function \elmtt{unify} to it, then append this substitution
+  list to the second one to get the third substitution list.
+\item keep repeat this pattern until the last term get substituted and unify, the
+  latest substitution list will the most general substitution list that we want
+  at the first place.
 \end{itemize}
 
-Please note that Elm compilation will consult \texttt{elm-package.json} for meta
-data. The dependency of target Elm file will be complied recursively. It can be
-outputted as HTML file (for standalone application) or JavaScript file (to
-embedded it as an element of bigger application).
-
-\section{Back-End Communication}
-There is a python server template from
-\url{https://gist.github.com/UniIsland/3346170} which allows client to
-download and upload local files directly in the server.
-
-This server template, with some modification, allows us to create a local server
-to serve \texttt{phometa.html} which is the main application that user will
-interact with. \texttt{phometa.html}, in tern, will load further resource such
-as \texttt{naive.js} (for naive code that can't be done directly in Elm) and
-\texttt{style.css} (for theme of Phometa).
-
-Once the setup is completed, Phometa will automatically load the repository by
-sending Ajax request to load \texttt{repository.json} from the server, and then,
-it will decode this json file to get instance of \elmtt{Package} and will set
-this to \elmtt{model.root_package}.
-
-Most of operation after this doesn't require further communication with the
-server. Nevertheless, if user would like to save the repository, Phometa will
-encode \elmtt{model.root_package} and send Ajax request to upload this as
-\texttt{repository.json}.
+There are also other several auxiliary functions for pattern matching as
+described in figure \ref{fig:supp-auxiliary} which can be described as the
+following
+\begin{itemize}
+\item \elmtt{substitute} --- replace every occurrence of the specified variable
+  ($1^{st} arg$) by the new term ($2^{st} arg$) inside the current term ($3^{rd}
+  arg$).
+\item \elmtt{multiple\_root\_substitute} --- substitute a root term by a
+  substitution list.
+\item \elmtt{pattern\_substitute} --- substitute a term by
+  pattern-to-root-term dictionary.
+\item \elmtt{pattern\_root\_substitute} --- the same as
+  \elmtt{pattern\_substitute} but substitute to a root-term rather than a term.
+\item \elmtt{pattern\_matching\_info\_substitute} --- update
+  \elmtt{PatternMatchingInfo} by a substitution list.
+\item \elmtt{pattern\_matchable} --- check whether the pattern root-term can be pattern
+  matched against target root-term or not.
+\item \elmtt{merge\_pattern\_variables\_list} --- merge all of
+  pattern-to-list-of-terms dictionaries in to a single dictionary.
+\end{itemize}
 
 \section{Testing / Continious Integration}
 Functional programming makes testing really easy. In order to test a function,
 we need to create a test suite and call that function with several inputs then
-check whether the outputs are the same as expectation or not.
+check whether the outputs are the same as expected or not.
 
 For example, we want to test a function \elmtt{list\_insert} as the following
 
@@ -1010,8 +725,10 @@ port runner = run (consoleRunner tests)
 \label{fig:implementation-test-main}
 \end{figure}
 
-To run the main test suite, go to top level of Phometa repository\\ then execute
-\texttt{./scripts/tests.sh} which will be processed as the following.
+To run\footnote{The instruction of running test suite is shown here to give a
+  favour to reader that how did I test my code, rather than asking user to run
+  the test.} the main test suite, go to top level of Phometa repository\\ then
+execute \texttt{./scripts/tests.sh} which will be processed as the following.
 \begin{itemize}
 \item compile \texttt{tests/Tests/Main.elm} to \texttt{raw-tests.js}
 \item convert \texttt{raw-tests.js} to \texttt{tests.js} using external bash
@@ -1022,10 +739,10 @@ To run the main test suite, go to top level of Phometa repository\\ then execute
 Please note that the test suite doesn't have 100\% coverage and functions
 related to HTML are not testable using this method.
 
-\emph{Travis CI} is used for continuous integration. Basically, every time when
-something is pushed to \emph{GitHub}, Travis CI will check \texttt{.travis.yml}
-this will result in the main test suite being executed in virtual machine using
-similar testing process above.
+Last but not least, \emph{Travis CI} is used for continuous integration.
+Basically, every time when something is pushed to \emph{GitHub}, Travis CI will
+check \texttt{.travis.yml} this will result in the main test suite being
+executed in virtual machine using similar testing process above.
 
 
 \end{document}

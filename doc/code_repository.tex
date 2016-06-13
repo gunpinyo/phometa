@@ -1,0 +1,153 @@
+\documentclass[master.tex]{subfiles}
+\begin{document}
+
+\chapter{The Phometa Repository}
+\label{chap:code_repository}
+
+\section{Installation and Startup}
+\label{sec:installation_startup}
+
+You can download the compiled version of Phometa at
+
+{\centering\url{https://github.com/gunpinyo/phometa/raw/master/build/phometa.tar.gz}}
+
+Once you unzip this file, you see several files as the following
+
+\begin{itemize}
+\item \texttt{\textbf{phometa.html}} --- the main file containing Phometa
+  web-based application.
+\item \texttt{\textbf{style.css \& style.css.map}} --- control the layout and
+  theme of \texttt{\textbf{phometa.html}}
+\item \texttt{\textbf{naive.js}} --- JavaScript code that will be injected to
+  \texttt{\textbf{phometa.html}}
+\item \texttt{\textbf{repository.json}} --- contain proofs repository, can be
+  loaded or saved by \texttt{\textbf{phometa.html}}
+\item \texttt{\textbf{logo.png}} --- image that will be used as favicon in
+  \texttt{\textbf{phometa.html}}
+\item \texttt{\textbf{phometa-server.py}} --- python script that can be executed
+  as local server.
+\item \texttt{\textbf{phometa-doc.pdf}} --- this report, included here as the
+  tutorial and reference.
+\end{itemize}
+
+You can start Phometa server by execute
+
+\texttt{./phometa-server.py 8080}
+
+where \texttt{8080} is port number, you can change this to another port number
+if you like. Please note that Python is required for this server.
+
+Then open your favourite web-browser\footnote{but Google Chrome is recommended}
+and enter
+
+\texttt{http://localhost:8080/phometa.html}
+
+The program will look like figure \ref{fig:specification-phometa-home-window}
+
+\section{The Anatomy of Phometa Repository}
+
+Phometa is been developed using \emph{Git} as the version control and hosted
+at
+
+\url{https://github.com/gunpinyo/phometa}.
+
+The Phometa repository \footnote{Please do not confuse with proofs repository
+  which is the root package of proofs content} has the structure as the
+following
+
+\begin{itemize}
+\item \texttt{\textbf{build/}} --- contains compiled version of Phometa and PDF
+  version of this report.
+
+\item \texttt{\textbf{doc/}} --- contains source code and supplementary images
+  of this report.
+
+\item \texttt{\textbf{scripts/}} --- contains scripts that can compile source
+  code, run test suites, etc.
+
+\item \texttt{\textbf{src/}} --- contains the entire source code of Phometa
+  \begin{itemize}
+  \renewcommand{\labelitemii}{$\star$}
+  \item \texttt{\textbf{Naive/}} --- contains naive JavaScript functions that
+    Elm functions can call.
+  \item \texttt{\textbf{Tools/}} --- contains additional functions that are
+    useful in general.
+  \item \texttt{\textbf{Models/}} --- contains dependencies of \elmtt{Model} and
+    its utilities.
+  \item \texttt{\textbf{Updates/}} --- contains dependencies of \elmtt{updates}
+    and its utilities.
+  \item \texttt{\textbf{Views/}} --- contains dependencies of \elmtt{view}
+    and its utilities.
+  \item \texttt{\textbf{Main.elm}} --- the main entry of Phometa that
+    wire up MCV components.
+  \item \texttt{\textbf{repository.json}} --- initial proofs repository that
+    contains standard library.
+  \item \texttt{\textbf{phometa-server.py}} --- a python scripts back-end server.
+  \item \texttt{\textbf{naive.js}} --- JavaScript that will be ship with
+    compiled version of Phometa.
+  \item \texttt{\textbf{style.scss}} --- layout and theme of Phometa.
+  \end{itemize}
+\item \texttt{\textbf{tests/}} --- contains tests suites
+\item \texttt{\textbf{.gitignore}} --- specification of files that will be
+  ignored by Git.
+\item \texttt{\textbf{.travis.yml}} --- meta data regarding to Travis continuous
+  integration.
+\item \texttt{\textbf{LICENSE}} --- 3-clause BSD license.
+\item \texttt{\textbf{README.md}} --- summary information for of this repository.
+\item \texttt{\textbf{elm-package.json}} --- meta data regarding to Elm
+  dependencies.
+\item \texttt{\textbf{logo.png}} --- logo that will be used for favicon.
+
+\end{itemize}
+
+Please note that some files are omitted here due to limited space.
+
+\newpage
+
+
+\section{Building a Compiled Version}
+We can build the compiled version of Phometa by go to the top directory of
+Phometa repository then execute \texttt{./scripts/build.sh}. This will process
+as the following
+\begin{itemize}
+\item create \texttt{build/} (if doesn't exist) or clean it (if doesn't empty)
+\item compile(\LaTeX) the document in \texttt{doc/} and copy the main PDF file to \texttt{build/}
+\item compile(Sass) \texttt{src/style.scss} to \texttt{build/style.css}
+\item copy the following files to \texttt{build/}
+  \begin{itemize}
+  \item \texttt{src/naive.js}
+  \item \texttt{src/repository.json}
+  \item \texttt{src/phometa-server.py}
+  \item \texttt{logo.png}
+  \end{itemize}
+\item compile(Elm) \texttt{src/Main.elm} to \texttt{build/phometa.html}
+\item compress everything in \texttt{build/} to \texttt{build/phometa.tar.gz}
+\end{itemize}
+
+Please note that Elm compilation will consult \texttt{elm-package.json} for meta
+data. The dependency of target Elm file will be compiled recursively. It can be
+outputted as HTML file (for standalone application) or JavaScript file (to
+embedded it as an element of bigger application).
+
+\section{Back-End Communication}
+There is a python server template from
+\url{https://gist.github.com/UniIsland/3346170} which allows client to
+download and upload local files directly in the server.
+
+This server template, with some modification, allows us to create a local server
+to serve \texttt{phometa.html} which is the main application that user will
+interact with. \texttt{phometa.html}, in turn, will load further resource such
+as \texttt{naive.js} (for naive code that can't be done directly in Elm) and
+\texttt{style.css} (for theme of Phometa).
+
+Once the setup is completed, Phometa will automatically load the repository by
+sending Ajax request to load \texttt{repository.json} from the server, and then,
+it will decode this json file to get instance of \elmtt{Package} and will set
+this to \elmtt{model.root_package}.
+
+Most of operation after this doesn't require further communication with the
+server. Nevertheless, if user would like to save the repository, Phometa will
+encode \elmtt{model.root_package} and send Ajax request to upload this as
+\texttt{repository.json}.
+
+\end{document}

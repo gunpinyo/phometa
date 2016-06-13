@@ -16,19 +16,19 @@ is guaranteed that the proof is valid.
 There are many powerful and famous proof assistants such as
 Coq\supercite{coq-official-website}, Agda\supercite{agda-official-website}, and
 Isabelle\supercite{isabelle-official-website} which are suitable for extreme use
-case of complex proofs. Nevertheless, they have a steep learning curve and have
-specific meta-theory behind it, for example, Coq has Calculus of Inductive
+cases of complex proofs. Nevertheless, they have a steep learning curve and have
+specific meta-theories behind them, for example, Coq has Calculus of Inductive
 Construction (CIC), Agda has Unified Theory of Dependent
-Types\supercite{norell:thesis}\supercite{Luo:1994:CRT:184757} which are quite
-hard for newcomers. To solve this problem they should start with something
+Types\supercite{norell:thesis}\supercite{Luo:1994:CRT:184757} both of which are
+quite hard for newcomers. To solve this problem they should start with something
 easier than these and come back again later.
 
-One of the easiest starting point to learn about formal proof is to use
+One of the easiest starting points to learn about formal proof is to use
 derivation trees where validity of a term is derived from a derivation rule
 together with validity of zero or more terms depending on the rule. These
 prerequisite terms can be proven similarly to the main term. The proving process
-will happen recursively, this lead to tree-like structure of the final proof,
-this is why it is called ``derivation tree''.
+will happen recursively, leading to a tree-like structure of the final proof,
+which is why it is called ``derivation tree''.
 
 The naive way to construct such a derivation tree is to draw it on a paper,
 however, this has many disadvantages such as
@@ -41,22 +41,22 @@ however, this has many disadvantages such as
   internal unification when applying a rule --- again, need to recreate the tree
   for many iterations.
 \item When a derivation tree is completed, there is nothing to guarantee that it
-  doesn't have any errors --- conflict with the ambition to use proof assistant
-  at the first place.
+  doesn't have any errors --- conflicting with the ambition to use proof
+  assistant at the first place.
 \end{itemize}
-So I decided to create a proof assistants called \emph{Phometa} to solve this
-derivation-tree manually-drawing problem. To be precise, Phometa is proof
-assistant that allows user to create a formal system and prove theorems using
+So I decided to create a proof assistant called \emph{Phometa} to solve this
+derivation-tree manual-drawing problem. To be precise, Phometa is proof
+assistant that allows users to create a formal system and prove theorems using
 derivation trees.
 
 Phometa fundamentally consists of three kinds\footnote{There exists the fourth
   kind of node which are comment node but I don't include it there since it is
   not relevant to the fundamental concept.} of node as the following
 \begin{itemize}
-\item \emph{Grammar} (or Backus-Naur Form) --- How to construct a well-form
+\item \emph{Grammar} (or Backus-Naur Form) --- How to construct a well-formed
   term.\\ For example, a simple arithmetic expression can be constructed by a
   number \emph{or} two expressions adding together \emph{or} two expressions
-  multiply together.
+  multiplied together.
 \item \emph{Rule} (or derivation rule) --- A reason that can be used to prove
   validity of terms. For example, $(u + v) = (x + y)$ is valid if $u = x$ and $v
   = y$.
@@ -64,7 +64,7 @@ Phometa fundamentally consists of three kinds\footnote{There exists the fourth
   a particular term is valid. For example,
   \begin{itemize}
   \item[] $((3 + 4) \times 5) = ((4 + 3) \times 5)$ is valid by rule
-    \rulename{add-intro} and
+    \rulename{mult-intro} and
     \begin{itemize}
     \item[] $(3 + 4) = (4 + 3)$ is valid by rule \rulename{add-comm}
     \item[] $5 = 5$ is valid by rule \rulename{eq-refl}
@@ -76,38 +76,50 @@ terms will be represented by theorems (derivation trees).
 
 In term of usage, users can Phometa by either
 \begin{itemize}
-\item Learn one of many existing formal systems provided in Phometa's standard
-  library and try to proof some theorem regarding to that formal system.
-\item Create their own formal system or extend an existing formal system, then
-  do some experiments about it.
+\item Learning one of many existing formal systems provided in Phometa
+  standard library and try to prove some theorem in that formal system.
+\item Creating their own formal system or extending an existing formal system,
+  then do some experiments about it.
 \end{itemize}
 
-In order to make Phometa easy to use, it is designed to be web-based
+In order to make Phometa easy to use, it is designed to be a web-based
 application. Users will interact with Phometa mainly by clicking buttons and
-pressing keyboard-shortcut. This has advantages over traditional proof assistant
-because it is easier to read, ill-from terms never occur, and guarantee that the
-entire system is always in consistent state.
+pressing keyboard-shortcuts. This has advantages over a traditional proof
+assistant because it is easier to read, ill-from terms never occur, and
+guarantees that the entire system is always in consistent state.
 
 \section{Objectives}
 \begin{itemize}
-  \item To make a construction of derivation tree become more systematic. Hence, users become more productive and have less chance to make an error.
-  \item To encourage users to create their own formal systems and reason about it.
-  % \item To integrate operational semantics with in formal system. Hence, be able represent the entire logical system with in just one framework.
-  \item To show that most of formal systems have a similar meta-structure which can be implemented using common framework.
-  \item To show advantages of visualised proof assistant over traditional one.
+\item To make a construction of derivation tree become more systematic. Hence,
+  users become more productive and have less chance to make an error.
+  \item To encourage users to create their own formal system and reason about
+    it.
+  \item To show that most of formal systems have a similar meta-structure which
+    can be implemented using a common framework.
+  \item To show advantages of a visualised proof assistant over a traditional
+    one.
 \end{itemize}
 
 \section{Achievement}
 \begin{itemize}
-\item Finished designing Phometa specification in such a way to keep it simple yet be able
-  to produce a complex proof.
-\item Finished implementing Phometa. All of basic functionality is working.
-\item Encoded several formal systems such as Simple Arithmetic, Propositional Logic, and Typed Lambda Calculus
-  as standard library in Phometa.
+\item Finished designing Phometa specification (chapter
+  \ref{chap:specification}) in such a way to keep it simple yet be able to
+  produce a complex proof.
+\item Finished implementing Phometa (chapter \ref{chap:implementation}). All of
+  basic functionality is working.
+\item Encoded the following formal systems as standard library in Phometa.
+  \begin{itemize}
+  \item Simple Arithmetic (chapter \ref{chap:example_simple_arithmetic})
+  \item Propositional Logic (chapters \ref{chap:examples_formal_systems} and
+    \ref{chap:example_propositional_logic})
+  \item Typed Lambda Calculus (chapters
+    \ref{chap:examples_formal_systems} and \ref{chap:example_lambda_calculus})
+  \end{itemize}
 \item Wrote a tutorial for newcomers to use Phometa (chapters
   \ref{chap:background}, \ref{chap:example_simple_arithmetic},
-  \ref{chap:example_propositional_logic}, and
-  \ref{chap:example_lambda_calculus}).
+  \ref{chap:example_propositional_logic},
+  \ref{chap:example_lambda_calculus}, and
+  \ref{chap:excercises}).
 \end{itemize}
 
 \end{document}

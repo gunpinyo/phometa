@@ -4,433 +4,715 @@
 \chapter{Specification}
 \label{chap:specification}
 
-In this chapter, we will the full detail of phometa.
-\section{Overview}
-mainly talk about phometa UI structure, grids, keymap pane, mode menu, and messages panel
+After gaining some familiarity with Phometa in the previous chapters, this
+chapter provides a complete reference of Phometa. After reading this chapter,
+you should be able to use Phometa in full efficiency.
 
-\section{Repository}
-structure of repository
+\section{User Interface Overview}
+
+After you install and start Phometa according to appendix section
+\ref{sec:installation_startup}, the program will look like this in a web-browser.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{spec-window-when-start}
+    \caption{Screenshot of Phometa when you open it from web-browser.}
+\label{fig:specification-phometa-home-window}
+\end{figure}
+
+According to figure \ref{fig:specification-phometa-home-window}, user interface
+of Phometa is divided into 4 panes as the following
+
 \begin{itemize}
-\item add new sub-package or module inside a package (using package pane)
-\item load/save repository using textarea in home pane + also talk about stdlib
-\item add/swap nodes inside module
-\item dedicate view for each node (using package pane)
+\item\textbf{Package Pane (left)} --- shows and let users interact with the
+  global structure of proofs repository.
+\item\textbf{Keymap Pane (right)} --- shows every possible key-binding on the
+  current state of the program, user can also click any row directly to get the
+  same effect as pressing the corresponded key.
+\item\textbf{Grids Pane (centre)} --- shows and lets user interact with the
+  current content, grids the pane can be split into several sub-panes using mode
+  menu explained below.
+\item\textbf{Messages Pane (upper-centre)} --- show incoming notifications such
+  as success or user exception notification; if there isn't any notification,
+  this pane will disappear.
 \end{itemize}
 
-\section{Auto Complete}
-autocomplete in general
+On any state of the program, user can click \pkbd{Alt-x} to jump to menu,
+this will change the keymap pane to display the following key-bindings
 
-define its param i.e.\ return call back
+\begin{itemize}
+\item \pkbd{l} --- reload proofs repository from \texttt{repository.json}
+\item \pkbd{s} --- save proofs repository to \texttt{repository.json}
+\item \pkbd{1} --- reform the grids pane to display just 1 sub-pane
+\item \pkbd{2} --- reform the grids pane to display 2 sub-panes aligned
+  horizontally.
+\item \pkbd{3} --- reform the grids pane to display 3 sub-panes aligned
+  horizontally.
+\item \pkbd{4} --- reform the grids pane to display 4 sub-panes as $2 \times 2$
+  grids.
+\item \pkbd{8} --- reform the grids pane to display 2 sub-panes aligned
+  vertically.
+\item \pkbd{9} --- reform the grids pane to display 3 sub-panes aligned
+  vertically.
+\item \pkbd{h} --- make focused sub-pane of the grids pane display home page
+\item \pkbd{p} --- toggle (show / hide) the package pane
+\item \pkbd{k} --- toggle (show / hide) the keymap pane
+\end{itemize}
 
-how to do autocomplete
+For example, in any state of the program, we can split the grids pane into two
+horizontally sub-panes by pressing \pkbd{Alt-x} followed by \pkbd{2} to get a
+result similar to figure \ref{fig:specification-1x2-grids}.
+
+In fact, splitting grids is recommended when you construct a proof, because it
+will let you use one of the sub-panes to look up relevant grammars and rules
+without losing concentration on a theorem that is on another sub-pane.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{spec-1x2-grids}
+    \caption{Screenshot of Phometa when you split the grids pane into $1 \times 2$
+      grids.}
+\label{fig:specification-1x2-grids}
+\end{figure}
+
+\section{Auto-Complete Input Box}
+Although users will interact with Phometa mainly by clicking a button and
+pressing a keyboard shortcut, there are several places that might require the
+user to type something, and in order make this as convenient as possible, every
+input box except textarea in comment node will have \emph{auto-complete}
+functionality.
+
+An (auto-complete) input box will internally have a list of choices, which will
+be mapped to keys \pkbd{Alt-{1..9}} respectively. Because these choices are
+keyboard shortcut hence they will be visible in the keymap pane so user can see all
+of this. If there are more than 9 choices, it will map just the first 9 choices to
+\pkbd{Alt-\{1..9\}} and provide \pkbd{Alt-[} and \pkbd{Alt-]} that can jump to
+previous and next page of choices respectively.
+
+\begin{figure}[H]
+    \centering
+
+\begin{minipage}{0.35\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{spec-autocomplete-1}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.35\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{spec-autocomplete-2}
+\end{flushright}
+\end{minipage}
+\caption{Key-blinding of an example of auto-complete before and after pressing \pkbd{Alt-]}}
+\label{fig:specification-autocomplete-choices}
+\end{figure}
+
+Another way to access further choices is to type some sub-strings (separated by
+space) in the input box. This will filter only choices that still match with
+those sub-string. For example, according to the choices in figure
+\ref{fig:specification-autocomplete-choices}, if we type \texttt{``dd''}, it
+will match just 4 rules which are \prule{add-intro}, \prule{add-assoc},
+\prule{add-comm}, \prule{add-identity} since this has \texttt{``dd''} as
+sub-string. Now, if we type \texttt{``dd in''} it will match just
+\prule{add-intro} since it is the only one that has \texttt{``dd''} \emph{and}
+\texttt{``in''} as sub-string. In addition, if there is just one choice left, we
+can hit ``Return'' for that choice alternative to \pkbd{Alt-1} for convenience.
+
+\begin{figure}[H]
+    \centering
+
+\begin{minipage}{0.35\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{spec-autocomplete-3}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.35\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{spec-autocomplete-4}
+\end{flushright}
+\end{minipage}
+\caption{Keymap pane of figure \ref{fig:specification-autocomplete-choices}
+  after be filtered by \texttt{``dd''} and \texttt{``dd in''}.}
+\label{fig:specification-autocomplete-choices-filtered}
+\end{figure}
+
+When typing something into the input box, it also appears on the top of the
+keymap pane as well (example as in figure
+\ref{fig:specification-autocomplete-choices-filtered}). Although it is not
+related to keyboard shortcut but that position is closer to the keymap table,
+hence user can type the filter then look at the remaining choices more easily.
+
+Some input box can accept newly created string as well e.g.\ input box waiting
+for the name of a new node. If this is the case, you can write the string
+directly into the input box then hit \pkbd{Return} to complete it\footnote{If
+  you click somewhere else before hitting \pkbd{Return}, the string in the
+  input box will be gone without producing any effect. This common pitfall for
+  newcomers and will be explain further in chapter
+  \ref{chap:evaluation_conclusion}.}. Please note that the written string still
+be used to filter choices out (if exists), but \pkbd{Return} as alternative to
+\pkbd{Alt-1} will no longer work as it contradicts with this new key.
+
+Auto-complete is also capable for unicode input method as well, if you want to
+add a unicode character, just press \pkbd{Alt-u} then the keymap pane will look
+like figure \ref{fig:specification-autocomplete-choices-unicode}.
+
+In unicode input method, we have choices that map to each unicode character
+using its name in \LaTeX\ math mode, these choices can be manipulated by
+\pkbd{Alt-[} and \pkbd{Alt-]} and filtering method similar to normal choices
+above. Once a choice is selected, it will be appended to the end in input box
+and return to normal input method. However, if you enter unicode input method by
+accident you can press \pkbd{Escape} to return to normal input method with
+appending any unicode character.
+
+\begin{figure}[H]
+    \centering
+
+\begin{minipage}{0.35\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{spec-autocomplete-5}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.35\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{spec-autocomplete-6}
+\end{flushright}
+\end{minipage}
+\caption{Key-blinding after entering unicode input method.}
+\label{fig:specification-autocomplete-choices-unicode}
+\end{figure}
+
+To conclude this section, originally, auto-complete was designed for an input
+box that is used to select a choice e.g.\ selecting a grammar for a term or
+selecting a rule for a step of a theorem, but now it is extended to other types
+of input box that doesn't have choice e.g.\ input box the name of a new node. So
+all of input boxes will have some feature in common, e.g.\ ability to
+use unicode input mode, this reduces Phometa learning curve.
+
+\section{The proofs repository}
+
+Phometa has a repository which consists of packages and modules. Analogously,
+you can imagine packages as directories and modules as files, therefore the
+proofs repository is similar to a real repository that contains directories and
+files.
+
+The package pane represents the global structure as shown in the following
+example,
+
+\begin{figure}[H]
+    \centering
+
+\begin{minipage}{0.35\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{spec-package-pane-1}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.35\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{spec-package-pane-2}
+\end{flushright}
+\end{minipage}
+
+\caption{Package pane represents the global structure of proofs repository}
+\label{fig:specification-package-pane}
+\end{figure}
+
+The current repository has one package named ``Standard Library'' which consists
+of three modules named ``Propositional Logic'', ``Simple Arithmetic'', and
+``Typed Lambda Calculus''. Each module of Phometa consists of a sequence of
+nodes, each node can be either comment (grey), grammar (dark green), rule (light
+green), or theorem (blue).
+
+Please note that a package contains its elements alphabetically whereas a
+modules contains its nodes using an explicit ordering that user can swap among
+them later.
+
+Each package and module can be folded or unfolded by clicking a triangle in
+front of it. You can also delete them by clicking \closeButton\ on the right
+hand side, then the conformation notification will appear in the messages pane
+like this
+
+\includegraphics[width=\textwidth]{spec-delete-confirmation.png}
+
+You can add sub-packages or sub-modules in any package by clicking ``Add
+Package'' or ``Add Module'' respectively, the clicked button will transform to
+an input box that you can enter the name.
+
+To read or edit a module, you can click at the label of the module directly,
+this will make the focused sub-pane\footnote{If there isn't a focus one, use the
+  first sub-pane.} of the grids pane to display the module similar to figure
+\ref{fig:specification-module}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{spec-module}
+    \caption{Screenshot of Simple Arithmetic module displayed in the grids pane
+      after the user click the label ``Simple Arithmetic'' in the package pane.
+      Please note that nodes in this module are reordered so you can see
+      different type of nodes in one screenshot.}
+    \label{fig:specification-module}
+\end{figure}
+
+The displayed module contains nodes that you can interact\footnote{Details on
+  how to interact with each type of nodes will be describe in later sections.}
+with directly. If you feel like this is too crowded, you can concentrate on
+particular node by clicking its label in the package pane, this will show only
+that node on the grids pane not the entire module.
+
+Nodes in a module are interspersed by panels which allow you add a new node by
+clicking the button corresponded to the type of a new node, the button then
+change to an (auto-complete) input box that ask for the name of that node, after
+you type the name and hit \pkbd{Return}, the new node will appear at the
+position of that panel. A panel also has \swapButton\ that allow you to swap the
+location between the above and below nodes.
+
+The current proofs repository can be loaded or saved with
+\texttt{repository.json} by using \pkbd{Alt-x l} and \pkbd{Alt-x s} as we
+mention before. This allows user to manipulate the proofs repository directly.
+For example,
+\begin{itemize}
+\item User can backup the current state of proofs repository by copy
+  \texttt{repository.json} to somewhere else. If user accidentally delete some node
+  or something else gone wrong, user can just replace it with the backup one.
+\item Users can work in a group on the same repository by passing
+  \texttt{repository.json} around.
+\item Users can distribute their formal systems to others by publishing their
+  \texttt{repository.json}
+\end{itemize}
+However, manually modifying \texttt{repository.json} without using Phometa
+interface is strongly discouraged as it will render the repository into an
+inconsistent state.
+
+Alternative to \texttt{repository.json}, user can copy / paste the repository
+directly from the text-area in the home page.
 
 \section{Node Comment}
 
+Node comment allows users to add commentary anywhere in a module. It is a proper
+node i.e.\ we need to specify the name of the comment, by convention, we will
+add ``\textbackslash\textbackslash'' as the prefix to the name so we don't have
+to worry about name clash with another type of nodes.
+
+To construct this, we need to obtain a blank node using one of adding panels
+explained in the last section. Then you can click ``Edit Comment'' which is on
+the top-right corner of the node then a HTML textarea\footnote{This is the only
+  input box that doesn't have auto-complete functionality.} will appear so you can
+write your comment, once it is finished, you can click ``Quit Editing'' button
+(or simply click somewhere else), this will transform the HTML textarea to
+normal box. Unlike other nodes, there is no need to lock a comment node so you
+can come back and edit this anytime.
+
 \section{Node Grammar}
+\label{spec:node_grammar}
+
+Node grammar allows users to encode a Backus-Naur Form. To construct this, we
+need get a draft grammar using one of adding panels, this will let us define the
+following properties of the grammar
+
+\begin{itemize}
+\item \kMetaVarRegex\ --- Specify JavaScript regex pattern that control the name
+  of a meta variable of this grammar. This property is optional, and if it is
+  absent, meta variables of this grammar cannot be instantiated.
+\item \kLiteralRegex\ --- Specify JavaScript regex pattern that control the name
+  of a literal of this grammar. This property is optional, and if it is
+  absent, literal of this grammar cannot be instantiated.
+\item \kChoice\ --- Describe an alternative branch that a term can be
+  instantiated to. A choice consists of sub-grammars and format-strings stripped
+  to each other.
+
+  This property is multiple, you can create a new choice by clicking ``Add
+  Choice'' button on the top-right corner of the grammar, it will ask you for
+  the number of sub-grammars that the new choice will have, after that, a new
+  \kChoice\ will appear with $2n + 1$ buttons, the odd buttons will asking for
+  string of syntax, and even buttons will be asking for sub-grammar (draft
+  grammar and itself included) which you can use auto-complete method described
+  in auto-complete section to complete.
+
+  You can also swap order among choices by clicking \swapButton\ on the right
+  hand side of that choice, this will swap the current choice with the one lower
+  (wrap around if necessary).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+
+\begin{minipage}{0.48\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{prop-tut-prop-5}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.48\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{prop-tut-prop-6}
+\end{flushright}
+\end{minipage}
+\caption{Example of a grammar before and after it is locked.}
+\end{figure}
+
+Once the grammar is completed i.e.\ all of buttons asking for sub-grammars are
+fulfilled, we can lock it using \lockButton\ on the top-right corner of the
+grammar so it will become a proper grammar and ready for usage of other type of
+nodes. In addition, if something is wrong during constructing this, you can
+reset the grammar to the initial state by clicking \resetButton.
+
+For more information about grammar construction, see appendix section
+\ref{sec:how_to_built_grammars_and_rules}.
 
 \section{Root Term}
 
-State that root term input method use lots of autocomplete and explain more on
-extended feature
+Root terms are not sub-terms of any other terms (as you can see from user
+interface). There 3 types of terms depending in its editability as the following
+\begin{itemize}
+\item Editable-up-to-grammar --- Both of grammar and term content of a root term
+  can be changed. They are used to construct premises and the conclusion of
+  rules and the goal of theorems.
+\item Editable-up-to-term --- Term content of a root term it editable
+ but the grammar is given and fixed. It is used in the place that depend on
+ other node such as an argument of a rule.
+\item Read-only --- Everything is fixed, the root term is shown there only for
+  your information.
+\end{itemize}
 
-explain navigation mode and meta reduction
+To make this type more distinguishable, read-only root-term will have white
+background colour represented its immutability, in constant, other two will have
+grey background colour.
 
-make sure that we include EVERY key binding and generated messages
+When an editable-up-to-grammar root-term is newly created, it doesn't know its
+own grammar and it will be shown as a button with a label ``Choose Grammar''. To
+specify a grammar, click that button, it will transform to an auto-complete
+input box waiting you to select a grammar using the method described in
+auto-complete section. Once you select a grammar for this, it will transform to
+another auto-complete input box but now asking for term content which behaves
+the same as an editable-up-to-term root-term.
 
-% When a term is created, it can be in one of this mode
+At the beginning of term-content input-method, i.e.\ when editable-up-to-grammar
+root-term get its grammar or editable-up-to-term root-term is newly created, the
+root term will show a single auto-complete input box with a placeholder as the
+name of corresponding grammar and have green background colour. This
+auto-complete input box, from now on, will be called \emph{todo-hole} and it can
+be fulfilled one of following method
 
-% \subsection{Editable up to Grammars}
-% On this mode, we have a absolute control over a term i.e.\ both of grammar and
-% term content can be changed, when it is created it will look like this,
+\begin{itemize}
+\item Select one of \kChoice{}s stated in the corresponding grammar declaration
+  using auto-complete method,
+  this will replace current todo-hole with that choice with corresponding
+  sub-grammars as further todo-holes (if any).
+\item Write a string to the input box and hit \pkbd{Return}
+  \begin{itemize}
+  \item if the string match with \kMetaVarRegex, then the current todo-holes
+    will be replaced with meta variable
+  \item otherwise, if the string match with \kLiteralRegex, then the current
+    todo-holes will be replaced with literal
+  \item otherwise, do nothing and prompt an exception on the messages pane.
+  \end{itemize}
+\item Select on of existing meta variables or literals (if any) using
+  auto-complete method.
+\end{itemize}
 
-% \centerline{\includegraphics[scale=0.25]{term-input-method-001.png}}
+\begin{figure}[H]
+    \centering
 
-% This is a completely blank term, we can set its grammar by clicking on it, then
-% you will see option on keymap-pane (left-bottom corner of screen) as the following
+\begin{minipage}{0.50\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{spec-root-term-1}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.35\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{spec-root-term-2}
+\end{flushright}
+\end{minipage}
+\caption{Example of root term during term-content input-method (left) and the
+  corresponding key-blinding (right). You can see that the current todo-hole has
+  \pgmr{Expr} as its grammar so their are 3 choices from \pgmr{Expr} and other 3
+  choices which are existing meta variables that has been entered bofore,
+  nevertheless it can write a new string then hit \pkbd{Return} for meta
+  variable as well.}
+\label{spec-root-term-todo}
+\end{figure}
 
-% \centerline{\includegraphics[scale=0.5]{term-input-method-002.png}}
+After the current todo-hole as been fulfilled, the cursor will automatically
+focus on the todo-hole, so user can finish entering the whole term content
+without touching a mouse.
 
-% This show all of possible key-blinding including all of grammar that can be use,
-% now we will select \pgmr{Prop} for this term's grammar by press \emph{1}
-% (or alternatively clicking on \pgmr{Prop} directly), which now tern the
-% term to be like this
+Phometa also has another feature to automatically expand the term that has
+exactly one choice and can't instantiate neither of meta variable nor literal
+e.g.\ a term of \pgmr{Equation}
 
-% \centerline{\includegraphics[scale=0.25]{term-input-method-003.png}}
+Every (sub) term can be focused directly by clicking at it, then the focused
+term will be overlined. If the focused term is todo-hole, keymap show its input
+text and grammar (similar to the right screenshot in figure
+\ref{spec-root-term-todo}), otherwise, the keymap will show its grammar and the
+term (similar to the right screenshot in figure). In addition, if the focus term
+is \kChoice\ term, we can jump to its sub-terms using \pkbd{\{0..9\}} as showned
+in figure \ref{spec-root-term-non-todo}.
 
-% This means the term now know that it is \pgmr{Prop} term and hasn't know a
-% content, and in order give a content we can set it to be either a construction
-% term or meta-variable term. Now let make it a construction term, if you see
-% keymap-pane again, it will look like this
+\begin{figure}[H]
+    \centering
 
-% \centerline{\includegraphics[scale=0.5]{term-input-method-004.png}}
+\begin{minipage}{0.40\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{spec-root-term-3}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.35\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{spec-root-term-4}
+\end{flushright}
+\end{minipage}
+\caption{Example of root term when \kChoice\ term is clicked, we can jump to its
+  first term by clicking \pkbd{1} or second term by clicking \pkbd{2}.}
+\label{spec-root-term-non-todo}
+\end{figure}
 
-% Similar to grammar selection, we can press the corresponded key-blinding that
-% construct the term as we like. Let press \emph{7} for \bat{\pgmr{Prop}
-%   \pifmt{$\rightarrow$} \pgmr{Prop}} and now the term become like this,
+Root term has limited space to interact, therefore, it make use lots of shortcut
+which can be described\footnote{This list excludes keyboard shortcut of
+  auto-complete as it is not specific to root term} as the following
 
-% \centerline{\includegraphics[scale=0.25]{term-input-method-005.png}}
+\begin{itemize}
+\item \pkbd{r} --- reset the whole root term to its initial state (mutable term only).
+\item \pkbd{t} --- reset the current term to todo-hole (mutable and non
+  todo-hole term only).
+\item \pkbd{Up} --- if it is root term, quit root term and focus on outer nod
+\item \pkbd{Up} --- if it is sub term, jump to parent term of current term.
+\item \pkbd{Left} --- jump to next todo-hole.
+\item \pkbd{Right} --- jump to next todo-hole.
+\end{itemize}
 
-% The root term now has \pifmt{$\rightarrow$} as the main connector and
-% \emph{todos} spilt into two place, this process is recursive, you can try to
-% split it again by e.g. press \emph{5} for \bat{\pgmr{Prop}
-%   \pifmt{$\wedge$} \pgmr{Prop}} and get
-
-% \centerline{\includegraphics[scale=0.25]{term-input-method-006.png}}
-
-% We also be able to move to other todos by clicking on target todo or simply
-% press left arrow or right arrow for previous and next todo respectively.
-
-% Next, we can make it to be meta-variable term by enter meta-variable name on the
-% target todo then press enter. Let type \emph{A} for the first todo
-
-% \centerline{\includegraphics[scale=0.25]{term-input-method-007.png}}
-
-% Now the first term become meta-variable and the cursor move to the next one
-% automatically, please note that the meta-variable name must comply to \kVarRegex
-% of corresponding grammar, otherwise, it will not convert to meta-variable. If
-% you want to create an atom here, you can't just type directly since it is for
-% \pgmr{Prop} meta-variable (As you can see from background text in todo),
-% instead, you need to press \emph{3} to tell Phometa that it is construction for
-% \pgmr{Atom}, like this
-
-% \centerline{\includegraphics[scale=0.25]{term-input-method-008.png}}
-
-% Now the background of current todo change from \emph{Prop} to \emph{Atom} and
-% has extra underline so now you can type and atom
-
-% \centerline{\includegraphics[scale=0.25]{term-input-method-009.png}}
-
-% Not only meta-variable that can finish up todos, some of grammar choice just
-% doesn't have sub-term, we could finish the last todo, by just press \emph{1} for \propTop
-
-% \centerline{\includegraphics[scale=0.25]{term-input-method-010.png}}
-
-% Now the term is finished, you can still return to the term and click some of
-% them e.g.\ clicking \pvar{A}
-
-% \centerline{\includegraphics[scale=0.25]{term-input-method-011.png}}
-
-% You can navigate to parent term my press up-arrow
-
-% \centerline{\includegraphics[scale=0.25]{term-input-method-012.png}}
-
-% If you think you create some sub-term wrongly, you click on the that sub-term
-% (in this is case \bat{\pvar{A} \propOr \bat{\pvar{p}}}) then press \emph{Alt-t}
-
-% \centerline{\includegraphics[scale=0.25]{term-input-method-013.png}}
-
-% Or if everything is wrong including the root term grammar, you just press
-% \emph{Alt-r}, this will go back to \emph{asking for grammar state}
-
-% \centerline{\includegraphics[scale=0.25]{term-input-method-001.png}}
-
-% To give more example, let try to create \pgmr{Judgement} term, by click \emph{4}
-
-% \centerline{\includegraphics[scale=0.25]{term-input-method-014.png}}
-
-% You might expect that after pressing \emph{4}, it should be just green area with
-% background written as \emph{Judgement}, why it is auto expend like this, well,
-% we have spacial case that if selecting grammar as just one choice and can't be
-% meta-variable (we didn't state \kVarRegex\ for \pgmr{Judgement}), it will auto
-% expend to that choice since that is the only action available.
-
-% \subsection{Editable up to Term}
-% This mode is the the same as editable up to grammar except that the grammar is
-% given and we can't change it. If we try to reset the whole term \emph{Alt-r}, it
-% the grammar still remain there.
-
-% \subsection{Read only}
-% In this mode, you can just view the term and nothing else.
-
+For further information about building a root term, please see the first half of
+section \ref{sec:arith-theorems-lemmas}.
 
 \section{Node Rule}
+\label{spec:node_rule}
+
+Node rule allows users to encode a derivation rule. To construct this, we need
+get a draft rule using one of adding panels, this will let us define the
+following properties of the rule
+
+\begin{itemize}
+\item \kAllowReduction\ --- Specify whether this rule could be used for meta
+  reduction or not. This property is a flag i.e.\ you can click
+  ``Disabled''/``Enabled'' button to toggle it.
+\item \kConclusion\ --- Specify a root term that will be used as the conclusion
+  of the rule. The root term displayed here is editable-up-to-grammar where you
+  can fulfil it using method described in the last section.
+\item \kPremise\ --- Describe a root term that will be used as one of premises
+  of this rule. Root term input method is the same as \kConclusion{}.
+
+  This property is multiple, you can create a new precise by clicking ``Add
+  Premise'' button on the top-right corner of the rule.
+\item \kCascade\ --- Describe a cascade premise which similar to a normal
+  premise but when the rule is called, rather than doing normal pattern
+  substitution, it tries to call its first sub-rule, if success this cascade
+  premise will be replaced by zero-or-more premises of sub-rule, otherwise,
+  cascadely calling other sub-rules. For more information about a cascade
+  premise, please see appendix section \ref{sec:hypothesis_rules}.
+
+  This property is multiple, you can create a new cascade premise by clicking
+  ``Add Cascade'' button on the top-right corner of the rule.
+
+  Each cascade premise has a list of sub-rules that it can try cascade. To add a
+  new sub-rule click ``Add Sub-Rule'' button which will transform to an
+  auto-complete input box asking for a rule (draft rules and itself included),
+  then the sub-rule calling template consists of the following
+  \begin{itemize}
+  \item Sub-rule name --- The rule that will be called as sub-rule, this is
+    specified when we add this sub-rule calling template and now it is fixed.
+  \item Unifiable / Exact Match flag --- The flag that you can
+    toggle between ``Unifiable''  (which is the default)  and ``Exact Match''
+    (treat sub-rule that require further substitution as failure).
+  \item Pattern of sub-rule goal --- An editable-up-to-term root-term that is
+    formed to match against sub-rule conclusion.
+  \item Patterns of sub-rule arguments --- Editable-up-to-term root-terms that
+    are formed to match against sub-rule parameters.
+  \end{itemize}
+  You can use \swapButton\ to reordering sub-rules around in the same way that
+  you swap ordering of \kChoice{}s of a grammar.
+
+\item \kParameter{}s --- Show meta variables (literals excluded) that appear
+  in one of premises but not in the conclusion. This property is automatic i.e.
+  it will be updated every time when one of premises or conclusion is updated,
+  user cannot manually change it.
+\end{itemize}
+
+List of \kPremise{}s and list of \kCascade{}s are, in fact, the same list, you
+can use \swapButton\ to swap ordering of these \kPremise{}s and \kCascade{}s
+around in the same way that you swap ordering of \kChoice{}s of a grammar.
+
+\begin{figure}[H]
+    \centering
+
+\begin{minipage}{0.48\textwidth}
+\begin{flushleft}
+    \includegraphics[width=\textwidth]{prop-tut-or-elim-5}
+    \includegraphics[width=\textwidth]{prop-tut-rule-hypo-5}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.48\textwidth}
+\begin{flushright}
+    \includegraphics[width=\textwidth]{prop-tut-or-elim-6}
+    \includegraphics[width=\textwidth]{prop-tut-rule-hypo-6}
+\end{flushright}
+\end{minipage}
+\caption{Example of rules before and after they are locked.}
+\end{figure}
+
+Once the rule is completed i.e.\ all of root terms has no todo-hole left, we can
+lock it using \lockButton\ on the top-right corner of the rule so it will
+become a proper rule and ready for usage of other type of nodes. In addition,
+if something is wrong during constructing this, you can reset the rule to the
+initial state by clicking \resetButton.
+
+For more information about rule construction, see appendix section
+\ref{sec:how_to_built_grammars_and_rules}.
+
 \section{Node Theorem}
-
-% \section{Placeholders}
-
-% We will use placeholders to distinguish between different intention of string. The advantage of GUI-based theorem prover is that you can use any string that you like. No more reserve word or name clash. For example, we can use keyword as normal string as it will be label differently.
-
-% \subsection{\pstr{string}} Represent newly created string, which is not linked from anywhere else before. This is useful when create a new identifier because we can't use a proper one as it doesn't exist before.
-
-% \subsection{\pkw{keyword}} Keywords are built-in. We can't create a new keyword.
-
-% \subsection{\pcomment{comment}} What ever you want to describe anything will be in this box.
-
-% \subsection{\pid{identifier}} Show an identifier that has been selected in this module (i.e. the name referred to each node).
-
-% \subsection{\pgmr{grammar}} The same as identifier but selection limited to grammar only. Grammar can be either inductive, literal, or sequence. For further information, see next section.
-
-% \subsection{\pregex{regex}} Represent newly created regular expression (regex) pattern.
-
-% \subsection{\pvar{variable}} Represent a (meta) variable used in rules and theorems. If there are variables that have the same name on the same root term, it is the same variable, this is useful in unification.
-
-% \subsection{\plit{literal}} Represent literal inside a term which has literal grammar.
-
-% \subsection{\pifmt{inductive formatter}} Sequent of symbol needed to construct inductive grammar.
-
-% \subsection{\psfmt{sequence formatter}} Sequent of symbol needed to construct sequence grammar.
-
-% \subsection{\pdfmt{definition formatter}} Sequent of symbol needed to construct definition.
-
-% \subsection{\pdef{definition}} The same as identifier but limited to definition only.
-
-% \subsection{\palias{alias}} The same as identifier but limited to alias only.
-
-% \subsection{\prule{rule}} The same as identifier but limited to rule only.
-
-% \subsection{\pthm{theorem}} The same as identifier but limited to theorem only.
-
-% \subsection{\ppkgmod{package or module}} This is the result of selection of a list available in package or module. Please note that this is \textbf{not} a subset of identifier so so we can have package/module and identifier with the same name. But, on the same module, subpackage and module can't have the same name.
-
-% \subsection{\bat{block \bat{\bat{as} term}}} We use underline to group (sub)term in to tree structure. This behaves similar to parenthesis, e.g. \bat{block \bat{\bat{as} term}} is in fact "(block (as (term)))" but looks a lot nicer. This is being used in
-% \begin{itemize}
-%     \item \bat{\ppkgmod{identify} \ppkgmod{module} \ppkgmod{path}}
-%     \item \bat{\pgmr{inductive}  \pgmr{grammar} \pifmt{declaration}}
-%     \item \bat{\pifmt{inductive} \pvar{term}}
-%     \item \bat{\psfmt{sequence} \pvar{term}}
-%     \item \bat{\pdfmt{definition} \pvar{term}}
-% \end{itemize}
-
-% \subsection{\bat{block as \bass{subsequence}}}
-% When patten match on sequential term, sometime we want to express subsequence. but we can use just normal \bat{block as term} since it will be ambiguous to another thing. So we highlight subsequence with another color. E.g. \bat{\pvar{A} \psfmt{,} \bass{\pvar{B}} \psfmt{,} \pvar{C}}. \psfmt{,} So know exactly that \pvar{B} represent subsequence of this sequential term, not just another element. \\ \\
-
-% TODO: write about term, root\_term, meta\_term, and hole.
-
-% TODO: write about \textbf{input method} on term and meta\_term.
-
-% TODO: write about \textbf{package explorer} which is the mechanism to dealing with \ppkgmod{packages} and \ppkgmod{modules} hierarchy.
-
-% \newpage
-
-% \section{Nodes and Attributes}
-
-% At top level, will have a root package which consists of packages and modules
-
-% each module is a collection of "nodes"
-
-% there are several type of node as the following
-
-% \begin{itemize}
-%     \item \kOpen
-%     \begin{itemize}
-%         \item \kShowByDefault
-%         \item \kHideByDefault
-%     \end{itemize}
-%     \item \kComment
-%     \item \kGrammar
-%     \begin{itemize}
-%         \item \kInductive
-%         \item \kLiteral
-%         \item \kSequence
-%         \item \kDictionary
-%     \end{itemize}
-%     \item \kDefinition
-%     \item \kAlias
-%     \item \kRule
-%     \begin{itemize}
-%         \item \kInference
-%         \item \kCompound
-%     \end{itemize}
-%     \item \kTheorem
-% \end{itemize}
-
-% Note1. When we infer to "identifier", it can refer to any node since each node create new identifier except \kOpen and \kComment.
-
-% Note3. Comment can be attribute of any node, if present, it must be the first attribute as well
-
-% \subsection{\kOpen \bat{\ppkgmod{path} \ppkgmod{to} \ppkgmod{target module}} \{ \kShowByDefault \textbackslash \kHideByDefault \} }
-
-% This is the way to import \pid{identifier} from another module to current module. Neither module name nor module path of this module will become identifier of current module (this is one of a reason why I use keyword "open" rather than "import"). The only result of this node is a set of identifier imported.
-
-% \subsubsection{Common attributes}
-
-% \begin{itemize}
-%     \item \kRecursive \{\kTrue \textbackslash \kFalse\} \\
-%     (Compulsory) If this is \kTrue, recursively import dependent identifiers which target module also use. In another word, transitive closure of dependent identifiers.
-%     \item \kRename \pid{identifier from target module} \kTo \pstr{new\_name} \\
-%     (Multiple) Import the target identifier and rename it as \pstr{new\_name}. Please note that this attribute is independent to show or hide by default.
-%     \item \kInject \pid{injected node form current module} \kTo \pid{injectable node from target module} \\
-% %   May be not necessary
-% %     (Multiple) Inject dependency (from current module) to the copy of target module immediately before import that to current module.
-% %     Please note that this does not effect the original target module. In fact, there is no way in phometa that allow dependent module to modify original one.
-% %     We can only inject dependency to only the node which has attribute \kInjectable setted as \kTrue. This is nice since we can guarantee that the other node left untouched. Currently we have just \kInductive \kGrammar which allow \kInjectable attribute. But we might change it later.
-% %     TODO: write an example involve injectable (i.e. first order logic which has pred different on context we are dealing with)
-% \end{itemize}
-
-% \subsubsection{\kShowByDefault and its attributes}
-% For each identifier inside target module, if not state otherwise, do not import this to current module.
-% \begin{itemize}
-%     \item \kHide \pid{identifier from target module} \\
-%     (Multiple) Tell phometa not to import this identifier. If \kRecursive is \kTrue this also work with the identifier that target module import as well.
-% \end{itemize}
-
-% \subsubsection{\kHideByDefault and its attributes}
-% For each identifier inside target module, if not state otherwise, import this to current module.
-% \begin{itemize}
-%     \item \kShow \pid{identifier from target module} \\
-%     (Multiple) The same effect as \kHide but show identifier instead of hiding it.
-% \end{itemize}
-
-% \subsection{node input method}
-
-% We will give an example of \kOpen node alongside with the explanation, other nodes will be similar.
-
-% Once the \kOpen node has been created (from module input method), user need to give path to target module (by module\_path input method) then they need to select (on the right corner of the header) weather this \kOpen node to be \kShowByDefault or \kHideByDefault.
-
-% After that, the body of the node will be generated, all of "Compulsory" attributes (in this case, just \kRecursive) will be assign to default value. User can edit this by click "edit" on the right most of the header then user can,
-
-% \begin{itemize}
-%     \item enable/disable optional attributes (in this case, just \kComment)
-%     \item add/remove/reorder multiple attributes
-% \end{itemize}
-
-% Please note that the order of attributes cannot change (except reordering in multiple attribute region).
-
-% % This method is deprecate, but might be useful in the future.
-% % \begin{itemize}[label={}]
-% %     \item $\square$ \kComment
-% %     \item $\oslash$ \kRecursive
-% %     \item $\bigcirc$ show\_by\_default
-% %     \begin{itemize}[label={}]
-% %       \item $\oplus$ \kHide
-% %     \end{itemize}
-% %     \item $\bigcirc$ hide\_by\_default
-% %     \begin{itemize}[label={}]
-% %         \item $\oplus$ \kShow
-% %     \end{itemize}
-% %     \item $\oplus$ \kRename
-% % \end{itemize}
-
-% % \begin{itemize}
-% %     \item $\oslash$ indicates that this attribute is compulsory, you can't add or delete it, it is there only for reference
-% %     \item $\square$ indicates that this attribute is optional, you can toggle "tick box" to add or delete it
-% %     \item $\bigcirc$ indicates that this attribute is selective, if you click circle, the attribute that you want will enable but also disable other (same level) circles
-% %     \item $\oplus$ indicates that this attribute is multiple, you can click $\oplus$ to add new attribute, for reorder and delete individual you can do it directly in node body.
-% % \end{itemize}
-
-% \subsection{\kComment \pstr{summarise of comment, optional}}
-% This is simply a node that we can use to short note. This is intended to be use as a way to describe or explain something involving multiple nodes. It is also use to explain module description.
-
-% For detail of each individual node, there will be \kComment attribute of each node that node that you can use. See examples for further information.
-
-% \subsection{\kGrammar \pstr{new grammar} \{\kInductive \textbackslash \kLiteral \textbackslash \kSequence \textbackslash \kDictionary\} }
-% Introduce new grammar for this formal system
-
-% \subsubsection{Common attributes}
-
-% \begin{itemize}
-%     \item \kVarRegex \pregex{regex} \\
-%     (Optional) Patten of string that allow to be used as variable of this grammar. If this attribute is disabled, this grammar can't be in form of variable.
-% \end{itemize}
-
-% \subsubsection{\kInductive and its attributes}
-% This is the standard way to define a grammar, an inductive term can be one of a form in \kChoice attributes. Then the subterm will be construct according to sub-grammar described in \kChoice
-% \begin{itemize}
-%     \item \kExtend \pgmr{inductive\_grammar} \\
-%     (Optional) If present, it will import \kChoice from base grammar. Please note that the grammar used of this attributes must be inductive. Please note that derived grammar can be used everywhere that base grammar can.
-%     \item \kChoice \bat{\pgmr{sequent} \pifmt{of} \pgmr{grammars} \pifmt{and formatter}} \kRef \pstr{reference} \\
-%     (Multiple) One of the ways to instantiate this grammar. \pstr{reference} will be used in input method to refer back in to this choice. Please note that \pstr{reference} is in local name space of this inductive grammar
-% \end{itemize}
-
-%   TODO: On inductive term input method, when enter "construct by reference", if there is just one \kChoice then select it automatically.
-
-% \subsubsection{\kLiteral and its attributes}
-% This is another way to define grammar. When you want to define something like set of atom, numbers, etc. it is better to define this way. When you instantiate this kind of grammar, simply write a string, phometa will check it against \kRegex attribute.
-% \begin{itemize}
-%     \item \kRegex \pregex{regex} \\
-%     (Compulsory) Pattern of string that allow to be used as literal of this grammar.
-% \end{itemize}
-
-% \subsubsection{\kSequence and its attributes}
-% TODO: try to encode Sequence and Dictionary as Inductive grammar. Analogus to, encode tuple by dependent pair e.g. (a,b,c,d) => (a,(b,(c,d)))
-% TODO: we will introduce spacial mechanism (perhaps built-in definition) to deal with sequence membership.
-% This is a proper way to create collection like list, set, bag, etc. The grammar which is created in this way will get extra power from built-in rule which will become handy later.
-% \begin{itemize}
-%     \item \kSubGrammar \pgmr{grammar} \\
-%     (Compulsory) Specify the grammar of elements of this sequence.
-%     \item \kDelimiter \pstr{string} \\
-%     (Optional) String to show as separator of each element. If this attribute doesn't exist. This sequence will not allow more than one element. Hence, become optional grammar (simialr to Maybe in Haskell and Option in OCaml)
-%     \item \kWhenEmpty \pstr{string} \\
-%     (Optional) String to show when the sequence is empty. If this attribute doesn't exist. This sequence cannot be empty which is useful for some particular sequence.
-%     \item \kCommutative \{\kTrue or \kFalse\} \\
-%     (Compulsory) State weather order is matter in this sequence or not. If \kTrue, there will be spacial rule which allow sequent to change order freely.
-%     \item \kIdempotent \{\kTrue or \kFalse\} \\
-%     (Compulsory) State weather elements are idempotent or not. If \kTrue, there will be spacial rule which allow sequent to remove or add some duplication on element.
-% \end{itemize}
-
-% \subsubsection{\kDictionary and its attributes}
-% TODO: finish this and extend the entire phometa to support \kDictionary similarity to \kSequence
-
-% TODO: we will introduce spacial mechanism (perhaps built-in definition) to deal with dictionary lookup/get\_keys/get\_values.
-
-% This is a proper way to create lookup table. This structure might not look primitive but it is so common, so we decide to make it built-in.
-
-% \begin{itemize}
-%     \item \kKeyGrammar \pgmr{grammar} \\
-%     (Compulsory) Specify the grammar of keys of this dictionary.
-%     \item \kValueGrammar \pgmr{grammar} \\
-%     (Compulsory) Specify the grammar of values of this dictionary.
-%     \item \kSeparator \pstr{string} \\
-%     (Compulsory) String to show as separator between key and value of each element of this dictionary.
-%     \item \kDelimiter \pstr{string} \\
-%     (Compulsory) String to show as separator of each element of this dictionary.
-%     \item \kWhenEmpty \pstr{string} \\
-%     (Compulsory) String to show when the sequence is empty.
-% \end{itemize}
-
-% \subsection{\kDefinition \pstr{new definition}}
-% % TODO: finish this, please note that \kPartial is normal definition. But \kTotal in a definition that always be able to reduce (like total function), this can be achieved by not using \kMatch (use \kTotalMatch instead) and not call \kPartial \kDefinition.
-% TODO: write an example involve \kLet ... \kBe
-% % and \kTotal \kDefinition
-
-% \subsection{\kAlias \pstr{new alias}}
-% Alias is the similar to \kDefinition but has no parameter. It can to convert any matched (sub)term to the identifier of the alias (without built-in rule like in definition, just change the (sub)term directly by clicking on (sub)term underline). This is useful when dealing with a term which has a long subterm that is not necessary at the moment.
-% % Whenever we said about definition (except \kDefinition node construction) we cover \kAlias as well.
-
-% TODO: finish this
-
-% \subsection{\kRule \pstr{new rule} \{\kInference \textbackslash \kCompound \} }
-% TODO: finish this
-
-% \subsection{\kTheorem \pstr{new theorem}}
-% TODO: finish this
-
-% \section{Available built-in rule so far}
-
-% \subsection{\prule{sequence\_commutative}}
-% Use this built-in rule to permute any sequential term that set \kCommutative as \kTrue.
-
-% For input method, once user select to use this built-in rule, it will copy the original rule as premise then user can click on a delimiter on target sequence then the elements (including subsequences) that are adjacent to that delimiter will swap the position, keep swapping until we get the desired permutation. Once you are done click at built-in rule stop this interactive editing session.
-
-% Please note that, this single command can permute several sequences at once.
-
-% \subsection{\prule{sequence\_idempotent}}
-% Use this built-in rule to duplicate or remove duplication on any sequential term. For input method, it is similar to \prule{sequence\_commutative} but user will click on element rather than delimiter (again, elements include subsequences as well, also if the element is \bat{block as term} then click its underline instead to avoid ambiguous on subterm)
-
-% If the clicked element isn't the same previous element then duplicate the element, otherwise remove the element. By this mechanism, for any consecutive identical elements. We can keep duplicate by repeatly clicking the first term and keep remove duplication by repeatly clicking the second-term (or later terms)
-
-% Stop this interactive editing session and ability to do on several sequences are the same as in \prule{sequence\_commutative}.
-
-% \subsection{\prule{sequence\_commutative\_idempotent}}
-% Can both permute and duplicate / remove duplicate like in \prule{sequence\_commutative} and \prule{sequence\_idempotent} in one go.
-
-
-% \subsection{\prule{definition\_unfold}}
-% Unfold target definitional term. For input method, once user select this build-in rule, user need to select one of definitional term (by clicking its underline), then it will unfold it.
-
-% % Please note that, this method always work for \kTotal \kDefinition but might not be the case for \kPartial \kDefinition.
-
-% \subsection{\prule{definition\_recursively\_unfold}}
-% Similar to \prule{definition\_unfold} but will recursively attempt unfold further definitional terms on result of the first unfolding.
-
-% Please note that, you can also select non-definitional term, then it will recursively unfold on definitional subterm of that term.
-
-% \subsection{\prule{definition\_fold}}
-% Fold target term. For input method, once user select this build-in rule, user need to select one of term then that term will become (term input method) hole, the user need to construct a term that can unfold to original term by one step.
-
-% \subsection{\prule{definition\_recursively\_fold}}
-% Similar to \prule{definition\_fold} but allow many step rather than just one step.
-
-% TODO: write built-in rule for \kDictionary
+\label{spec:node_theorem}
+
+\subsection{Theorem Construction}
+
+Node theorem allows users to encode a derivation tree. To construct this, we
+need get a draft theorem using one of adding panels, this will give us a blank
+theorem with the goal as editable-up-to-grammar root-term.
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{spec-thm-1}
+\end{center}
+
+Once the we complete the goal, it will also appear in the header\footnote{This
+  is useful for a long theorem as reader doesn't need to scroll down the very
+  end just to see what has been proven.} and there might be two buttons pop-up
+as the following
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{spec-thm-2}
+\end{center}
+
+\begin{itemize}
+\item ``Proof By Rule'' button --- once clicked, it will turn to an
+  auto-complete input box with choices consisting of rules which has the grammar
+  of the conclusion the same as the grammar of the current goal. If there is no
+  such a rule, ``Proof By Rule'' button will not appear at the first place.
+  Please note that some rule on auto-complete choices might not be applicable to
+  the current goal, if we select it, it will nothing and pop-up exception in the
+  message pane.
+\item ``Proof By Lemma'' button --- once clicked, it will turn to an
+  auto-complete input box with choices consisting of lemmas which each of them
+  has the goal that can turn to out current goal i.e.\ each meta variable of the
+  lemma goal can be substituted in such a way that is it identical to out
+  current goal. If there is no such a lemma, ``Proof By Rule'' button will not
+  appear at the first place. In fact, if there is at least one lemma in the
+  auto-complete choices, we can guarantee that our current goal can be proven as
+  it can fail in the similar way as rules.
+\end{itemize}
+
+In the current example, we could ``Proof By Lemma'' and select \pthm{dist-left}
+then this theorem will finish immediately, but in order to investigate more on
+other thing, we will select ``Proof By Lemma'' and select \prule{eq-tran}.
+
+Normally, when we apply a rule, the conclusion of the rule will be pattern
+matched against the current goal, then substitute pattern match result to each
+premise to get sub-goals that are needed to be proven later. However if the rule
+has parameters, it will ask user to fill arguments that corresponding to each
+parameter using an editable-up-to-term root-term, similar to this example.
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{spec-thm-3}
+\end{center}
+\begin{center}
+\includegraphics[width=0.8\textwidth]{spec-thm-4}
+\end{center}
+
+After the main goal knows its rule or lemma, the colour of it become white i.e.
+now it is read-only root-term. Sub-goals (if any) will have white background as
+well since they depend on a rule and it can't be changed.
+
+The generated sub-goals can be proven using the same method as the main goal,
+and it will happened recursively until all leaf sub-goals are proven by rules
+with no premises or by lemma.
+
+For each (sub) goal, that has been proven, we can reset its proof by clicking
+\closeButton\ on the bottom-right corner of particular proof. If we reset the
+main proof, the theorem goal will turn grey again and allow we to modify it.
+
+Once, the theorem is complete i.e.\ there is no active sub-goal left, we can
+lock a theorem to become a lemma by clicking \lockButton\ on the top-right
+corner of the theorem. In addition, if something is wrong during constructing
+this, you can reset the entire theorem to the initial state by clicking
+\resetButton.
+
+Since user will interact with Phometa most the time by constructing a theorem,
+so we provide some keyboard short-cut that user can use.
+
+\begin{itemize}
+\item \pkbd{r} --- reset the whole theorem (equivalent to \resetButton).
+\item \pkbd{t} --- reset the current current proof (equivalent to \closeButton\
+  of the current proof).
+\item \pkbd{l} --- lock the theorem (equivalent to \lockButton).
+\end{itemize}
+
+For further information about building a theorem, please see the second half of
+section \ref{sec:arith-theorems-lemmas}.
+
+\subsection{Theorem Fold/Unfold}
+
+Some (sub) proof in a theorem is quite long so its goal and sub-goals will be
+far away from each other, therefore, it is very hard to read them together as an
+instance of a derivation rule. To tackle this problem, we can click
+\focusButton\ on the proof that we want to focus, this will fold its sub-proofs
+so goal and sub-goals will stick together and easier to read as instance of a
+derivation rule.
+
+To unfocus the proof, we can click \unfocusButton\ at the same position that we
+click \focusButton. This will unfold all of sub-proofs that are currently
+folded.
+
+To avoid potential confusions among (sub) proofs, we allow to have a focus proof
+one at the time (per theorem) i.e.\ if you click \focusButton\ on some proof
+during another proof is being focus, then it will automatically unfocus the old
+one (without clicking \unfocusButton) and then focus the new one.
+
+Some proof might not have any sub-goal that is foldable, focusing on it will not
+produce any difference, hence, such a proof will simply doesn't have
+\focusButton\ at the first place.
+
+For further information about theorem fold/unfold, please see section
+\ref{sec:arith-complex-theorem}.
+
+\section{Meta Reduction}
+
+Some rule has exactly one premise which has the same grammar as the conclusion.
+Conceptually, this establishes some kind of relation that suggests that the
+conclusion of this rule should be able to \emph{reduce} to the premise. We can
+make this concept come true by enabling flag \kAllowReduction\ on that rule.
+
+Meta reduction can be performed in a (sub)term that is inside a (sub)goal of a
+theorem, and that (sub)goal must be in ``todo'' state i.e.\ it must not be in
+parameters-waiting state nor has been proven by a rule or a lemma. Although
+sub-goal is read-only root-term but meta reduction can be preform since it is
+not related to the term construction.
+
+Once you click such a (sub)term, you might see some rule appear as an
+auto-complete choice, this means that you can use that rule to reduce the term.
+
+Formally, a rule can appear as an auto-complete choice to reduce a term if it
+satisfies the following condition
+\begin{itemize}
+\item The \kAllowReduction flag of the rule is set.
+\item The rule requires no parameters.
+\item The generates exactly one premise (might happen dynamically via cascade
+  premises).
+\item That premise has the same grammar as the conclusion of the rule.
+\item The applying process doesn't involve any further substitution.
+\end{itemize}
+
+For further information about meta-reduction, please see appendix section
+\ref{sec:prop-context-manipulation}.
 
 \end{document}

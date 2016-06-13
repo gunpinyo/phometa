@@ -22,7 +22,7 @@ build/**
 # nodejs, npm package
 node_modules/
 
-# css, which is complied by sass
+# css, which is compiled by sass
 src/style.css
 src/style.css.map
 .sass-cache/

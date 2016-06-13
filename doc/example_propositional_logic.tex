@@ -5,10 +5,10 @@
 \label{chap:example_propositional_logic}
 
 Once you are familiar with some basic features and usability of \emph{Phometa}
-from the last chapter. This chapter aims to show more advance features on
-another formal system named \emph{Propositional Logic} which is the most well
-known logical system\footnote{Logical system is a formal system together with
-  semantics\supercite{formal-system-wiki}}.
+from the chapter \ref{chap:example_simple_arithmetic}. This chapter aims to show
+more advance features on another formal system named \emph{Propositional Logic}
+which is the most well known logical system\footnote{Logical system is a formal
+  system together with semantics\supercite{formal-system-wiki}}.
 
 Logic, in general, works so well with traditional derivation system, hence there
 is spacial name called \emph{Natural Deduction} which is a combination of any
@@ -38,12 +38,12 @@ This grammar is equivalence to the following Backus Normal Form
 \begin{figure}[H]
 \begin{framed}
 \begin{lstlisting}[style=bnf]
-<Prop> ::= $\top$ | $\bot$ | <Atom>
-         | <Prop> $\wedge$ <Prop>
-         | <Prop> $\vee$ <Prop>
-         | $\neg$ <Prop>
-         | <Prop> $\rightarrow$ <Prop>
-         | <Prop> $\leftrightarrow$ <Prop>
+<Prop> ::= `$\top$' | `$\bot$' | <Atom>
+         | `('<Prop> `$\wedge$' <Prop>`)'
+         | `('<Prop> `$\vee$' <Prop>`)'
+         | `( $\neg$' <Prop>`)'
+         | `('<Prop> `$\rightarrow$' <Prop>`)'
+         | `('<Prop> `$\leftrightarrow$' <Prop>`)'
          | meta-variables comply with regex
              /[A-Z][a-zA-Z]*([1-9][0-9]*|'*)/
 \end{lstlisting}
@@ -134,10 +134,11 @@ Please note that \pgmr{Judgement} doesn't have field \kMetaVarRegex nor
 \pgmr{Judgement}.
 
 \section{Hypothesis rules}
+\label{sec:hypothesis_rules}
 
 In order to prove any judgement, we want ability to state that for any
-proposition that is in assumptions, it can be conclusion i.e. $A_{1..n} \vdash
-A_i$ where $i \in {1..n}$
+proposition that is in assumptions, it can be conclusion i.e. $\epsilon, A_1,
+A_2, \ldots, A_n \vdash A_i$ where $i \in {1..n}$
 
 This is achievable by \prule{hypothesis-base} and \prule{hypothesis-next}.
 
@@ -220,7 +221,7 @@ fail. So, the cascade premise will move to second sub-rule and try to apply
 \prule{hypothesis}, as sub-rule, let \term{prop-tut-hypo-4} pattern match
 against \term{prop-tut-hypo-10}, the process is similar as before so I can tell
 directly that it will apply \prule{hypothesis} as sub-sub-rule with goal =
-\term{prop-tut-hypo-11}, which in tern, apply \prule{hypothesis} as
+\term{prop-tut-hypo-11}, which in turn, apply \prule{hypothesis} as
 sub-sub-sub-rule with goal = \term{prop-tut-hypo-12}.
 
 Now, \prule{hypothesis-base} with goal = \term{prop-tut-hypo-12} will not fail
@@ -361,6 +362,7 @@ this theorem is \pgmr{Prop} rather than \pgmr{Judgement} as usual.
 \end{center}
 
 \section{Context manipulation}
+\label{sec:prop-context-manipulation}
 
 Context in Propositional Logic is just a set of assumption so the order and
 duplication among assumptions shouldn't matter. Formally, \term{prop-ctx-man-1}
@@ -431,17 +433,15 @@ available in keymap so we can select it.
 
 Although I said that white background means not modifiable, but meta-reduction
 is exceptional because its implicitness. Meta-reduction is very powerful but
-also dangerous so I limit usage of meta-reduction only for \emph{empty}
-sub-goal\footnote{Sub-goal that has associate lemma or rule (including the one
-  that is waiting for parameter(s)), is not empty sub-goal.} in unfinished
-theorem where proving process will benefit from it. In contrast, it doesn't make
-sense to do this in rules or lemmas and only make user confuse.
+also dangerous so I limit usage of meta-reduction only for
+\emph{empty}\footnote{(Sub)goal that has associate lemma or rule (including the
+  one that is waiting for parameter(s)), is not empty (sub)goal.} (sub)goal in
+unfinished theorem where proving process will benefit from it. In contrast, it
+doesn't make sense to do this in rules or lemmas and only make user confuse.
 
 Context manipulation is not that important to for Propositional Logic since rule
 \prule{hypothesis} can penetrate thought out of \pgmr{Context}. However, is
-better to show it here so you will know how meta-reduction works. This is
-particularly important when we start to implement Lambda Calculus in the next
-chapter.
+better to show it here so you will know how meta-reduction works.
 
 \section{How to build Grammars and Rules}
 \label{sec:how_to_built_grammars_and_rules}
@@ -474,8 +474,8 @@ JavaScript regexp specification.} here,
 \end{center}
 
 The background colour of this regular expression is grey, so you can edit it
-afterword by click the box again. Alternatively you can delete it using close
-button on the right of the row.
+afterword by click the box again. Alternatively you can delete it using
+\closeButton\ on the right of the row.
 
 For \kLiteralRegex, we do nothing about it as \pgmr{TutorialProp} will not
 instantiate literal.
@@ -515,7 +515,7 @@ should look like this.
   \includegraphics[scale=0.5]{prop-tut-prop-5}
 \end{center}
 
-You can lock this draft grammar by clicking lock button on top-right corner,
+You can lock this draft grammar by clicking \lockButton\ on top-right corner,
 this will transform it as a proper grammar where you can refer it in rules and
 theorems.
 
@@ -567,7 +567,7 @@ The two remaining premises can be done by similar process above
   \includegraphics[scale=0.5]{prop-tut-or-elim-5}
 \end{center}
 
-You can lock this draft rule by clicking lock button on top-right corner,
+You can lock this draft rule by clicking \lockButton\ on top-right corner,
 this will transform it as a proper rule where you can refer it in theorems.
 
 \begin{center}
@@ -620,58 +620,5 @@ Then you can lock this draft rule, to change it to a proper rule.
 \begin{center}
   \includegraphics[scale=0.5]{prop-tut-rule-hypo-6}
 \end{center}
-
-\newpage
-
-\section{Exercises}
-
-Credit: Some of material here modified from tutorial 3, 4, and 5 of first year Logic
-course, Department of Computing, Imperial College London. Thank you Prof Ian
-Hodkinson and Dr Krysia Broda for this.
-
-\begin{itemize}
-\item Create a theorem and proof each of the following
-  \begin{itemize}
-  \item \term{prop-ex-1-a}
-  \item \term{prop-ex-1-b} (reminder: this is \pgmr{Prop} not \pgmr{Judgement})
-  \item \term{prop-ex-1-c}
-  \item \term{prop-ex-1-d}
-  \item \term{prop-ex-1-e}
-  \item \term{prop-ex-1-f}
-  \item \term{prop-ex-1-g}
-  \item \term{prop-ex-2-a}
-  \item \term{prop-ex-2-b}
-  \item \term{prop-ex-2-c}
-  \item \term{prop-ex-2-d}
-  \item \term{prop-ex-2-e}
-  \item \term{prop-ex-2-f}
-  \item \term{prop-ex-2-g}
-  \item \term{prop-ex-2-h}
-  \item \term{prop-ex-2-i}
-  \item \term{prop-ex-2-j}
-  \end{itemize}
-\item Equivalence of Propositional Logic could be written in the form ($A \equiv
-  B$) stated that, $A$ holds if and only if $B$ holds. Please
-  introduce new a grammar \pgmr{Equivalence} and write \prule{equiv-intro}
-  similar section \ref{sec:validity_of_proposition} and prove the following
-  \begin{itemize}
-  \item \term{prop-ex-eqv-1}
-  \item \term{prop-ex-eqv-2}
-  \item \term{prop-ex-eqv-3}
-  \item \term{prop-ex-eqv-4}
-  \item \term{prop-ex-eqv-5}
-  \item \term{prop-ex-eqv-6}
-  \item \term{prop-ex-eqv-7}
-  \item \term{prop-ex-eqv-8}
-  \item \term{prop-ex-eqv-9}
-  \item \term{prop-ex-eqv-10}
-  \item \term{prop-ex-eqv-11}
-  \item \term{prop-ex-eqv-12}
-  \item \term{prop-ex-eqv-13}
-  \item \term{prop-ex-eqv-14}
-  \item \term{prop-ex-eqv-15}
-  \end{itemize}
-\item (Challenge) Extend this Propositional Logic to become First Order Logic.
-\end{itemize}
 
 \end{document}

@@ -4,30 +4,31 @@
 \chapter{Related Work}
 
 There are many proof assistants available out there, each of them rely on
-slightly different meta-theory. We can separate proof assistants into 2
+slightly different meta-theory. We can separate proof assistants into two
 categories which are text-base proof assistants and visualised proof assistants.
 
 \section{Text-Base Proof Assistants}
 
-Text-base proof assistants are similar to programming language where user writes
-everything in text-files and compile it, if the compilation is successful, then
+Text-base proof assistants are similar to programming where a user writes
+everything in text-files and compiles it; if the compilation is successful, then
 the proofs are correct. User can freely manipulate these text-files, hence,
-easier to write a complex proof. In addition, most of proof assistants have a
-plug-in to mainstream text editor, so user can use their favourite text editor
+easier to write a complex proof. In addition, most proof assistants have a
+plug-in to a mainstream text editor, so users can use their favourite text editor
 with full performance.
 
-There are several mainstream text-base proof assistants that worth mentioning
+There are several mainstream text-base proof assistants that are worth
+mentioning
 
 \subsection{Coq}
 Coq\supercite{coq-official-website} is one the most famous proof assistants. It
-is based on the Calculus of Inductive Constructions (CIC)\footcite{CIC is itself
+is based on the Calculus of Inductive Constructions (CIC)\footnote{CIC is itself
   is developed alongside Coq.} developed by Thierry
 Coquand\supercite{thierry-coquand-homepage}.
 
-Coq has customisable tactics which are commands that transform goal into
+Coq has customisable tactics which are commands that transform a goal into
 smaller-sub goal (if any), this makes proving process become faster compared to
-other proof assistants. In contrast, tactics reduce readability, reader might
-need to replay each tactic step by step in order to understand a proof
+other proof assistants. In contrast, tactics reduce readability, and a reader
+might need to replay each tactic step by step in order to understand a proof
 completely.
 
 Coq is very mature, it has been developed since 1984. Hence, it is reliable and
@@ -57,22 +58,22 @@ Unified Theory of Dependent
 Types\supercite{norell:thesis}\supercite{Luo:1994:CRT:184757} similar to Martin
 Lof Type Theory.
 
-Its proving technique is relies on Curry-Howard correspondence
-which state that there is duality between computer programs and mathematical
-proofs\supercite{curry-howard-correspondence}, for example function corresponded
-to implication, product type corresponded to logical implication.
+Its proving technique relies on the Curry-Howard correspondence which states
+that there is duality between computer programs and mathematical
+proofs\supercite{curry-howard-correspondence}; for example functions
+corresponded to implication, product types corresponded to logical implication.
 
 Agda is suitable for reasoning about functional programs because we can write a
 program and prove that certain properties of a function hold using the same
 language. This is feasible since a proof is just a function due to Curry-Howard
 correspondence.
 
-Agda has less steep learning curve compared other proof assistants such as Coq.
-This is because user doesn't need to learn about proving
-system since it is the same as programming. In contrast, it doesn't have
-fancy tactic system so proving process is slower.
+Agda has a less steep learning curve compared other proof assistants such as
+Coq. This is because users don't need to learn about proving in the system since
+it is the same as programming. In contrast, it doesn't have fancy tactic system
+so the proving process is slower.
 
-In term of popularity, it is less popular than Coq, however, some project such
+In term of popularity, it is less popular than Coq, however, some projects such
 as Homotopy Type Theory\supercite{hott-coq-repo}\supercite{hott-agda-repo} use
 Agda as alternative experiments to Coq.
 
@@ -94,14 +95,14 @@ other editor.
 Isabelle\supercite{isabelle-official-website} is generic proof assistant which
 allows user to express mathematical formulae in a formal language and provide a
 tool to prove something about it. There are many systems that Isabelle supports
-but the most widespread one is \emph{Isabelle/HOL} which provide a higher order
+but the most widespread one is \emph{Isabelle/HOL} which provides a higher order
 logic environment that is ready for a big application.
 
-One of the main advantage of Isabelle is its readability, the proofs will be
+One of the main advantages of Isabelle is its readability; the proofs will be
 constructed by a language called \emph{Isar} which is designed in such a way
-that it could be read easily by both of computers and humans. Another advantage
-of Isabelle is that some part of a proof can be automatically proven, this
-improve user productivity.
+that it can be read easily by both of computers and humans. Another advantage of
+Isabelle is that some part of a proof can be automatically proven, this improves
+user productivity.
 
 In term of editor, Isabelle has default user interface and Prover IDE called
 \emph{Isabelle/jEdit} which is based on jEdit and Isabelle/Scala.
@@ -115,33 +116,27 @@ In term of editor, Isabelle has default user interface and Prover IDE called
 \label{fig:related-work-isabelle}
 \end{figure}
 
-% \subsection{Lean}
-
-% Lean\supercite{lean-offical-website} is a relatively new interactive theorem
-% prover\footnote{The Lean project was launched by Leonardo de Moura at Microsoft
-%   Research in 2013}, because of this it can borrow some
-
 \section{Visualised Proof Assistant}
 Visualised proof assistants show proofs and related contents in graphical way,
-it also allow user interact with proofs mainly by clicking which make them
-easier to use by newcomers, nevertheless, user cannot fully manipulate the proof
-as they have limited choices of input method, this makes it is harder have
-some advance features.
+it also allows user to interact with proofs mainly by clicking, which make them
+easier to use by newcomers. Nevertheless, users cannot fully manipulate the
+proof as they have limited choices of input method, which makes it is harder
+have some advance features.
 
-There are so visualised proof assistants so there, I will show a few of them to
-illustrate what visualised proof assistants look like.
+There are much visualised proof assistants out there, so I will show a few of
+them to illustrate what visualised proof assistants look like.
 
 \subsection{Logitext}
 Logitext\supercite{logitext-official-website} is a web-based proof assistant for
 \emph{first-order classical logic} using the \emph{sequent calculus}. The main
-intention is to teach students about \emph{Gentzen trees} which one of a way to
-struct derivation system. Logitext uses Coq internally to check validity of
-proof steps.
+intention is to teach students about \emph{Gentzen trees} which is one of a way
+to construct a derivation system. Logitext uses Coq internally to check validity
+of proof steps.
 
-Logitext is very easy use, user usually only need to click a logical connector
-on the goal itself to construct a derivation tree. However, it only supports
-sequent calculus for first-order classical logic or propositional intuitionistic
-logic and user cannot extend the system.
+Logitext is very easy to use, the user usually only needs to click a logical
+connector on the goal itself to construct a derivation tree. However, it only
+supports sequent calculus for first-order classical logic or propositional
+intuitionistic logic and users cannot extend the system.
 
 \begin{figure}[H]
     \centering
@@ -155,11 +150,11 @@ logic and user cannot extend the system.
 \subsection{Panda}
 Panda\supercite{panda-official-website}\supercite{Gasquet2011} (\textbf{P}roof
 \textbf{A}ssistant for \textbf{N}atural \textbf{D}eduction for \textbf{A}ll) is
-graphical proof assistant that can be used to prove first order logic using
+a graphical proof assistant that can be used to prove first order logic using
 Gentzen style's natural deduction.
 
-User will interact with it mainly by drag and drop. The main advantage is its
-tutorial which is well integrate with the actual program itself.
+Users interact with it mainly by drag and drop. The main advantage is its
+tutorial which is well integrated with the actual program itself.
 
 \begin{figure}[H]
     \centering
@@ -175,13 +170,13 @@ tutorial which is well integrate with the actual program itself.
 \subsection{Pandora}
 Pandora\supercite{pandora-official-website}\supercite{Broda2007PandoraAR}
 (\textbf{P}roof \textbf{A}ssistant for \textbf{N}atural \textbf{D}eduction using
-\textbf{O}rganised \textbf{R}ectangular \textbf{A}reas) is graphical proof
+\textbf{O}rganised \textbf{R}ectangular \textbf{A}reas) is a graphical proof
 assistant that can be used to prove first order logic using Fetch style's
 natural deduction.
 
-The usage is quite similar to Panda, but it use boxes (Fetch style) rather than
-derivation tree (Gentzen style). It also have a comprehensive document for
-newcomer as well.
+The usage is quite similar to Panda, but it uses boxes (Fetch style) rather than
+derivation trees (Gentzen style). It also have a comprehensive document for
+newcomers as well.
 
 \begin{figure}[H]
     \centering
