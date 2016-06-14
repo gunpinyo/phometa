@@ -1,8 +1,0 @@
-- implement module importation
-
-- implement Traditional Theorem tree view
-
-- implement undo feature
-  i.e. command that can roll back `Model` to previous state
-
-- make is_folded ui works for node in module pane
