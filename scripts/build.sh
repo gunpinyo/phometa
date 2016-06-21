@@ -5,16 +5,19 @@ pushd $(git rev-parse --show-toplevel)
 # bash scripts/clean.sh
 
 mkdir -p build
+mkdir -p doc-pdf
 
 rm -rf build/*
 
-if [ ! -e doc/master.pdf ]
-then
 cd doc
 latexmk -pdf --synctex=1 -interaction=nonstopmode -file-line-error master.tex
+latexmk -pdf --synctex=1 -interaction=nonstopmode -file-line-error presentation.tex
+latexmk -pdf --synctex=1 -interaction=nonstopmode -file-line-error presentation_script.tex
 cd ..
-fi
 cp doc/master.pdf build/phometa-doc.pdf
+cp doc/master.pdf doc-pdf/final-report.pdf
+cp doc/presentation.pdf doc-pdf/presentation.pdf
+cp doc/presentation_script.pdf doc-pdf/presentation_script.pdf
 
 sass src/style.scss build/style.css
 cp src/naive.js build/naive.js
