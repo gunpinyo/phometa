@@ -18,6 +18,7 @@ tests.js
 build/**
 !build/phometa.tar.gz
 !build/phometa-doc.pdf
+!doc-bin/**
 
 # nodejs, npm package
 node_modules/
